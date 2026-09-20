@@ -1,0 +1,323 @@
+{
+  "checked_at_utc": "2026-09-20T21:01:56.137350+00:00",
+  "theorems": 59,
+  "module_theorems": {
+    "Solow1956/Growth/SolowSwan.lean": 16,
+    "Solow1956/Growth/SolowSwanDynamics.lean": 37,
+    "Solow1956/Growth/SolowSwanExamples.lean": 6
+  },
+  "full_build": "passed",
+  "fresh_source_compilation": "passed",
+  "axioms": {
+    "Solow1956.SolowSwan.hasDerivAt_capitalPerWorker": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.intensiveForm_of_homogeneous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.steadyState_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.sqrt_steadyState": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.capitalChange_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.capitalChange_factor": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.capitalChange_steadyState": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.eq_steadyState_of_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.capitalChange_eq_zero_iff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.existsUnique_positive_steadyState": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.capitalChange_pos_of_lt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.capitalChange_neg_of_gt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.steadyState_strictMono_saving": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.steadyState_strictMono_productivity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.steadyState_strictAnti_population": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.steadyState_capital_output_ratio": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.hasDerivAt_capitalPerEffectiveWorker": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.steadyState_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.rate_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.rate_factor": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.steadyState_power": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.rate_steadyState": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.eq_steadyState_of_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.existsUnique_positive_steadyState": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.rate_eq_zero_iff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.transformedPath_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.transformedPath_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.path_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.path_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.hasDerivAt_transformedPath": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.hasDerivAt_power": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.hasDerivAt_path": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.eq_transformedPath_of_hasDerivAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.solution_eq_path": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.tendsto_transformedPath": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.tendsto_path": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.path_power_gap": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.positive_dynamics": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.rate_pos_of_lt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.rate_neg_of_gt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.steadyState_strictMono_investment": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.steadyState_strictAnti_dilution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.steadyState_strictMono_saving": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.steadyState_capital_output_ratio": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.path_lt_steadyState_iff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.tendsto_of_isPositiveSolution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.path_monotoneOn_of_le": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.path_antitoneOn_of_le": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.tendsto_output": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.weightedCapital_monotoneOn": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.positive_of_nonnegative_solution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.IsNonnegativeSolution.isPositiveSolution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.nonnegative_dynamics": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.example_positive_path": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.normalized_steadyState": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.zero_solution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.zero_solution_not_positive": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.no_positive_stationary_at_exponent_one": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.hasDerivAt_effectiveLabour": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "source_sha256": {
+    "Solow1956/Growth/SolowSwan.lean": "698d382425ecd5af5f73486fa2d73a11fa73e89735172160f60ed6c986e16447",
+    "Solow1956/Growth/SolowSwanDynamics.lean": "130eea43d0210410674fb182dd6c7244a3274ed626676cc0f46cea1f98239071",
+    "Solow1956/Growth/SolowSwanExamples.lean": "6766d7734315f5da6d8cdc9f6183732cf0f9aa588e6e10c94e1d9a57ac88fa4e",
+    "lean-toolchain": "8190e75a201741065fe508b28955dd64dd72d090babe5f70ce6848879d68ae88",
+    "lakefile.toml": "10542f7b43e56829165cba4e0e8cff7b4edd997d92057343b3adea501a586c87",
+    "lake-manifest.json": "618413521d3ad7501dd3d2efe1aff5777695e6e023684e59b878372d976c8722",
+    "proof-manifest.json": "476bcb93acf4da91ff8d775452c4daf3a099ee632f4f4f6e1a8d99955522986e",
+    "scripts/verify.py": "508215d14b1fcfb912379eeca887db57c08131595737231aad36d6234f2324c6",
+    "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c"
+  },
+  "fresh_audit_sha256": "8337d078389a08c1e8b47f8f04769b7b34dc5e61bf9d871a75f47f3a3637bac1",
+  "lean_toolchain": "leanprover/lean4:v4.34.0-rc2",
+  "scope": "Cobb-Douglas Solow-Swan dynamics for 0 < alpha < 1 and b,m,k0 > 0: constructive existence, positivity, uniqueness among nonnegative differentiable solutions, monotonicity, convergence, and comparative statics.",
+  "source_provenance": "4bed57534cf4f5562be8b90c481bb3dd54360fe0"
+}
