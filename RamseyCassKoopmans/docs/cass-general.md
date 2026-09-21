@@ -15,6 +15,12 @@ consumption, with positive marginal utility, continuous first and second
 derivatives, strictly negative second derivative, and marginal utility tending
 to infinity at zero. No third derivative is assumed.
 
+The [source comparison](source-map.md#version-and-model-differences) records
+the differences from Cass's displayed assumptions: the formal statement makes
+`f(0)=0` and derivative continuity explicit and uses a regular admissible class
+with strictly positive consumption. It does not assert coverage of every
+control allowed by the paper.
+
 There is a unique positive stationary stock `ks` satisfying `f'(ks)=d+m`.
 The proof constructs a feasible path from `k0` with nonnegative gross investment,
 finite lifetime welfare, and capital and consumption limits
@@ -175,7 +181,7 @@ contradicting capital monotonicity. Finally the gross saving rate converges to
 
 The complete source is freshly elaborated by `scripts/verify.py`, and every
 named theorem and definition is checked for extra axioms. The current milestone
-has 423 theorems and 493 named declarations across 52 modules. Allowed axioms are
+has 423 theorems and 576 audited declarations across 52 modules. Allowed axioms are
 only `propext`, `Classical.choice`, and `Quot.sound`. The existing TheoryDebugger
 record supplies 24 algebra diagnostics and 48 Lean-verified certificates; the
 global analytic construction is checked directly by Lean and Mathlib.

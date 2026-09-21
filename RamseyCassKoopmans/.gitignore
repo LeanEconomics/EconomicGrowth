@@ -2,3 +2,7 @@
 __pycache__/
 *.pyc
 *.olean
+
+verification/FreshCertificates.lean
+
+verification/fresh-certificates.txt

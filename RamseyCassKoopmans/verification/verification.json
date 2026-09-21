@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-09-21T19:22:50.851023+00:00",
+  "checked_at_utc": "2026-09-21T21:19:26.867461+00:00",
   "theorems": 423,
   "module_theorems": {
     "RamseyCassKoopmans/Model.lean": 5,
@@ -55,8 +55,63 @@
     "RamseyCassKoopmans/KoopmansBoundaryCompetitor.lean": 7,
     "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean": 5
   },
-  "audited_declarations": 493,
+  "audited_declarations": 576,
   "declarations": [
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath",
+      "kind": "structure",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.mk",
+      "kind": "constructor",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.capital",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.consumption",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.investment",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.capital_nonneg",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.consumption_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.consumption_continuous",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.investment_continuous",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.resource",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.dynamics",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Model.lean"
+    },
     {
       "name": "RamseyCassKoopmans.FeasiblePath.NonnegativeInvestment",
       "kind": "def",
@@ -331,6 +386,76 @@
       "name": "RamseyCassKoopmans.stationaryPath_hasWelfare",
       "kind": "theorem",
       "module": "RamseyCassKoopmans/StationaryPath.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices",
+      "kind": "structure",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.mk",
+      "kind": "constructor",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.price",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.marginalUtility",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.marginalProduct",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.weight_nonneg",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.weight_continuous",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.utility_continuous",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.marginalUtility_continuous",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.marginalProduct_continuous",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.marginalUtility_nonneg",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.utility_support",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.production_support",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.SupportingPrices.costate",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/Verification.lean"
     },
     {
       "name": "RamseyCassKoopmans.SupportingPrices.price_continuous",
@@ -1818,6 +1943,191 @@
       "module": "RamseyCassKoopmans/NonescapingDynamics.lean"
     },
     {
+      "name": "RamseyCassKoopmans.CassPhase",
+      "kind": "structure",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.mk",
+      "kind": "constructor",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.f",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.mp",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.\u03bc",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.C",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.d",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.m",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.kl",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.ku",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.ks",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.ca",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.cb",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.qs",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.Q",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.d_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.m_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.kl_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.kl_lt",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.ku_gt",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.ca_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.ca_le_cb",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.f_mem",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.f_mono",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.mp_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.mp_anti",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.mp_star",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.\u03bc_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.\u03bc_anti",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.C_mem",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.C_anti",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.inverse",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.Q_eq",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.qs_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.qs_lt",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.ca_lt_surplus",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPhase.qs_eq",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassPhase.lean"
+    },
+    {
       "name": "RamseyCassKoopmans.CassPhase.stock",
       "kind": "def",
       "module": "RamseyCassKoopmans/CassPhase.lean"
@@ -2131,6 +2441,111 @@
       "name": "RamseyCassKoopmans.CassPhase.exists_convergent_trajectory",
       "kind": "theorem",
       "module": "RamseyCassKoopmans/CassConstruction.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData",
+      "kind": "structure",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.mk",
+      "kind": "constructor",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.phase",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.production_eq",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.marginalProduct_eq",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.marginalUtility_eq",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.discount_eq",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.dilution_eq",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.steady_eq",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.bounded",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.demand_bounded",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.production_bounded",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.net_mono",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.c",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.T",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.consumption_mem",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.net_gap",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.time_nonneg",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.price_large",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.time_large",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassConstructionData.initial_mem",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassFiniteData.lean"
     },
     {
       "name": "RamseyCassKoopmans.exists_cass_finite_data",
@@ -2526,6 +2941,61 @@
   "full_build": "passed",
   "fresh_source_compilation": "passed",
   "axioms": {
+    "RamseyCassKoopmans.FeasiblePath": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.capital": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.consumption": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.investment": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.capital_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.consumption_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.consumption_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.investment_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.resource": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.dynamics": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "RamseyCassKoopmans.FeasiblePath.NonnegativeInvestment": [
       "propext",
       "Classical.choice",
@@ -2797,6 +3267,76 @@
       "Quot.sound"
     ],
     "RamseyCassKoopmans.stationaryPath_hasWelfare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.price": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.marginalUtility": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.marginalProduct": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.weight_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.weight_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.utility_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.marginalUtility_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.marginalProduct_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.marginalUtility_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.utility_support": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.production_support": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.SupportingPrices.costate": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -4286,6 +4826,191 @@
       "Classical.choice",
       "Quot.sound"
     ],
+    "RamseyCassKoopmans.CassPhase": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.f": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.mp": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.\u03bc": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.C": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.d": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.m": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.kl": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.ku": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.ks": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.ca": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.cb": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.qs": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.Q": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.d_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.m_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.kl_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.kl_lt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.ku_gt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.ca_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.ca_le_cb": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.f_mem": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.f_mono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.mp_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.mp_anti": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.mp_star": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.\u03bc_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.\u03bc_anti": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.C_mem": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.C_anti": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.inverse": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.Q_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.qs_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.qs_lt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.ca_lt_surplus": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPhase.qs_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "RamseyCassKoopmans.CassPhase.stock": [
       "propext",
       "Classical.choice",
@@ -4597,6 +5322,111 @@
       "Quot.sound"
     ],
     "RamseyCassKoopmans.CassPhase.exists_convergent_trajectory": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.phase": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.production_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.marginalProduct_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.marginalUtility_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.discount_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.dilution_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.steady_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.bounded": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.demand_bounded": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.production_bounded": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.net_mono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.c": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.T": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.consumption_mem": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.net_gap": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.time_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.price_large": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.time_large": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassConstructionData.initial_mem": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -5050,15 +5880,393 @@
     "lakefile.toml": "70f6c3c88f73c758167b2fda4747d9cd9af4481382704592e390c9de18c4aca2",
     "lake-manifest.json": "1bb3337875efd2ba5d979d520cae76e4a23d176b42f4ee6f8e45df4f7da0170d",
     "proof-manifest.json": "a4520b8ec76e2d177870aae93590f6b1eb9514e6bc882c4690169664ee2f33af",
-    "scripts/verify.py": "302889278f316f723d7b71e5ffc45b39d9d5ecd0a357399c728907be660c50f4",
+    "scripts/verify.py": "fec6e33fb6df8900ecb65f5c0fbc133070f21ce7b1c08c2b64c4f54954877e0d",
+    "scripts/verify_evidence.py": "75518db86e6a5a21996cc87d7fe2492da49ab9aa47170ea1b074094247446f1e",
+    "scripts/check_theorydebugger.py": "0784c67bf6f1a2266900df9f3da4fabb85aaeb49f6b8f7fa2cb6681f1c55f626",
     "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c"
   },
-  "fresh_audit_sha256": "95f5dd487bd120a22d6968fa272aeabb4955c1c186d682259eb533419a215871",
+  "fresh_audit_sha256": "dddfc3d7fe4dfede5e09e57769ab2a373220b7e1c21d7a3703e22333cd9e0916",
   "lean_toolchain": "leanprover/lean4:v4.34.0",
   "scope": "General positive-discount Cass constructed existence, capital and consumption monotonicity, convergence, eventual positive investment, finite candidate welfare, all-competitor asymptotic welfare dominance, and finite-welfare optimality/uniqueness from primitive Inada and C2 assumptions. Explicit square-root specialization. Certified obstruction to the regular convergent Euler characterization under Koopmans appendix scalar assumptions. Original undiscounted Ramsey and zero/negative-discount extensions are outside scope.",
+  "source_provenance": null,
   "theorydebugger": {
     "cases": 24,
     "certificates": 48,
-    "saved_evidence_hashes": "passed"
+    "saved_evidence_hashes": "passed",
+    "fresh_certificate_compilation": "passed",
+    "original_input_type_checks": "passed",
+    "fresh_certificates_sha256": "ec3177ef7785c4c0359b93aaf56828a9637bf9cde6f8e5c06dcfe9fb7d95d5c9",
+    "axioms": {
+      "Evidence0.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence0.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence1.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence2.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence2.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence3.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence4.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence4.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence5.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence6.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence6.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence7.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence8.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence8.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence9.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence9.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence10.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence10.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence11.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence12.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence12.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence13.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence14.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence14.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence15.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence16.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence16.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence17.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence17.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence18.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence18.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence19.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence20.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence20.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence21.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence22.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence22.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence23.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence24.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence24.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence25.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence26.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence26.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence27.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence28.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence28.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence29.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence30.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence30.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence31.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence32.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence32.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence33.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence34.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence34.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence35.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence36.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence36.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence37.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence38.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence38.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence39.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence40.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence40.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence41.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence42.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence42.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence43.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence44.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence44.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence45.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence46.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence46.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence47.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
   }
 }

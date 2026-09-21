@@ -79,7 +79,7 @@ selected path's monotonicity and limit, and removes every auxiliary clipping
 bound. The Inada condition supplies the quantitative upper-price bound. Finite
 candidate welfare also holds for utility that takes negative values.
 
-The fresh source audit at this milestone checks 423 theorems and 493 named
+The fresh source audit at this milestone checks 423 theorems and 576 audited
 declarations in 52 modules. See [the general proof](cass-general.md).
 
 ## Koopmans boundary obstruction

@@ -20,7 +20,7 @@
 
 | Source argument | Lean module / principal declaration | Scope |
 |---|---|---|
-| Resource constraints, Cass pp. 233–234; Koopmans appendix pp. 261–262 | `Model.FeasiblePath` (namespace `RamseyCassKoopmans`), `Cass.FeasiblePath.resource_derivative` | Continuous controls, positive consumption, classical capital derivatives; investment sign separate |
+| Resource constraints, Cass pp. 233–234; Koopmans appendix pp. 261–262 | `FeasiblePath` in `Model.lean`, `FeasiblePath.resource_derivative` in `Cass.lean` (both under namespace `RamseyCassKoopmans`) | Continuous controls, positive consumption, classical capital derivatives; investment sign separate |
 | Cass costate and complementary slackness, p. 235 | `cassSupportingPrices`, `cass_certificate_is_optimal` | Sufficient certificate for a supplied Cass-feasible path |
 | Koopmans Proposition G, p. 246; appendix equation (43), p. 263 | `finite_horizon_comparison` | Proved calculus and finite integrals, with terminal capital retained |
 | Koopmans p. 250, Appendix A7 pp. 278–279 | `infinite_horizon_optimality`, `Terminal.*` | Finite limiting welfare and explicit terminal limit; bounds/price decay proved separately |
@@ -60,6 +60,24 @@ optimality argument unaffected by this printing discrepancy.
 
 ## Version and model differences
 
+Cass's displayed production assumptions, equations (2)–(3) on p. 233,
+concern positive capital. The general formal theorem additionally specifies
+`f(0)=0` and strict concavity on all nonnegative capital. It makes continuity
+of the first and second derivatives on positive arguments explicit. These are
+the formal theorem's assumptions, not a verbatim transcription of the source.
+For production it uses strict concavity rather than a pointwise strictly
+negative second derivative; for utility it retains the strict second-derivative
+condition. The production and marginal-utility Inada limits correspond to
+Cass's equations (3) and (7). No derivative at zero or third derivative is required.
+
+Cass's resource constraint on p. 234 allows `c=0`. Our `FeasiblePath` restricts
+competitors to strictly positive consumption, continuous controls and classical
+capital derivatives. Its optimality and uniqueness conclusions concern this
+stated class; they do not by themselves extend to every control admitted by
+the source. Finite limiting welfare is part of `IsCassOptimal`; the separate
+`AsymptoticallyDominates` conclusion compares every competitor in this regular
+Cass class without assuming its welfare has a finite limit.
+
 The 1963 Koopmans draft's Proposition H uses an Euler-only characterization.
 Published Proposition I, p. 248, includes convergence to stationary capital.
 Published appendix p. 279 expressly recognizes feasible nonoptimal Euler
@@ -91,7 +109,8 @@ Koopmans existence theorem is not silently substituted for the source statement.
 
 ## New source-assumption diagnostic
 
-`KoopmansBoundaryEconomy.displayed_assumptions` and `utility_at_zero` verify the
+`KoopmansBoundary.displayed_assumptions` and `KoopmansBoundary.utility_at_zero`
+in `KoopmansBoundaryEconomy.lean` verify the
 appendix scalar conditions for `f(k)=8k/(1+k)` and `U(c)=c-1/c`, with `d=m=1`.
 `KoopmansBoundary.no_convergent_euler_path` rules out a regular feasible Euler
 path from capacity 7 converging to steady capital 1. The proof derives price

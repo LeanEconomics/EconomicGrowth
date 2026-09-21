@@ -152,11 +152,15 @@ python scripts/verify.py
 ```
 
 The audit builds the library, freshly elaborates all original proof source,
-checks every named theorem and definition for extra axioms, and records hashes.
+checks named declarations and structure constructors/projections for extra axioms,
+and records hashes. It also freshly compiles the 48 saved TheoryDebugger certificates
+and checks their proof types against the original diagnostic inputs. This step
+requires only Lean and Python; it does not rerun CVC5 or trust saved success labels.
 Only Lean's standard `propext`, `Classical.choice` and `Quot.sound` are accepted.
 See [verification/verification.json](verification/verification.json).
-The current fresh-source audit covers **423 theorems and 493 named declarations
-in 52 modules**, with no placeholder proofs or additional axioms.
+The current fresh-source audit covers **423 theorems and 576 declarations in
+52 modules**, including structure constructors and projections, with no
+placeholder proofs or additional axioms.
 
 Replaying the diagnostic search additionally needs a TheoryDebugger checkout
 and its Python dependencies (including CVC5):
