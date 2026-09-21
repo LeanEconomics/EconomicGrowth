@@ -1,0 +1,72 @@
+{
+  "imports": [
+    {
+      "directory": "SolowSwan",
+      "repository": "https://github.com/mvazcar/solow1956-lean",
+      "commit": "2f3e906f29c9e27131a1b3240ade44848de103be",
+      "source_files_sha256": {
+        ".gitignore": "aabdf2c455f2e0384a90a30c669395cd6b07ed28c0ff5debeb6096a98502fa35",
+        "CONTRIBUTING.md": "55a121b9e226bf403b0a76a69ff9f0d75fc22c7d408a24ea68d3dd3475b71a83",
+        "LICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c",
+        "README.md": "e27362dc0395511452cdbd776fce6160dabc105fa144a6e34e03f83bb1de2e29",
+        "Solow1956.lean": "ce8e678f94d4ba428fbdb41e5d7488a6ae5ecbb283782ed2fc2835e9eb7895d7",
+        "Solow1956/Growth/SolowSwan.lean": "698d382425ecd5af5f73486fa2d73a11fa73e89735172160f60ed6c986e16447",
+        "Solow1956/Growth/SolowSwanDynamics.lean": "130eea43d0210410674fb182dd6c7244a3274ed626676cc0f46cea1f98239071",
+        "Solow1956/Growth/SolowSwanExamples.lean": "6766d7734315f5da6d8cdc9f6183732cf0f9aa588e6e10c94e1d9a57ac88fa4e",
+        "THIRD_PARTY_NOTICES.md": "049896b2a400c0d4ff783879023551d1e9d53e3f5ecef6fc82cb4397263014ff",
+        "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c",
+        "docs/solow-swan-dynamics.md": "763f515e892ac7eade5c5cfba48fad1e762e00ec550eb63fd37d1421f32fdc2c",
+        "lake-manifest.json": "618413521d3ad7501dd3d2efe1aff5777695e6e023684e59b878372d976c8722",
+        "lakefile.toml": "10542f7b43e56829165cba4e0e8cff7b4edd997d92057343b3adea501a586c87",
+        "lean-toolchain": "8190e75a201741065fe508b28955dd64dd72d090babe5f70ce6848879d68ae88",
+        "proof-manifest.json": "476bcb93acf4da91ff8d775452c4daf3a099ee632f4f4f6e1a8d99955522986e",
+        "scripts/verify.py": "508215d14b1fcfb912379eeca887db57c08131595737231aad36d6234f2324c6",
+        "verification/FreshAudit.lean": "8337d078389a08c1e8b47f8f04769b7b34dc5e61bf9d871a75f47f3a3637bac1",
+        "verification/verification.json": "928a6d98ae1fd8328ea33843c98d131034d04e3a8211aeb4fe8d33a95d1b7b14"
+      },
+      "adaptations": [
+        "README gains project-directory instructions and index link.",
+        "Standalone GitHub workflow replaced by repository-root matrix workflow.",
+        "Verification record refreshed after a fresh build in the imported location."
+      ],
+      "proof_source_changes": "None. Modules, manifests, toolchain and verifier copied byte-for-byte."
+    },
+    {
+      "directory": "Uzawa",
+      "repository": "https://github.com/mvazcar/uzawa-modern-lean",
+      "commit": "efd5b956ade4516b1ce24628d74a2a5ed3bf21af",
+      "source_files_sha256": {
+        ".gitignore": "aabdf2c455f2e0384a90a30c669395cd6b07ed28c0ff5debeb6096a98502fa35",
+        "CONTRIBUTING.md": "55a121b9e226bf403b0a76a69ff9f0d75fc22c7d408a24ea68d3dd3475b71a83",
+        "LICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c",
+        "README.md": "ff0ace78dc9291bd282e7c7e735c7d193d600b6c2d0e27be7cee8dcbfc99bb4d",
+        "THIRD_PARTY_NOTICES.md": "049896b2a400c0d4ff783879023551d1e9d53e3f5ecef6fc82cb4397263014ff",
+        "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c",
+        "UzawaModern.lean": "ac1b0544e3ac89aef8afa8cf190d1dd00c8e435e64221eac97d2a87979e6f202",
+        "UzawaModern/Growth/Uzawa.lean": "9de3989276d0e1819f53eaedf6a2230d245600c730f12c21cff607509f0a534e",
+        "UzawaModern/Growth/UzawaElasticity.lean": "3b31195112b4c5b284129bb352be5ea1d19d667037c13b7e62fb200f1c56c680",
+        "UzawaModern/Growth/UzawaExamples.lean": "0a00e82f2a42d55bbf527fa396dff8858f83b7314d63eb065ec2a03d33380c2d",
+        "UzawaModern/Growth/UzawaSeparation.lean": "a80aa30185ac4327414c249544b92a22177a553503c068651628bc98a619cb56",
+        "UzawaModern/Growth/UzawaSeparationExamples.lean": "5ba684ce8d5482a8a14c597cc07720727f6b0eed329475603191ebf9f1638f31",
+        "UzawaModern/VersionAudit.lean": "1dfb160f107a9f85b7e25623081a1e4f0c518fd1a6756ac2fc64034cac81f12b",
+        "docs/uzawa-1961-source.md": "b19ef10e331e7a6dcd76b0e521083a0f544cccf3bc2faa6d738c2b52ca0e0e20",
+        "docs/uzawa-elasticity-repaired.md": "20b50f6353212700ddb303db47dce2986ac6d08128611088c9360906ac329d00",
+        "docs/uzawa-jones.md": "177e8a83aba3a1562fc1c6850ac625b3301b077a2edb9da3ba86d6e706520f2c",
+        "docs/uzawa-versions-comparison.md": "f2d55b93087a551f5b08c57bd70f53d346b454be411a20a66156d5c07edbd01d",
+        "lake-manifest.json": "af96cfb5a366f14893613c5952f006bc7a58607720cf5de5903e93e7e0c4c5d7",
+        "lakefile.toml": "2c071f168525b3a8cc5ab3df02efcab6331892d213d144597e567fd88e5a9fcb",
+        "lean-toolchain": "8190e75a201741065fe508b28955dd64dd72d090babe5f70ce6848879d68ae88",
+        "proof-manifest.json": "13c0e79383fbdf69380df6a3b883950a99d3d7fd6cb685058838b1cded6a63ff",
+        "scripts/verify.py": "508215d14b1fcfb912379eeca887db57c08131595737231aad36d6234f2324c6",
+        "verification/FreshAudit.lean": "82b6d76bc42a2b2061d64cc4f1eef8936a1d8a219ef0f234fb24a97109bdefde",
+        "verification/verification.json": "f3ec64061c5f746eda6730c27ede848b894ab96def2622f47f291729c571a64f"
+      },
+      "adaptations": [
+        "README gains project-directory instructions and index link.",
+        "Standalone GitHub workflow replaced by repository-root matrix workflow.",
+        "Verification record refreshed after a fresh build in the imported location."
+      ],
+      "proof_source_changes": "None. Modules, manifests, toolchain and verifier copied byte-for-byte."
+    }
+  ]
+}

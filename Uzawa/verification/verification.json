@@ -1,0 +1,364 @@
+{
+  "checked_at_utc": "2026-09-20T21:01:57.242609+00:00",
+  "theorems": 66,
+  "module_theorems": {
+    "UzawaModern/Growth/Uzawa.lean": 16,
+    "UzawaModern/Growth/UzawaElasticity.lean": 3,
+    "UzawaModern/Growth/UzawaExamples.lean": 6,
+    "UzawaModern/Growth/UzawaSeparation.lean": 28,
+    "UzawaModern/Growth/UzawaSeparationExamples.lean": 10,
+    "UzawaModern/VersionAudit.lean": 3
+  },
+  "full_build": "passed",
+  "fresh_source_compilation": "passed",
+  "axioms": {
+    "UzawaModern.Uzawa.trajectory_start": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.trajectory_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.hasDerivAt_trajectory": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.trajectory_one": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.trajectory_two": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.rate_eq_of_weighted_moments": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.outputGrowth_eq_investmentGrowth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.investmentGrowth_eq_capitalGrowth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.technology_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.technology_start": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.hasDerivAt_technology": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.technology_growthRate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.technology_mul_labor": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.output_per_worker": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.outputGrowth_eq_capitalGrowth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.labor_augmenting_representation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaElasticity.hasDerivAt_capitalOutputRatio": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaElasticity.capitalOutputRatio_derivative_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaElasticity.output_capitalOutput_elasticity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.Examples.resource": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.Examples.accumulation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.Examples.production_on_path": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.Examples.constant_returns": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.Examples.labor_augmenting": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.Examples.levels_positive": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.ratio_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.hasDerivAt_ratio": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.ratio_derivative_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.ratio_strictMonoOn": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.capital_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.ratio_capital": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.capital_ratio": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.capital_strictMonoOn": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.capital_image": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.continuousAt_capital": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.hasDerivAt_capital": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.phi_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.hasDerivAt_phi": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.capital_eq_ratio_mul_phi": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.elasticity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.technology_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.technology_reference": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.hasDerivAt_phi_ratio_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.separation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.intensive_representation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.production_eq_original": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.production_representation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.original_production_representation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.technology_eq_phi_ratio": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.phi_of_production": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.technology_eq_balanced_growth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.repaired_labor_augmenting_representation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.hasDerivWithinAt_technology_of_balanced_growth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.sqrt_share": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.sqrt_ratio_square": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.sqrt_capital": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.sqrt_phi": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.sqrt_shares_invariant": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.sqrt_technology": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.growing_shares_invariant": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.growing_production": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.growing_labor_augmenting": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.growing_technology": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.VersionAudit.zero_investment_positive_capital": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.VersionAudit.no_strict_capital_representation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.VersionAudit.zero_investment_no_neoclassical_representation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "source_sha256": {
+    "UzawaModern/Growth/Uzawa.lean": "9de3989276d0e1819f53eaedf6a2230d245600c730f12c21cff607509f0a534e",
+    "UzawaModern/Growth/UzawaElasticity.lean": "3b31195112b4c5b284129bb352be5ea1d19d667037c13b7e62fb200f1c56c680",
+    "UzawaModern/Growth/UzawaExamples.lean": "0a00e82f2a42d55bbf527fa396dff8858f83b7314d63eb065ec2a03d33380c2d",
+    "UzawaModern/Growth/UzawaSeparation.lean": "a80aa30185ac4327414c249544b92a22177a553503c068651628bc98a619cb56",
+    "UzawaModern/Growth/UzawaSeparationExamples.lean": "5ba684ce8d5482a8a14c597cc07720727f6b0eed329475603191ebf9f1638f31",
+    "UzawaModern/VersionAudit.lean": "1dfb160f107a9f85b7e25623081a1e4f0c518fd1a6756ac2fc64034cac81f12b",
+    "lean-toolchain": "8190e75a201741065fe508b28955dd64dd72d090babe5f70ce6848879d68ae88",
+    "lakefile.toml": "2c071f168525b3a8cc5ab3df02efcab6331892d213d144597e567fd88e5a9fcb",
+    "lake-manifest.json": "af96cfb5a366f14893613c5952f006bc7a58607720cf5de5903e93e7e0c4c5d7",
+    "proof-manifest.json": "13c0e79383fbdf69380df6a3b883950a99d3d7fd6cb685058838b1cded6a63ff",
+    "scripts/verify.py": "508215d14b1fcfb912379eeca887db57c08131595737231aad36d6234f2324c6",
+    "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c"
+  },
+  "fresh_audit_sha256": "82b6d76bc42a2b2061d64cc4f1eef8936a1d8a219ef0f234fb24a97109bdefde",
+  "lean_toolchain": "leanprover/lean4:v4.34.0-rc2",
+  "scope": "Published Jones-Scrimgeour/Schlicht on-path representation and a strengthened domain-wide elasticity route; 63 main theorems and 3 additional obstruction lemmas. Not a proof of the literal November 2004 statement.",
+  "source_provenance": "3086d5eece57e5f9f69ebf73e28be5efa0595fcf"
+}

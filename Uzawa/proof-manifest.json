@@ -1,0 +1,48 @@
+{
+  "library": "UzawaModern",
+  "modules": [
+    "UzawaModern/Growth/Uzawa.lean",
+    "UzawaModern/Growth/UzawaElasticity.lean",
+    "UzawaModern/Growth/UzawaExamples.lean",
+    "UzawaModern/Growth/UzawaSeparation.lean",
+    "UzawaModern/Growth/UzawaSeparationExamples.lean",
+    "UzawaModern/VersionAudit.lean"
+  ],
+  "theorem_counts": {
+    "UzawaModern/Growth/Uzawa.lean": 16,
+    "UzawaModern/Growth/UzawaElasticity.lean": 3,
+    "UzawaModern/Growth/UzawaExamples.lean": 6,
+    "UzawaModern/Growth/UzawaSeparation.lean": 28,
+    "UzawaModern/Growth/UzawaSeparationExamples.lean": 10,
+    "UzawaModern/VersionAudit.lean": 3
+  },
+  "scope": "Published Jones-Scrimgeour/Schlicht on-path representation and a strengthened domain-wide elasticity route; 63 main theorems and 3 additional obstruction lemmas. Not a proof of the literal November 2004 statement.",
+  "source_commit": "3086d5eece57e5f9f69ebf73e28be5efa0595fcf",
+  "source_files": {
+    "UzawaModern/Growth/Uzawa.lean": {
+      "source": "LeanEconomics/Growth/Uzawa.lean",
+      "sha256": "ad74b1b258a5fdf3eb122ee59d7cb61024c9c1ff1d71d68fadb70947e7bf77db"
+    },
+    "UzawaModern/Growth/UzawaElasticity.lean": {
+      "source": "LeanEconomics/Growth/UzawaElasticity.lean",
+      "sha256": "b32a4db969a5daca640beeb7e35d4c98433b87ae8b76ac1af2bc7b175caaab72"
+    },
+    "UzawaModern/Growth/UzawaExamples.lean": {
+      "source": "LeanEconomics/Growth/UzawaExamples.lean",
+      "sha256": "8d5fa9fd62fb7dc949afc3efcde9d85181063c193b1b929a557c2a10df5c15e8"
+    },
+    "UzawaModern/Growth/UzawaSeparation.lean": {
+      "source": "LeanEconomics/Growth/UzawaSeparation.lean",
+      "sha256": "bdea177283de7bc8aa3a1e58063b6eabaee11d9f483d0c285ad2d6d7459d7f41"
+    },
+    "UzawaModern/Growth/UzawaSeparationExamples.lean": {
+      "source": "LeanEconomics/Growth/UzawaSeparationExamples.lean",
+      "sha256": "0b2151d464fcf3fab21f37f1553bcb9ad0c036f311f9bf8f9707f55ac3f22ed2"
+    },
+    "UzawaModern/VersionAudit.lean": {
+      "source": "UzawaVersionAudit.lean",
+      "sha256": "96b757e6814669b8d8d8d5129603f08caa4b5da124d307b75a63d9362cf009e5"
+    }
+  },
+  "adaptation": "Independent original contribution extracted without upstream repository history; only project namespace/import paths and license header changed."
+}
