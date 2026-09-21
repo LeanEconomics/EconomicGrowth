@@ -5,6 +5,9 @@ defaultTargets = ["RamseyCassKoopmans"]
 [leanOptions]
 autoImplicit = false
 relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+# The original contribution uses Unlicense rather than Mathlib's Apache header.
+linter.style.header = false
 
 [[require]]
 name = "mathlib"

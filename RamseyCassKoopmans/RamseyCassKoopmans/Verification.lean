@@ -125,8 +125,10 @@ theorem finite_horizon_comparison {f U w : ℝ → ℝ} {m : ℝ} {a : FeasibleP
     welfare U w b.consumption T - welfare U w a.consumption T ≤
       boundary v.price a.capital b.capital T := by
   have hsub : Icc (0 : ℝ) T ⊆ Ici 0 := fun _ ht => ht.1
-  have haint := ((welfare_integrand_continuous v a).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
-  have hbint := ((welfare_integrand_continuous v b).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
+  have haint :=
+    ((welfare_integrand_continuous v a).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
+  have hbint :=
+    ((welfare_integrand_continuous v b).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
   have hBint := ((boundaryRate_continuous v b).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
   have hFTC : (∫ t in (0 : ℝ)..T, boundaryRate v b t) =
       boundary v.price a.capital b.capital T - boundary v.price a.capital b.capital 0 := by

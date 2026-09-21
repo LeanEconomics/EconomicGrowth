@@ -211,21 +211,25 @@
 'RamseyCassKoopmans.strictAnti_joinAt' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.tendsto_joinAt_atTop' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.r' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RamseyCassKoopmans.ClosedForm.Corner.R' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RamseyCassKoopmans.ClosedForm.Corner.inverseFactor' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.preCapital' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.preConsumption' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.preShadow' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.preMu' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.preMp' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.r_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RamseyCassKoopmans.ClosedForm.Corner.R_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.r_switch' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RamseyCassKoopmans.ClosedForm.Corner.R_switch' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RamseyCassKoopmans.ClosedForm.Corner.r_eq_inv_R' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_switch' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RamseyCassKoopmans.ClosedForm.Corner.r_eq_inv_inverseFactor' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_r' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_R' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_inverseFactor' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.r_continuous' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RamseyCassKoopmans.ClosedForm.Corner.R_continuous' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_continuous' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_preCapital' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_preConsumption' depends on axioms: [propext,
  Classical.choice,

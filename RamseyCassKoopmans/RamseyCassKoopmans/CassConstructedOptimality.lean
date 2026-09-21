@@ -171,7 +171,8 @@ theorem CassConstructionData.exists_optimal
   obtain ⟨_, _, hCLip, _⟩ := D.demand_bounded
   obtain ⟨_, _, hFLip, _⟩ := D.production_bounded
   obtain ⟨γ, h0, hd, hclipq, hlim, hbelow, habove, hconstant⟩ := p.exists_convergent_trajectory
-    D.bounded D.net_mono D.consumption_mem D.net_gap D.time_nonneg D.price_large D.time_large D.initial_mem
+    D.bounded D.net_mono D.consumption_mem D.net_gap D.time_nonneg D.price_large
+    D.time_large D.initial_mem
   have hclip := fun t ht => (hclipq t ht).1
   have hprod : p.f = f := D.production_eq
   have hmul : p.μ = deriv U := D.marginalUtility_eq
@@ -183,7 +184,9 @@ theorem CassConstructionData.exists_optimal
   have hfdiff' : ∀ k, 0 < k → DifferentiableAt ℝ p.f k := hprod ▸ hfdiff
   have hfprime' : ContinuousOn (deriv p.f) (Ioi 0) := hprod ▸ hfprime
   have hcapacity' : ∀ k, K ≤ k → p.f k ≤ p.m * k := by simpa only [hprod, hdil] using hcapacity
-  obtain ⟨J, hJ⟩ := p.constructed_optimal U hmp hmul hfconc'.concaveOn hUconc.concaveOn hfdiff' hUdiff hfprime' hUprime
+  obtain ⟨J, hJ⟩ :=
+    p.constructed_optimal U hmp hmul hfconc'.concaveOn hUconc.concaveOn
+      hfdiff' hUdiff hfprime' hUprime
     hCLip.continuous hFLip.continuous hd hclip hlim (h0 ▸ hkK) hcapacity'
   let a := p.feasiblePath γ hCLip.continuous hFLip.continuous hd hclip
   have hresult : ∃ a : FeasiblePath p.f p.m, ∃ J : ℝ,

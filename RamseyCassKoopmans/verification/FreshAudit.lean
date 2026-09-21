@@ -891,8 +891,10 @@ theorem finite_horizon_comparison {f U w : ℝ → ℝ} {m : ℝ} {a : FeasibleP
     welfare U w b.consumption T - welfare U w a.consumption T ≤
       boundary v.price a.capital b.capital T := by
   have hsub : Icc (0 : ℝ) T ⊆ Ici 0 := fun _ ht => ht.1
-  have haint := ((welfare_integrand_continuous v a).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
-  have hbint := ((welfare_integrand_continuous v b).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
+  have haint :=
+    ((welfare_integrand_continuous v a).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
+  have hbint :=
+    ((welfare_integrand_continuous v b).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
   have hBint := ((boundaryRate_continuous v b).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
   have hFTC : (∫ t in (0 : ℝ)..T, boundaryRate v b t) =
       boundary v.price a.capital b.capital T - boundary v.price a.capital b.capital 0 := by
@@ -2144,20 +2146,20 @@ open scoped Topology
 namespace RamseyCassKoopmans.ClosedForm.Corner
 
 noncomputable def r (τ t : ℝ) : ℝ := Real.exp ((t - τ) / 4)
-noncomputable def R (τ t : ℝ) : ℝ := Real.exp ((τ - t) / 4)
-noncomputable def preCapital (τ t : ℝ) : ℝ := (4 / 9) * R τ t ^ 4
-noncomputable def preConsumption (τ t : ℝ) : ℝ := (4 / 3) * R τ t ^ 2
+noncomputable def inverseFactor (τ t : ℝ) : ℝ := Real.exp ((τ - t) / 4)
+noncomputable def preCapital (τ t : ℝ) : ℝ := (4 / 9) * inverseFactor τ t ^ 4
+noncomputable def preConsumption (τ t : ℝ) : ℝ := (4 / 3) * inverseFactor τ t ^ 2
 noncomputable def preShadow (τ t : ℝ) : ℝ := Real.sqrt 3 / 10 * (6 * r τ t ^ 3 - r τ t ^ 8)
 noncomputable def preMu (τ t : ℝ) : ℝ := Real.sqrt 3 / 2 * r τ t
 noncomputable def preMp (τ t : ℝ) : ℝ := 3 / 2 * r τ t ^ 2
 
 theorem r_pos (τ t : ℝ) : 0 < r τ t := Real.exp_pos _
-theorem R_pos (τ t : ℝ) : 0 < R τ t := Real.exp_pos _
+theorem inverseFactor_pos (τ t : ℝ) : 0 < inverseFactor τ t := Real.exp_pos _
 theorem r_switch (τ : ℝ) : r τ τ = 1 := by simp [r]
-theorem R_switch (τ : ℝ) : R τ τ = 1 := by simp [R]
+theorem inverseFactor_switch (τ : ℝ) : inverseFactor τ τ = 1 := by simp [inverseFactor]
 
-theorem r_eq_inv_R (τ t : ℝ) : r τ t = (R τ t)⁻¹ := by
-  rw [r, R, ← Real.exp_neg]
+theorem r_eq_inv_inverseFactor (τ t : ℝ) : r τ t = (inverseFactor τ t)⁻¹ := by
+  rw [r, inverseFactor, ← Real.exp_neg]
   congr 1
   ring
 
@@ -2166,25 +2168,28 @@ theorem hasDerivAt_r (τ t : ℝ) : HasDerivAt (r τ) (r τ t / 4) t := by
   · rfl
   · simp [r, div_eq_mul_inv]
 
-theorem hasDerivAt_R (τ t : ℝ) : HasDerivAt (R τ) (-R τ t / 4) t := by
+theorem hasDerivAt_inverseFactor (τ t : ℝ) :
+    HasDerivAt (inverseFactor τ) (-inverseFactor τ t / 4) t := by
   convert (((hasDerivAt_id t).const_sub τ).div_const 4).exp using 1
   · rfl
-  · simp [R]
+  · simp [inverseFactor]
     ring
 
 theorem r_continuous (τ : ℝ) : Continuous (r τ) := by unfold r; fun_prop
-theorem R_continuous (τ : ℝ) : Continuous (R τ) := by unfold R; fun_prop
+theorem inverseFactor_continuous (τ : ℝ) : Continuous (inverseFactor τ) := by
+  unfold inverseFactor
+  fun_prop
 
 theorem hasDerivAt_preCapital (τ t : ℝ) :
     HasDerivAt (preCapital τ) (-preCapital τ t) t := by
-  convert ((hasDerivAt_R τ t).pow 4).const_mul (4 / 9) using 1
+  convert ((hasDerivAt_inverseFactor τ t).pow 4).const_mul (4 / 9) using 1
   · rfl
   · dsimp [preCapital]
     ring
 
 theorem hasDerivAt_preConsumption (τ t : ℝ) :
     HasDerivAt (preConsumption τ) (-preConsumption τ t / 2) t := by
-  convert ((hasDerivAt_R τ t).pow 2).const_mul (4 / 3) using 1
+  convert ((hasDerivAt_inverseFactor τ t).pow 2).const_mul (4 / 3) using 1
   · rfl
   · dsimp [preConsumption]
     ring
@@ -2198,22 +2203,22 @@ theorem hasDerivAt_preShadow (τ t : ℝ) :
     ring
 
 theorem preCapital_pos (τ t : ℝ) : 0 < preCapital τ t := by
-  exact mul_pos (by norm_num) (pow_pos (R_pos τ t) 4)
+  exact mul_pos (by norm_num) (pow_pos (inverseFactor_pos τ t) 4)
 
 theorem preConsumption_pos (τ t : ℝ) : 0 < preConsumption τ t := by
-  exact mul_pos (by norm_num) (sq_pos_of_pos (R_pos τ t))
+  exact mul_pos (by norm_num) (sq_pos_of_pos (inverseFactor_pos τ t))
 
 theorem sqrt_preCapital (τ t : ℝ) :
-    Real.sqrt (preCapital τ t) = (2 / 3) * R τ t ^ 2 := by
+    Real.sqrt (preCapital τ t) = (2 / 3) * inverseFactor τ t ^ 2 := by
   apply (Real.sqrt_eq_iff_eq_sq (preCapital_pos τ t).le (by positivity)).2
   dsimp [preCapital]
   ring
 
 theorem sqrt_preConsumption (τ t : ℝ) :
-    Real.sqrt (preConsumption τ t) = (2 / Real.sqrt 3) * R τ t := by
+    Real.sqrt (preConsumption τ t) = (2 / Real.sqrt 3) * inverseFactor τ t := by
   have hs : Real.sqrt (3 : ℝ) ≠ 0 := ne_of_gt (Real.sqrt_pos.mpr (by norm_num))
   apply (Real.sqrt_eq_iff_eq_sq (preConsumption_pos τ t).le
-    (mul_nonneg (div_nonneg (by norm_num) (Real.sqrt_nonneg 3)) (R_pos τ t).le)).2
+    (mul_nonneg (div_nonneg (by norm_num) (Real.sqrt_nonneg 3)) (inverseFactor_pos τ t).le)).2
   dsimp [preConsumption]
   field_simp
   nlinarith [Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)]
@@ -2226,14 +2231,14 @@ theorem pre_resource (τ t : ℝ) : preConsumption τ t = Examples.production (p
 theorem pre_utility_derivative (τ t : ℝ) :
     HasDerivAt utility (preMu τ t) (preConsumption τ t) := by
   convert hasDerivAt_utility (preConsumption_pos τ t) using 1
-  rw [sqrt_preConsumption, preMu, r_eq_inv_R]
+  rw [sqrt_preConsumption, preMu, r_eq_inv_inverseFactor]
   field_simp
 
 theorem pre_production_derivative (τ t : ℝ) :
     HasDerivAt Examples.production (preMp τ t) (preCapital τ t) := by
   change HasDerivAt utility (preMp τ t) (preCapital τ t)
   convert hasDerivAt_utility (preCapital_pos τ t) using 1
-  rw [sqrt_preCapital, preMp, r_eq_inv_R]
+  rw [sqrt_preCapital, preMp, r_eq_inv_inverseFactor]
   field_simp
 
 theorem preShadow_pos {τ t : ℝ} (ht : t ≤ τ) : 0 < preShadow τ t := by
@@ -2253,7 +2258,9 @@ theorem preShadow_le_preMu {τ t : ℝ} (ht : t ≤ τ) : preShadow τ t ≤ pre
   have h4 : r τ t ^ 4 ≤ r τ t := by simpa using pow_le_pow_of_le_one hr hr1 (show 1 ≤ 4 by norm_num)
   have h5 : r τ t ^ 5 ≤ r τ t := by simpa using pow_le_pow_of_le_one hr hr1 (show 1 ≤ 5 by norm_num)
   have h6 : r τ t ^ 6 ≤ r τ t := by simpa using pow_le_pow_of_le_one hr hr1 (show 1 ≤ 6 by norm_num)
-  have hinner : 0 ≤ 5 + 5 * r τ t - r τ t ^ 2 - r τ t ^ 3 - r τ t ^ 4 - r τ t ^ 5 - r τ t ^ 6 := by linarith
+  have hinner :
+      0 ≤ 5 + 5 * r τ t - r τ t ^ 2 - r τ t ^ 3 - r τ t ^ 4 - r τ t ^ 5 - r τ t ^ 6 := by
+    linarith
   have hprod := mul_nonneg (mul_nonneg hr (sub_nonneg.mpr hr1)) hinner
   have hpoly : 6 * r τ t ^ 3 - r τ t ^ 8 ≤ 5 * r τ t := by nlinarith only [hprod]
   have hmul := mul_le_mul_of_nonneg_left hpoly (Real.sqrt_nonneg 3)
@@ -2303,10 +2310,10 @@ theorem tail_shadow_continuous : Continuous (shadow (2 / 3)) :=
   continuous_iff_continuousAt.mpr (fun t => (tail_shadow_hasDerivAt t).continuousAt)
 
 theorem capital_match (τ : ℝ) : preCapital τ τ = capital (2 / 3) (τ - τ) := by
-  norm_num [preCapital, R, capital, state, discount]
+  norm_num [preCapital, inverseFactor, capital, state, discount]
 
 theorem consumption_match (τ : ℝ) : preConsumption τ τ = consumption (2 / 3) (τ - τ) := by
-  norm_num [preConsumption, R, consumption, state, discount]
+  norm_num [preConsumption, inverseFactor, consumption, state, discount]
 
 theorem investment_match (τ : ℝ) : (0 : ℝ) = investment (2 / 3) (τ - τ) := by
   norm_num [investment, state, discount]
@@ -2360,7 +2367,7 @@ theorem hasDerivAt_joinedShadow (τ t : ℝ) :
 
 theorem joinedConsumption_continuous (τ : ℝ) : Continuous (joinedConsumption τ) := by
   apply continuous_joinAt _ _ (consumption_match τ)
-  · exact continuous_const.mul ((R_continuous τ).pow 2)
+  · exact continuous_const.mul ((inverseFactor_continuous τ).pow 2)
   · exact (continuous_const.mul ((state_continuous (2 / 3)).pow 2)).comp
       (continuous_id.sub continuous_const)
 
@@ -2406,7 +2413,8 @@ noncomputable def cornerPath (τ : ℝ) : FeasiblePath Examples.production 1 whe
   investment_continuous := (joinedInvestment_continuous τ).continuousOn
   resource := fun t _ => by
     by_cases ht : t ≤ τ
-    · simp only [joinedConsumption, joinedInvestment, joinedCapital, joinAt, ite_eq_left ht, add_zero]
+    · simp only [joinedConsumption, joinedInvestment, joinedCapital, joinAt,
+        ite_eq_left ht, add_zero]
       exact pre_resource τ t
     · simp only [joinedConsumption, joinedInvestment, joinedCapital, joinAt, ite_eq_right ht]
       exact (path (2 / 3) (by norm_num)).resource (t - τ) (by linarith)
@@ -2561,7 +2569,8 @@ theorem corner_allocation (τ : ℝ) (b : FeasiblePath Examples.production 1)
   · intro t _
     exact mul_le_mul_of_nonneg_left (joinedShadow_le_joinedMu τ t) (discount_pos 1 t).le
   · intro t _
-    change (discount 1 t * joinedShadow τ t - discount 1 t * joinedMu τ t) * joinedInvestment τ t = 0
+    change (discount 1 t * joinedShadow τ t - discount 1 t * joinedMu τ t) *
+      joinedInvestment τ t = 0
     calc
       _ = discount 1 t * ((joinedShadow τ t - joinedMu τ t) * joinedInvestment τ t) := by ring
       _ = 0 := by rw [joined_complementarity, mul_zero]
@@ -2618,7 +2627,7 @@ theorem cornerPath_initial (τ : ℝ) (hτ : 0 ≤ τ) :
   change joinedCapital τ 0 = _
   unfold joinedCapital
   rw [joinAt_left _ _ hτ]
-  dsimp [preCapital, R]
+  dsimp [preCapital, inverseFactor]
   rw [← Real.exp_nat_mul]
   congr 2
   ring
@@ -2640,14 +2649,14 @@ theorem pre_welfare_integrand (τ t : ℝ) :
   have hscale : 2 * (2 / Real.sqrt (3 : ℝ)) = 4 * Real.sqrt 3 / 3 := by
     field_simp
     nlinarith [Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)]
-  have he : discount 1 t * R τ t = Real.exp (τ / 4) * discount (5 / 4) t := by
-    unfold discount R
+  have he : discount 1 t * inverseFactor τ t = Real.exp (τ / 4) * discount (5 / 4) t := by
+    unfold discount inverseFactor
     rw [← Real.exp_add, ← Real.exp_add]
     congr 1
     ring
   rw [utility, sqrt_preConsumption]
   calc
-    _ = (2 * (2 / Real.sqrt 3)) * (discount 1 t * R τ t) := by ring
+    _ = (2 * (2 / Real.sqrt 3)) * (discount 1 t * inverseFactor τ t) := by ring
     _ = _ := by rw [hscale, he]; ring
 
 theorem welfare_prefix (τ : ℝ) (hτ : 0 ≤ τ) :
@@ -2787,7 +2796,8 @@ theorem cornerPath_unique (τ : ℝ) (hτ : 0 ≤ τ)
   apply path_eq_of_welfare_eq v b (corner_allocation τ b hbinvest)
     hinit (cornerPath_hasWelfare τ hτ) hb
     (terminal_for_paths _ _ v.price
-      (Terminal.discounted_price_tendsto_zero (d := 1) (by norm_num) (joinedShadow_tendsto τ)) hinit)
+      (Terminal.discounted_price_tendsto_zero (d := 1) (by norm_num)
+        (joinedShadow_tendsto τ)) hinit)
     utility_strictConcave_positive production_strictConcave
   · exact fun t _ => joined_utility_derivative τ t
   · exact fun t _ => joined_production_derivative τ t
@@ -4914,7 +4924,10 @@ theorem exists_low_endpoint {v : ℝ × ℝ → ℝ × ℝ} {B : ℝ≥0}
     (fun t ht => hdown (γ t) (hq t ht).le)
   rw [h0] at hk
   change (γ T).1 - k0 ≤ -ε * (T - 0) at hk
-  exact ⟨T, hT.le, by constructor; linarith; exact (hq T ⟨hT.le, le_rfl⟩).trans ha⟩
+  refine ⟨T, hT.le, ?_⟩
+  constructor
+  · linarith
+  · exact (hq T ⟨hT.le, le_rfl⟩).trans ha
 
 theorem exists_high_endpoint {v : ℝ × ℝ → ℝ × ℝ} {B : ℝ≥0}
     (hbound : ∀ x, ‖v x‖ ≤ B) {a : ℝ × ℝ} {Q ε : ℝ}
@@ -5274,7 +5287,8 @@ theorem exists_convergent_trajectory (p : CassPhase) (hb : BoundedLip p.field)
       (k0 = p.ks → ∀ t, γ t = p.steady) := by
   obtain ⟨K, B, hlip, hbound⟩ := hb
   rcases lt_trichotomy k0 p.ks with hbelow | heq | habove
-  · obtain ⟨γ, h0, hd, hav⟩ := p.exists_avoiding_solution ⟨K, B, hlip, hbound⟩ hnet (hc.1.trans_lt hgap) k0
+  · obtain ⟨γ, h0, hd, hav⟩ :=
+      p.exists_avoiding_solution ⟨K, B, hlip, hbound⟩ hnet (hc.1.trans_lt hgap) k0
     have hk : (γ 0).1 < p.ks := h0 ▸ hbelow
     obtain ⟨hlim, hm, ha, _⟩ := p.lower_avoiding_converges hlip hd hav hk
     have hq0 : (γ 0).2 < p.Q := p.lower_initial_price_lt_top hlip hd hav hk hT hlarge
@@ -5291,7 +5305,8 @@ theorem exists_convergent_trajectory (p : CassPhase) (hb : BoundedLip p.field)
       exact False.elim (lt_irrefl _ (heq ▸ h))
     · intro h
       exact False.elim (lt_irrefl _ (heq ▸ h))
-  · obtain ⟨γ, h0, hd, hav⟩ := p.exists_avoiding_solution ⟨K, B, hlip, hbound⟩ hnet (hc.1.trans_lt hgap) k0
+  · obtain ⟨γ, h0, hd, hav⟩ :=
+      p.exists_avoiding_solution ⟨K, B, hlip, hbound⟩ hnet (hc.1.trans_lt hgap) k0
     have hk : p.ks < (γ 0).1 := h0 ▸ habove
     obtain ⟨hlim, ha, hm, _⟩ := p.upper_avoiding_converges hlip hd hav hk
     exact ⟨γ, h0, hd, p.upper_clips_inactive hlip hd hav hk (h0 ▸ hk0.2),
@@ -5365,7 +5380,8 @@ theorem exists_cass_finite_data (f mp μ : ℝ → ℝ) (d m kl ku ks k0 : ℝ)
   have hnetout : f kl - m * kl < f kl := by nlinarith [mul_pos hm hkl]
   have hflpos := hnetpos.trans hnetout
   have hflu : f kl ≤ f ku :=
-    hfmono ⟨le_rfl, (hlstar.trans hstaru).le⟩ ⟨(hlstar.trans hstaru).le, le_rfl⟩ (hlstar.trans hstaru).le
+    hfmono ⟨le_rfl, (hlstar.trans hstaru).le⟩ ⟨(hlstar.trans hstaru).le, le_rfl⟩
+      (hlstar.trans hstaru).le
   let cb := f ku + 1
   have hcbpos : 0 < cb := by dsimp [cb]; linarith
   have hc_cb : c < cb := by dsimp [cb]; linarith
@@ -5413,7 +5429,8 @@ theorem exists_cass_finite_data (f mp μ : ℝ → ℝ) (d m kl ku ks k0 : ℝ)
     hmpcont.congr (fun k hk => (hfderiv k hk).deriv)
   have hFL : BoundedLip (f ∘ clip kl ku) := boundedLip_comp_clip (hlstar.trans hstaru).le
     (fun k hk => (hfderiv k hk).differentiableAt) hfprime
-  have hPL : BoundedLip (mp ∘ clip kl ku) := boundedLip_comp_clip (hlstar.trans hstaru).le hmpdiff hmpprime
+  have hPL : BoundedLip (mp ∘ clip kl ku) :=
+    boundedLip_comp_clip (hlstar.trans hstaru).le hmpdiff hmpprime
   have hμL : BoundedLip (μ ∘ clip ca cb) := boundedLip_comp_clip hcab
     (fun x hx => hμdiff x (hμinterval hx)) (hμprime.mono hμinterval)
   have hHL : BoundedLip ((fun k => μ (f k)) ∘ clip kl ku) := by
@@ -6006,7 +6023,8 @@ theorem CassConstructionData.exists_optimal
   obtain ⟨_, _, hCLip, _⟩ := D.demand_bounded
   obtain ⟨_, _, hFLip, _⟩ := D.production_bounded
   obtain ⟨γ, h0, hd, hclipq, hlim, hbelow, habove, hconstant⟩ := p.exists_convergent_trajectory
-    D.bounded D.net_mono D.consumption_mem D.net_gap D.time_nonneg D.price_large D.time_large D.initial_mem
+    D.bounded D.net_mono D.consumption_mem D.net_gap D.time_nonneg D.price_large
+    D.time_large D.initial_mem
   have hclip := fun t ht => (hclipq t ht).1
   have hprod : p.f = f := D.production_eq
   have hmul : p.μ = deriv U := D.marginalUtility_eq
@@ -6018,7 +6036,9 @@ theorem CassConstructionData.exists_optimal
   have hfdiff' : ∀ k, 0 < k → DifferentiableAt ℝ p.f k := hprod ▸ hfdiff
   have hfprime' : ContinuousOn (deriv p.f) (Ioi 0) := hprod ▸ hfprime
   have hcapacity' : ∀ k, K ≤ k → p.f k ≤ p.m * k := by simpa only [hprod, hdil] using hcapacity
-  obtain ⟨J, hJ⟩ := p.constructed_optimal U hmp hmul hfconc'.concaveOn hUconc.concaveOn hfdiff' hUdiff hfprime' hUprime
+  obtain ⟨J, hJ⟩ :=
+    p.constructed_optimal U hmp hmul hfconc'.concaveOn hUconc.concaveOn
+      hfdiff' hUdiff hfprime' hUprime
     hCLip.continuous hFLip.continuous hd hclip hlim (h0 ▸ hkK) hcapacity'
   let a := p.feasiblePath γ hCLip.continuous hFLip.continuous hd hclip
   have hresult : ∃ a : FeasiblePath p.f p.m, ∃ J : ℝ,
@@ -6132,7 +6152,8 @@ theorem cass_general_dynamic (f U : ℝ → ℝ) (d m k0 : ℝ)
     hfdiff (fun k hk => (hfprimepos k hk).le) hfInadaTop
   have hUprime : ContinuousOn (deriv U) (Ioi 0) :=
     fun c hc => (hUsecond c hc).continuousAt.continuousWithinAt
-  exact ⟨ks, hks, hstationary, D.exists_optimal hfconc hUconc hfdiff hUdiff hfprime hUprime hkK hcapacity⟩
+  exact ⟨ks, hks, hstationary,
+    D.exists_optimal hfconc hUconc hfdiff hUdiff hfprime hUprime hkK hcapacity⟩
 
 end RamseyCassKoopmans
 
@@ -6612,7 +6633,8 @@ theorem no_convergent_euler_path (a : FeasiblePath production 1) (cd : ℝ → �
   have hprice : Tendsto P atTop (𝓝 0) :=
     ODE.tendsto_zero_of_negative_logarithmic_derivative hPD hPn hcoeff (by norm_num)
   have hgL : Tendsto (fun t => g (a.capital t)) atTop (𝓝 3) := by
-    have h := ((production_deriv (by norm_num : (1 : ℝ) + 1 ≠ 0)).continuousAt.tendsto.comp hklim).sub hklim
+    have h :=
+      ((production_deriv (by norm_num : (1 : ℝ) + 1 ≠ 0)).continuousAt.tendsto.comp hklim).sub hklim
     convert h using 1
     · rfl
     · norm_num [production]
@@ -6623,7 +6645,8 @@ theorem no_convergent_euler_path (a : FeasiblePath production 1) (cd : ℝ → �
     · filter_upwards [eventually_ge_atTop (0 : ℝ)] with t ht
       change discount 1 t * (2 / a.consumption t) ≤ discount 1 t * deriv utility (a.consumption t)
       rw [deriv_utility (a.consumption_pos t ht).ne']
-      exact mul_le_mul_of_nonneg_left (reciprocal_bound (a.consumption_pos t ht)).2 (discount_pos 1 t).le
+      exact mul_le_mul_of_nonneg_left (reciprocal_bound (a.consumption_pos t ht)).2
+        (discount_pos 1 t).le
   have hFL : Tendsto F atTop (𝓝 0) := by
     have hh := (hprice.mul hgL).sub hR
     simp only [zero_mul, sub_zero] at hh
@@ -6654,7 +6677,8 @@ theorem no_convergent_euler_path (a : FeasiblePath production 1) (cd : ℝ → �
     production_strictConcave.concaveOn utility_strictConcave.concaveOn utility_continuous
     (fun k hk => (production_deriv (by linarith)).differentiableAt)
     (fun _ hc => (utility_deriv hc.ne').differentiableAt)
-    production_prime_continuous utility_prime_continuous hkpos (fun t ht => (hqpos t ht).le) hcostate
+    production_prime_continuous utility_prime_continuous hkpos
+    (fun t ht => (hqpos t ht).le) hcostate
   have hoptimal := infinite_horizon_optimality_of_bounded_capital v competitor
     (allocation_of_interior v (fun _ _ => rfl)) (hinit.trans competitor_initial.symm) hJ hb hprice
     (a.capital_le_capacity (fun _ hk => production_capacity hk) hinit.le)
@@ -6847,21 +6871,21 @@ end RamseyCassKoopmans.KoopmansBoundary
 #print axioms RamseyCassKoopmans.strictAnti_joinAt
 #print axioms RamseyCassKoopmans.tendsto_joinAt_atTop
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.r
-#print axioms RamseyCassKoopmans.ClosedForm.Corner.R
+#print axioms RamseyCassKoopmans.ClosedForm.Corner.inverseFactor
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.preCapital
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.preConsumption
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.preShadow
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.preMu
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.preMp
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.r_pos
-#print axioms RamseyCassKoopmans.ClosedForm.Corner.R_pos
+#print axioms RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_pos
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.r_switch
-#print axioms RamseyCassKoopmans.ClosedForm.Corner.R_switch
-#print axioms RamseyCassKoopmans.ClosedForm.Corner.r_eq_inv_R
+#print axioms RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_switch
+#print axioms RamseyCassKoopmans.ClosedForm.Corner.r_eq_inv_inverseFactor
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_r
-#print axioms RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_R
+#print axioms RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_inverseFactor
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.r_continuous
-#print axioms RamseyCassKoopmans.ClosedForm.Corner.R_continuous
+#print axioms RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_continuous
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_preCapital
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_preConsumption
 #print axioms RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_preShadow

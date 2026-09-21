@@ -145,6 +145,11 @@ The economic interpretation of the formal assumptions still needs human review.
 The project pins Lean **4.34.0** and the matching Mathlib revision in
 `lean-toolchain` and `lake-manifest.json`.
 
+The standard Mathlib lint set is enabled in both the library build and the
+fresh-source audit, following the main LeanEconomics project's configuration.
+Only the Apache-specific header rule is disabled because this original
+contribution uses the Unlicense. Warnings fail verification.
+
 ```sh
 lake exe cache get
 lake build

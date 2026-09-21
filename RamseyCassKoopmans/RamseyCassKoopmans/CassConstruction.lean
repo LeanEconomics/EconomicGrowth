@@ -60,7 +60,8 @@ theorem exists_convergent_trajectory (p : CassPhase) (hb : BoundedLip p.field)
       (k0 = p.ks → ∀ t, γ t = p.steady) := by
   obtain ⟨K, B, hlip, hbound⟩ := hb
   rcases lt_trichotomy k0 p.ks with hbelow | heq | habove
-  · obtain ⟨γ, h0, hd, hav⟩ := p.exists_avoiding_solution ⟨K, B, hlip, hbound⟩ hnet (hc.1.trans_lt hgap) k0
+  · obtain ⟨γ, h0, hd, hav⟩ :=
+      p.exists_avoiding_solution ⟨K, B, hlip, hbound⟩ hnet (hc.1.trans_lt hgap) k0
     have hk : (γ 0).1 < p.ks := h0 ▸ hbelow
     obtain ⟨hlim, hm, ha, _⟩ := p.lower_avoiding_converges hlip hd hav hk
     have hq0 : (γ 0).2 < p.Q := p.lower_initial_price_lt_top hlip hd hav hk hT hlarge
@@ -77,7 +78,8 @@ theorem exists_convergent_trajectory (p : CassPhase) (hb : BoundedLip p.field)
       exact False.elim (lt_irrefl _ (heq ▸ h))
     · intro h
       exact False.elim (lt_irrefl _ (heq ▸ h))
-  · obtain ⟨γ, h0, hd, hav⟩ := p.exists_avoiding_solution ⟨K, B, hlip, hbound⟩ hnet (hc.1.trans_lt hgap) k0
+  · obtain ⟨γ, h0, hd, hav⟩ :=
+      p.exists_avoiding_solution ⟨K, B, hlip, hbound⟩ hnet (hc.1.trans_lt hgap) k0
     have hk : p.ks < (γ 0).1 := h0 ▸ habove
     obtain ⟨hlim, ha, hm, _⟩ := p.upper_avoiding_converges hlip hd hav hk
     exact ⟨γ, h0, hd, p.upper_clips_inactive hlip hd hav hk (h0 ▸ hk0.2),

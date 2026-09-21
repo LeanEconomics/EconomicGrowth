@@ -40,10 +40,10 @@ theorem tail_shadow_continuous : Continuous (shadow (2 / 3)) :=
   continuous_iff_continuousAt.mpr (fun t => (tail_shadow_hasDerivAt t).continuousAt)
 
 theorem capital_match (τ : ℝ) : preCapital τ τ = capital (2 / 3) (τ - τ) := by
-  norm_num [preCapital, R, capital, state, discount]
+  norm_num [preCapital, inverseFactor, capital, state, discount]
 
 theorem consumption_match (τ : ℝ) : preConsumption τ τ = consumption (2 / 3) (τ - τ) := by
-  norm_num [preConsumption, R, consumption, state, discount]
+  norm_num [preConsumption, inverseFactor, consumption, state, discount]
 
 theorem investment_match (τ : ℝ) : (0 : ℝ) = investment (2 / 3) (τ - τ) := by
   norm_num [investment, state, discount]
@@ -97,7 +97,7 @@ theorem hasDerivAt_joinedShadow (τ t : ℝ) :
 
 theorem joinedConsumption_continuous (τ : ℝ) : Continuous (joinedConsumption τ) := by
   apply continuous_joinAt _ _ (consumption_match τ)
-  · exact continuous_const.mul ((R_continuous τ).pow 2)
+  · exact continuous_const.mul ((inverseFactor_continuous τ).pow 2)
   · exact (continuous_const.mul ((state_continuous (2 / 3)).pow 2)).comp
       (continuous_id.sub continuous_const)
 
@@ -143,7 +143,8 @@ noncomputable def cornerPath (τ : ℝ) : FeasiblePath Examples.production 1 whe
   investment_continuous := (joinedInvestment_continuous τ).continuousOn
   resource := fun t _ => by
     by_cases ht : t ≤ τ
-    · simp only [joinedConsumption, joinedInvestment, joinedCapital, joinAt, ite_eq_left ht, add_zero]
+    · simp only [joinedConsumption, joinedInvestment, joinedCapital, joinAt,
+        ite_eq_left ht, add_zero]
       exact pre_resource τ t
     · simp only [joinedConsumption, joinedInvestment, joinedCapital, joinAt, ite_eq_right ht]
       exact (path (2 / 3) (by norm_num)).resource (t - τ) (by linarith)

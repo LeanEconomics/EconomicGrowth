@@ -64,7 +64,8 @@ theorem exists_cass_finite_data (f mp μ : ℝ → ℝ) (d m kl ku ks k0 : ℝ)
   have hnetout : f kl - m * kl < f kl := by nlinarith [mul_pos hm hkl]
   have hflpos := hnetpos.trans hnetout
   have hflu : f kl ≤ f ku :=
-    hfmono ⟨le_rfl, (hlstar.trans hstaru).le⟩ ⟨(hlstar.trans hstaru).le, le_rfl⟩ (hlstar.trans hstaru).le
+    hfmono ⟨le_rfl, (hlstar.trans hstaru).le⟩ ⟨(hlstar.trans hstaru).le, le_rfl⟩
+      (hlstar.trans hstaru).le
   let cb := f ku + 1
   have hcbpos : 0 < cb := by dsimp [cb]; linarith
   have hc_cb : c < cb := by dsimp [cb]; linarith
@@ -112,7 +113,8 @@ theorem exists_cass_finite_data (f mp μ : ℝ → ℝ) (d m kl ku ks k0 : ℝ)
     hmpcont.congr (fun k hk => (hfderiv k hk).deriv)
   have hFL : BoundedLip (f ∘ clip kl ku) := boundedLip_comp_clip (hlstar.trans hstaru).le
     (fun k hk => (hfderiv k hk).differentiableAt) hfprime
-  have hPL : BoundedLip (mp ∘ clip kl ku) := boundedLip_comp_clip (hlstar.trans hstaru).le hmpdiff hmpprime
+  have hPL : BoundedLip (mp ∘ clip kl ku) :=
+    boundedLip_comp_clip (hlstar.trans hstaru).le hmpdiff hmpprime
   have hμL : BoundedLip (μ ∘ clip ca cb) := boundedLip_comp_clip hcab
     (fun x hx => hμdiff x (hμinterval hx)) (hμprime.mono hμinterval)
   have hHL : BoundedLip ((fun k => μ (f k)) ∘ clip kl ku) := by

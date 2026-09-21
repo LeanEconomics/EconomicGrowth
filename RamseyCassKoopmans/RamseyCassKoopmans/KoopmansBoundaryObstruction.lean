@@ -99,7 +99,8 @@ theorem no_convergent_euler_path (a : FeasiblePath production 1) (cd : ℝ → �
   have hprice : Tendsto P atTop (𝓝 0) :=
     ODE.tendsto_zero_of_negative_logarithmic_derivative hPD hPn hcoeff (by norm_num)
   have hgL : Tendsto (fun t => g (a.capital t)) atTop (𝓝 3) := by
-    have h := ((production_deriv (by norm_num : (1 : ℝ) + 1 ≠ 0)).continuousAt.tendsto.comp hklim).sub hklim
+    have h :=
+      ((production_deriv (by norm_num : (1 : ℝ) + 1 ≠ 0)).continuousAt.tendsto.comp hklim).sub hklim
     convert h using 1
     · rfl
     · norm_num [production]
@@ -110,7 +111,8 @@ theorem no_convergent_euler_path (a : FeasiblePath production 1) (cd : ℝ → �
     · filter_upwards [eventually_ge_atTop (0 : ℝ)] with t ht
       change discount 1 t * (2 / a.consumption t) ≤ discount 1 t * deriv utility (a.consumption t)
       rw [deriv_utility (a.consumption_pos t ht).ne']
-      exact mul_le_mul_of_nonneg_left (reciprocal_bound (a.consumption_pos t ht)).2 (discount_pos 1 t).le
+      exact mul_le_mul_of_nonneg_left (reciprocal_bound (a.consumption_pos t ht)).2
+        (discount_pos 1 t).le
   have hFL : Tendsto F atTop (𝓝 0) := by
     have hh := (hprice.mul hgL).sub hR
     simp only [zero_mul, sub_zero] at hh
@@ -141,7 +143,8 @@ theorem no_convergent_euler_path (a : FeasiblePath production 1) (cd : ℝ → �
     production_strictConcave.concaveOn utility_strictConcave.concaveOn utility_continuous
     (fun k hk => (production_deriv (by linarith)).differentiableAt)
     (fun _ hc => (utility_deriv hc.ne').differentiableAt)
-    production_prime_continuous utility_prime_continuous hkpos (fun t ht => (hqpos t ht).le) hcostate
+    production_prime_continuous utility_prime_continuous hkpos
+    (fun t ht => (hqpos t ht).le) hcostate
   have hoptimal := infinite_horizon_optimality_of_bounded_capital v competitor
     (allocation_of_interior v (fun _ _ => rfl)) (hinit.trans competitor_initial.symm) hJ hb hprice
     (a.capital_le_capacity (fun _ hk => production_capacity hk) hinit.le)

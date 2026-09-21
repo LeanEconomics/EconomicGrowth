@@ -49,7 +49,8 @@ theorem corner_allocation (τ : ℝ) (b : FeasiblePath Examples.production 1)
   · intro t _
     exact mul_le_mul_of_nonneg_left (joinedShadow_le_joinedMu τ t) (discount_pos 1 t).le
   · intro t _
-    change (discount 1 t * joinedShadow τ t - discount 1 t * joinedMu τ t) * joinedInvestment τ t = 0
+    change (discount 1 t * joinedShadow τ t - discount 1 t * joinedMu τ t) *
+      joinedInvestment τ t = 0
     calc
       _ = discount 1 t * ((joinedShadow τ t - joinedMu τ t) * joinedInvestment τ t) := by ring
       _ = 0 := by rw [joined_complementarity, mul_zero]
@@ -106,7 +107,7 @@ theorem cornerPath_initial (τ : ℝ) (hτ : 0 ≤ τ) :
   change joinedCapital τ 0 = _
   unfold joinedCapital
   rw [joinAt_left _ _ hτ]
-  dsimp [preCapital, R]
+  dsimp [preCapital, inverseFactor]
   rw [← Real.exp_nat_mul]
   congr 2
   ring
@@ -128,14 +129,14 @@ theorem pre_welfare_integrand (τ t : ℝ) :
   have hscale : 2 * (2 / Real.sqrt (3 : ℝ)) = 4 * Real.sqrt 3 / 3 := by
     field_simp
     nlinarith [Real.sq_sqrt (show (0 : ℝ) ≤ 3 by norm_num)]
-  have he : discount 1 t * R τ t = Real.exp (τ / 4) * discount (5 / 4) t := by
-    unfold discount R
+  have he : discount 1 t * inverseFactor τ t = Real.exp (τ / 4) * discount (5 / 4) t := by
+    unfold discount inverseFactor
     rw [← Real.exp_add, ← Real.exp_add]
     congr 1
     ring
   rw [utility, sqrt_preConsumption]
   calc
-    _ = (2 * (2 / Real.sqrt 3)) * (discount 1 t * R τ t) := by ring
+    _ = (2 * (2 / Real.sqrt 3)) * (discount 1 t * inverseFactor τ t) := by ring
     _ = _ := by rw [hscale, he]; ring
 
 theorem welfare_prefix (τ : ℝ) (hτ : 0 ≤ τ) :

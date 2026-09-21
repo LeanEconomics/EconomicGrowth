@@ -46,7 +46,10 @@ theorem exists_low_endpoint {v : ℝ × ℝ → ℝ × ℝ} {B : ℝ≥0}
     (fun t ht => hdown (γ t) (hq t ht).le)
   rw [h0] at hk
   change (γ T).1 - k0 ≤ -ε * (T - 0) at hk
-  exact ⟨T, hT.le, by constructor; linarith; exact (hq T ⟨hT.le, le_rfl⟩).trans ha⟩
+  refine ⟨T, hT.le, ?_⟩
+  constructor
+  · linarith
+  · exact (hq T ⟨hT.le, le_rfl⟩).trans ha
 
 theorem exists_high_endpoint {v : ℝ × ℝ → ℝ × ℝ} {B : ℝ≥0}
     (hbound : ∀ x, ‖v x‖ ≤ B) {a : ℝ × ℝ} {Q ε : ℝ}

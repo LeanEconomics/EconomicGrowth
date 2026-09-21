@@ -58,6 +58,7 @@ theorem cass_general_dynamic (f U : ℝ → ℝ) (d m k0 : ℝ)
     hfdiff (fun k hk => (hfprimepos k hk).le) hfInadaTop
   have hUprime : ContinuousOn (deriv U) (Ioi 0) :=
     fun c hc => (hUsecond c hc).continuousAt.continuousWithinAt
-  exact ⟨ks, hks, hstationary, D.exists_optimal hfconc hUconc hfdiff hUdiff hfprime hUprime hkK hcapacity⟩
+  exact ⟨ks, hks, hstationary,
+    D.exists_optimal hfconc hUconc hfdiff hUdiff hfprime hUprime hkK hcapacity⟩
 
 end RamseyCassKoopmans

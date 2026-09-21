@@ -99,7 +99,8 @@ theorem cornerPath_unique (τ : ℝ) (hτ : 0 ≤ τ)
   apply path_eq_of_welfare_eq v b (corner_allocation τ b hbinvest)
     hinit (cornerPath_hasWelfare τ hτ) hb
     (terminal_for_paths _ _ v.price
-      (Terminal.discounted_price_tendsto_zero (d := 1) (by norm_num) (joinedShadow_tendsto τ)) hinit)
+      (Terminal.discounted_price_tendsto_zero (d := 1) (by norm_num)
+        (joinedShadow_tendsto τ)) hinit)
     utility_strictConcave_positive production_strictConcave
   · exact fun t _ => joined_utility_derivative τ t
   · exact fun t _ => joined_production_derivative τ t

@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-09-21T21:19:26.867461+00:00",
+  "checked_at_utc": "2026-09-21T22:05:32.768978+00:00",
   "theorems": 423,
   "module_theorems": {
     "RamseyCassKoopmans/Model.lean": 5,
@@ -963,7 +963,7 @@
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
     {
-      "name": "RamseyCassKoopmans.ClosedForm.Corner.R",
+      "name": "RamseyCassKoopmans.ClosedForm.Corner.inverseFactor",
       "kind": "def",
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
@@ -998,7 +998,7 @@
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
     {
-      "name": "RamseyCassKoopmans.ClosedForm.Corner.R_pos",
+      "name": "RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_pos",
       "kind": "theorem",
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
@@ -1008,12 +1008,12 @@
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
     {
-      "name": "RamseyCassKoopmans.ClosedForm.Corner.R_switch",
+      "name": "RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_switch",
       "kind": "theorem",
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
     {
-      "name": "RamseyCassKoopmans.ClosedForm.Corner.r_eq_inv_R",
+      "name": "RamseyCassKoopmans.ClosedForm.Corner.r_eq_inv_inverseFactor",
       "kind": "theorem",
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
@@ -1023,7 +1023,7 @@
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
     {
-      "name": "RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_R",
+      "name": "RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_inverseFactor",
       "kind": "theorem",
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
@@ -1033,7 +1033,7 @@
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
     {
-      "name": "RamseyCassKoopmans.ClosedForm.Corner.R_continuous",
+      "name": "RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_continuous",
       "kind": "theorem",
       "module": "RamseyCassKoopmans/CornerDynamics.lean"
     },
@@ -2940,6 +2940,10 @@
   ],
   "full_build": "passed",
   "fresh_source_compilation": "passed",
+  "fresh_source_lint_options": [
+    "-Dlinter.mathlibStandardSet=true",
+    "-Dlinter.style.header=false"
+  ],
   "axioms": {
     "RamseyCassKoopmans.FeasiblePath": [
       "propext",
@@ -3846,7 +3850,7 @@
       "Classical.choice",
       "Quot.sound"
     ],
-    "RamseyCassKoopmans.ClosedForm.Corner.R": [
+    "RamseyCassKoopmans.ClosedForm.Corner.inverseFactor": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -3881,7 +3885,7 @@
       "Classical.choice",
       "Quot.sound"
     ],
-    "RamseyCassKoopmans.ClosedForm.Corner.R_pos": [
+    "RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_pos": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -3891,12 +3895,12 @@
       "Classical.choice",
       "Quot.sound"
     ],
-    "RamseyCassKoopmans.ClosedForm.Corner.R_switch": [
+    "RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_switch": [
       "propext",
       "Classical.choice",
       "Quot.sound"
     ],
-    "RamseyCassKoopmans.ClosedForm.Corner.r_eq_inv_R": [
+    "RamseyCassKoopmans.ClosedForm.Corner.r_eq_inv_inverseFactor": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -3906,7 +3910,7 @@
       "Classical.choice",
       "Quot.sound"
     ],
-    "RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_R": [
+    "RamseyCassKoopmans.ClosedForm.Corner.hasDerivAt_inverseFactor": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -3916,7 +3920,7 @@
       "Classical.choice",
       "Quot.sound"
     ],
-    "RamseyCassKoopmans.ClosedForm.Corner.R_continuous": [
+    "RamseyCassKoopmans.ClosedForm.Corner.inverseFactor_continuous": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -5829,7 +5833,7 @@
     "RamseyCassKoopmans/Terminal.lean": "548a5fd9c9aeb310bcd50e412f1bb8943f1b686574573dad0296f34888cdbae5",
     "RamseyCassKoopmans/Stationary.lean": "d03097965bca78d114c295c634d772d3520781f29ea67731dfe4763549fdadd1",
     "RamseyCassKoopmans/StationaryPath.lean": "9d308dd69220b8300c2ec1c9c4d21e43632ae27c3fe1c17981936943b3a7945b",
-    "RamseyCassKoopmans/Verification.lean": "0993e3642d62dca479aada260de261ac1213ae41a9fa6d7129f92c2a6d40799c",
+    "RamseyCassKoopmans/Verification.lean": "9ded38f3053077aa7fe546f5461ac81847150a4365a8d4b94fdee04397aee999",
     "RamseyCassKoopmans/Cass.lean": "2a02b5b09fa68805dbdc8202c9c705a14d3e8bb346010ea2d3ab52bb7807d634",
     "RamseyCassKoopmans/StationaryOptimality.lean": "7b2c96b3baf1d3f86c11c1e1df554e4e9fadf2a0156c8980de15fc6f0d6f0827",
     "RamseyCassKoopmans/Koopmans.lean": "85e07c56e1bbe4697f97207e69af5824a94fb7c88e7e2ff0b8a084cc7f7f1080",
@@ -5837,11 +5841,11 @@
     "RamseyCassKoopmans/Examples.lean": "6562c5019cdabae333011039fa440b6be726fffa96c334561d0541feb0b7c88a",
     "RamseyCassKoopmans/ClosedFormDynamics.lean": "4b6c83e6028a400932f60b9f9a934e7ee6b996042596188d6fbc3c2a6c5bbf87",
     "RamseyCassKoopmans/PathGluing.lean": "838d478701cbbb40a0149c6d1dff718399f54c93c06c59a979d7917b253983db",
-    "RamseyCassKoopmans/CornerDynamics.lean": "fc9721fa08161b4e28d1df3d211621e8bd7fde0f8fee82584501fe1452034cb9",
-    "RamseyCassKoopmans/CornerPath.lean": "7d73357ea46383a31bcac260eb1c0cf5b0c6ca1ce741d5ef9533fa5857bde7aa",
+    "RamseyCassKoopmans/CornerDynamics.lean": "2df50b013f88a15ffd3d0371376590b4a5463fe17d0cc58ea46844d0c0b48abc",
+    "RamseyCassKoopmans/CornerPath.lean": "fb611ad59259792dba7aef7c96dfaffb37539150c933d75d68b220a93d41537f",
     "RamseyCassKoopmans/TailWelfare.lean": "ab221d36da780e09d65c2efbc8480cd5d6b93ef88d02ade540b27f9861ce61b5",
-    "RamseyCassKoopmans/CornerOptimality.lean": "87bc4e4ce1afb6fad4c67ff17fb7bcc3a4c7476411685b969d9825027f79660a",
-    "RamseyCassKoopmans/GlobalCass.lean": "f26473ea5ff0ad665277a7c6d7829a3a5265aa7ef8ebd116d51d89f1c4b4260a",
+    "RamseyCassKoopmans/CornerOptimality.lean": "b22b077287bb1d6c818c0fcc6744fcd6cb72c826f5246d8671b6c9520525c6dd",
+    "RamseyCassKoopmans/GlobalCass.lean": "2f897c239eada8b81ec004e1ed5542bdb3a8e3fa09a48d3ed402f1aa1ddc99cb",
     "RamseyCassKoopmans/BoundedWelfare.lean": "61cbc4ee93036187a619fe5ca6e3796a221aa57ac6186717c50b14c63004b79a",
     "RamseyCassKoopmans/CassSpecialization.lean": "85b597979a8d9bfb3737725ad95c8ae0d639cdeb76155efe8423629b76f1c9bf",
     "RamseyCassKoopmans/GlobalFlow.lean": "8929b26fcdb340bc09f4eeabf3beacb1f163c95f39d7393a9b96d45e52412350",
@@ -5858,34 +5862,34 @@
     "RamseyCassKoopmans/NonescapingDynamics.lean": "d470fff5bce4779e2c8f9eea7d5da10299ef5b1b928eecec4769bd1d4eba2321",
     "RamseyCassKoopmans/CassPhase.lean": "84d6ca2e7191ad4a249392649cf9932da784e9b750637af2519e1444c0454224",
     "RamseyCassKoopmans/CassPhaseEquilibrium.lean": "3eb48b8a8f4aad0ea6301b9cbf38904cc6b97b2a998f2b3f42e36c371bbabbec",
-    "RamseyCassKoopmans/ShootingEndpoints.lean": "303101ab54a6026cd4e647a642cf062f25ea53a727a162c0eeab8d0295bbea20",
+    "RamseyCassKoopmans/ShootingEndpoints.lean": "2a7662c8f3ff080974ea92a4000640733d193bbe5474a080cba36e040b0aa21c",
     "RamseyCassKoopmans/CassShooting.lean": "3e4b1794592d040bacd0c7131e19a8da11e8090d9fca10ee96ed96c83e5a16cd",
     "RamseyCassKoopmans/CassUnclipping.lean": "f881a965c13da7aef0cc8e9ed8fd2f4541915f8799cb430c73d2aac47b9c989b",
-    "RamseyCassKoopmans/CassConstruction.lean": "c37916a0e8fae7b535cf054c481f8020ccb484d9767e184b728fbfaeae77f29f",
-    "RamseyCassKoopmans/CassFiniteData.lean": "999f7b266b579173c803660b248deab8b37860c4b0f3680c0cd590fba9d9d991",
+    "RamseyCassKoopmans/CassConstruction.lean": "63f5c4a3d43b38034fb71ff9ce1e79a5c2f0b5adfc8edc0e1f09e2bf1b8dd19e",
+    "RamseyCassKoopmans/CassFiniteData.lean": "37d401c452dda6002c726c766b1f5e80e0390b2d26d1273ad7532f1457c7bc17",
     "RamseyCassKoopmans/CassInadaData.lean": "44c92ccfaac386bf6157195a3c01bd583ffa69f7ff782afe7c7124dace35afd2",
     "RamseyCassKoopmans/CassConstructedPath.lean": "671c7b6a414a8d4fb07c99e9272be27816f37ff6bf297c0dcf51e8302d0889f8",
     "RamseyCassKoopmans/SignedWelfare.lean": "881feb02ea3dabfe8217b3b9c554857cf1a048b8b249be68a2fdf907609ee36b",
     "RamseyCassKoopmans/CassQualitative.lean": "5e87199ba4275143be934ebe3b33af8fc9d19632c1ee2299ea20f62d1a218b12",
     "RamseyCassKoopmans/AsymptoticOptimality.lean": "129ad19de1646a9564915465ce0ee0f777eedb1ab8a573c8b2b0de933ae4b34a",
-    "RamseyCassKoopmans/CassConstructedOptimality.lean": "38c707b70ae8af1f6c307c85279fdee25d8d094f43692c490a9d6821bbbbf43e",
-    "RamseyCassKoopmans/CassGeneral.lean": "c99fdbd58112e1ed831c42cb771b7a400357eb8dc995af0a4f631f79ff6a80c0",
+    "RamseyCassKoopmans/CassConstructedOptimality.lean": "4c8f40ac76f1240b9b921fd5510531fd55bd2548b43e753a671b17ce1e5ca433",
+    "RamseyCassKoopmans/CassGeneral.lean": "8e3c18d5c517171ce22dee424586d01ae01469da71d70eb38c0880c5f0473497",
     "RamseyCassKoopmans/ExponentialDecay.lean": "c99439cd64f1e00cde8db2fe8d321eaecaf5db14c33f69b20db9b0139eca27eb",
     "RamseyCassKoopmans/Hamiltonian.lean": "fa2656236b76f3be8aa0deba2bab2cea39dbe7343e0cb1ebe4bdfa19b4a4ed64",
     "RamseyCassKoopmans/KoopmansBoundaryEconomy.lean": "9ddc289d5ff834a25b270fcc6d8dd1ed87996b94365a364f2de136a73d2b0891",
     "RamseyCassKoopmans/KoopmansBoundaryCompetitor.lean": "5c78ed82b1babb062b1b5aea6fb457a2e56889b222584ca0007f7e52a60a12aa",
-    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean": "942f117a31466b27dcd57f5328e0f4be18f24fbd76d37e2a88bafaec6611a6e3",
+    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean": "03e3cdf4dcac5ccfdee4e2645c0b3a13bf52093a6256e67044d8e1aac3d7aa2c",
     "RamseyCassKoopmans.lean": "eb47aae1e325767e63047083b95037c5de09de78603959340beb3e2f62c4df8a",
     "lean-toolchain": "8733782dc070a99b312039cda424f601b80f3be6f6f512627da5ba25adc27632",
-    "lakefile.toml": "70f6c3c88f73c758167b2fda4747d9cd9af4481382704592e390c9de18c4aca2",
+    "lakefile.toml": "40c45c4c815d8d3a74fa7c798f01086e11af17b200f018ffb256c90e76aa0217",
     "lake-manifest.json": "1bb3337875efd2ba5d979d520cae76e4a23d176b42f4ee6f8e45df4f7da0170d",
     "proof-manifest.json": "a4520b8ec76e2d177870aae93590f6b1eb9514e6bc882c4690169664ee2f33af",
-    "scripts/verify.py": "fec6e33fb6df8900ecb65f5c0fbc133070f21ce7b1c08c2b64c4f54954877e0d",
+    "scripts/verify.py": "ed2ba44fa8c69fbadac9b8961728090a7f9f2de30a153395e1878432e2331265",
     "scripts/verify_evidence.py": "75518db86e6a5a21996cc87d7fe2492da49ab9aa47170ea1b074094247446f1e",
     "scripts/check_theorydebugger.py": "0784c67bf6f1a2266900df9f3da4fabb85aaeb49f6b8f7fa2cb6681f1c55f626",
     "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c"
   },
-  "fresh_audit_sha256": "dddfc3d7fe4dfede5e09e57769ab2a373220b7e1c21d7a3703e22333cd9e0916",
+  "fresh_audit_sha256": "f862f1b083c74d9a9092b7e691aba82f0895d214f28d5fb7bf27abcd7f578ff2",
   "lean_toolchain": "leanprover/lean4:v4.34.0",
   "scope": "General positive-discount Cass constructed existence, capital and consumption monotonicity, convergence, eventual positive investment, finite candidate welfare, all-competitor asymptotic welfare dominance, and finite-welfare optimality/uniqueness from primitive Inada and C2 assumptions. Explicit square-root specialization. Certified obstruction to the regular convergent Euler characterization under Koopmans appendix scalar assumptions. Original undiscounted Ramsey and zero/negative-discount extensions are outside scope.",
   "source_provenance": null,
