@@ -1,0 +1,4 @@
+TheoryDebugger.Generated.feasible : ∃ _v0, True
+'TheoryDebugger.Generated.feasible' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.satisfying : ∃ _v0, True ∧ 3 * _v0 ^ 2 + (2 * _v0 - 3 * _v0 ^ 2) = 2 * _v0
+'TheoryDebugger.Generated.satisfying' depends on axioms: [propext, Classical.choice, Quot.sound]

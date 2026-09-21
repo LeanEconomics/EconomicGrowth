@@ -1,0 +1,8 @@
+C:\Users\admin\.codex\worktrees\a161\GURU\ramsey-cass-koopmans-lean\verification\theorydebugger\certificates\ba485a4d1eb778dce56e\Certificate.lean:18:59: warning: Unused tactic linter: `subst_vars` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+C:\Users\admin\.codex\worktrees\a161\GURU\ramsey-cass-koopmans-lean\verification\theorydebugger\certificates\ba485a4d1eb778dce56e\Certificate.lean:18:71: warning: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+TheoryDebugger.Generated.no_satisfying (v0 : ℝ) : v0 > 2 / 3 → ¬2 * v0 - 3 * v0 ^ 2 ≥ 0
+'TheoryDebugger.Generated.no_satisfying' depends on axioms: [propext, Classical.choice, Quot.sound]

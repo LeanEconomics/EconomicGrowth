@@ -1,0 +1,11 @@
+C:\Users\admin\.codex\worktrees\a161\GURU\ramsey-cass-koopmans-lean\verification\theorydebugger\certificates\2655524b9fadf23a8415\Certificate.lean:18:59: warning: Unused tactic linter: `subst_vars` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+C:\Users\admin\.codex\worktrees\a161\GURU\ramsey-cass-koopmans-lean\verification\theorydebugger\certificates\2655524b9fadf23a8415\Certificate.lean:18:80: warning: Unused tactic linter: `nlinarith` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+C:\Users\admin\.codex\worktrees\a161\GURU\ramsey-cass-koopmans-lean\verification\theorydebugger\certificates\2655524b9fadf23a8415\Certificate.lean:18:80: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+TheoryDebugger.Generated.claim : original
+'TheoryDebugger.Generated.claim' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,15 @@
+TheoryDebugger.Generated.sample_h0 : 1 > 0
+'TheoryDebugger.Generated.sample_h0' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.sample_h1 : 1 > 0
+'TheoryDebugger.Generated.sample_h1' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.sample_h2 : 0 ≥ 0
+'TheoryDebugger.Generated.sample_h2' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.sample_h3 : 1 ≤ 1
+'TheoryDebugger.Generated.sample_h3' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.sample_h4 : (1 - 1) * 0 = 0
+'TheoryDebugger.Generated.sample_h4' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.feasible : ∃ _v0 _v1 _v2, _v0 > 0 ∧ _v1 > 0 ∧ _v2 ≥ 0 ∧ _v1 ≤ _v0 ∧ (_v1 - _v0) * _v2 = 0
+'TheoryDebugger.Generated.feasible' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.satisfying :
+  ∃ _v0 _v1 _v2, (_v0 > 0 ∧ _v1 > 0 ∧ _v2 ≥ 0 ∧ _v1 ≤ _v0 ∧ (_v1 - _v0) * _v2 = 0) ∧ _v1 = _v0
+'TheoryDebugger.Generated.satisfying' depends on axioms: [propext, Classical.choice, Quot.sound]

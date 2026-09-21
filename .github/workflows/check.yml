@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [SolowSwan, Uzawa]
+        project: [SolowSwan, Uzawa, RamseyCassKoopmans]
     defaults:
       run:
         working-directory: ${{ matrix.project }}

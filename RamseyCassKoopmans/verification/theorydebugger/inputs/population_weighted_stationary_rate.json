@@ -1,0 +1,65 @@
+{
+  "variables": [
+    "d",
+    "m",
+    "rho",
+    "n",
+    "depreciation"
+  ],
+  "assumptions": [
+    [
+      ">",
+      "d",
+      0
+    ],
+    [
+      ">",
+      "n",
+      0
+    ],
+    [
+      ">",
+      "depreciation",
+      0
+    ],
+    [
+      "=",
+      "d",
+      [
+        "-",
+        "rho",
+        "n"
+      ]
+    ],
+    [
+      "=",
+      "m",
+      [
+        "+",
+        "n",
+        "depreciation"
+      ]
+    ]
+  ],
+  "goal": [
+    "=",
+    [
+      "+",
+      "d",
+      "m"
+    ],
+    [
+      "+",
+      "rho",
+      "depreciation"
+    ]
+  ],
+  "witness": {
+    "d": 1,
+    "m": 2,
+    "rho": 2,
+    "n": 1,
+    "depreciation": 1
+  },
+  "name": "population_weighted_stationary_rate"
+}

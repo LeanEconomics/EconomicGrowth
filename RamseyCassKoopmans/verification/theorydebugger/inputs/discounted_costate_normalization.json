@@ -1,0 +1,67 @@
+{
+  "variables": [
+    "qdot",
+    "d",
+    "m",
+    "q",
+    "u",
+    "fprime"
+  ],
+  "assumptions": [
+    [
+      "=",
+      "qdot",
+      [
+        "-",
+        [
+          "*",
+          [
+            "+",
+            "d",
+            "m"
+          ],
+          "q"
+        ],
+        [
+          "*",
+          "u",
+          "fprime"
+        ]
+      ]
+    ]
+  ],
+  "goal": [
+    "=",
+    [
+      "-",
+      "qdot",
+      [
+        "*",
+        "d",
+        "q"
+      ]
+    ],
+    [
+      "-",
+      [
+        "*",
+        "m",
+        "q"
+      ],
+      [
+        "*",
+        "u",
+        "fprime"
+      ]
+    ]
+  ],
+  "witness": {
+    "qdot": 0,
+    "d": 1,
+    "m": 1,
+    "q": 1,
+    "u": 1,
+    "fprime": 2
+  },
+  "name": "discounted_costate_normalization"
+}

@@ -1,0 +1,9 @@
+TheoryDebugger.Generated.sample_h0 : 1 > 0
+'TheoryDebugger.Generated.sample_h0' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.sample_h1 : 1 ≤ -1 * 1 * (1 - 2)
+'TheoryDebugger.Generated.sample_h1' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.feasible : ∃ _v0 _v1 _v2 _v3, _v1 > 0 ∧ _v0 ≤ -1 * _v1 * (_v3 - _v2)
+'TheoryDebugger.Generated.feasible' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.satisfying :
+  ∃ _v0 _v1 _v2 _v3, (_v1 > 0 ∧ _v0 ≤ -1 * _v1 * (_v3 - _v2)) ∧ _v0 ≤ _v1 * (_v2 - _v3)
+'TheoryDebugger.Generated.satisfying' depends on axioms: [propext, Classical.choice, Quot.sound]
