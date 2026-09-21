@@ -3,14 +3,34 @@
   "modules": [
     "Solow1956/Growth/SolowSwan.lean",
     "Solow1956/Growth/SolowSwanDynamics.lean",
-    "Solow1956/Growth/SolowSwanExamples.lean"
+    "Solow1956/Growth/SolowSwanExamples.lean",
+    "Solow1956/Analysis/GlobalFlow.lean",
+    "Solow1956/Analysis/CompactExtension.lean",
+    "Solow1956/Analysis/AsymptoticODE.lean",
+    "Solow1956/Analysis/ScalarFlow.lean",
+    "Solow1956/Growth/Neoclassical.lean",
+    "Solow1956/Growth/GeneralSolow.lean",
+    "Solow1956/Growth/SolowComparative.lean",
+    "Solow1956/Growth/SolowGoldenRule.lean",
+    "Solow1956/Growth/GeneralSolowApplications.lean",
+    "Solow1956/Growth/GeneralSolowExamples.lean"
   ],
   "theorem_counts": {
     "Solow1956/Growth/SolowSwan.lean": 16,
     "Solow1956/Growth/SolowSwanDynamics.lean": 37,
-    "Solow1956/Growth/SolowSwanExamples.lean": 6
+    "Solow1956/Growth/SolowSwanExamples.lean": 6,
+    "Solow1956/Analysis/GlobalFlow.lean": 1,
+    "Solow1956/Analysis/CompactExtension.lean": 5,
+    "Solow1956/Analysis/AsymptoticODE.lean": 10,
+    "Solow1956/Analysis/ScalarFlow.lean": 1,
+    "Solow1956/Growth/Neoclassical.lean": 14,
+    "Solow1956/Growth/GeneralSolow.lean": 5,
+    "Solow1956/Growth/SolowComparative.lean": 18,
+    "Solow1956/Growth/SolowGoldenRule.lean": 9,
+    "Solow1956/Growth/GeneralSolowApplications.lean": 4,
+    "Solow1956/Growth/GeneralSolowExamples.lean": 6
   },
-  "scope": "Cobb-Douglas Solow-Swan dynamics for 0 < alpha < 1 and b,m,k0 > 0: constructive existence, positivity, uniqueness among nonnegative differentiable solutions, monotonicity, convergence, and comparative statics.",
+  "scope": "General neoclassical continuous-time Solow-Swan growth from positive capital: existence, positivity, uniqueness among nonnegative classical paths, strict monotone convergence, Lyapunov stability, all eight Acemoglu comparative-statics partials, Golden Rule saving, a stationary Cass bridge, saving shocks, effective-labour convergence, and Cobb-Douglas closed forms.",
   "source_commit": "4bed57534cf4f5562be8b90c481bb3dd54360fe0",
   "source_files": {
     "Solow1956/Growth/SolowSwan.lean": {
@@ -26,5 +46,16 @@
       "sha256": "b5609e3202c68076f349c44469af75bac960eab2f300bcb2ffb8fb8ddc14e798"
     }
   },
-  "adaptation": "Independent original contribution extracted without upstream repository history; only project namespace/import paths and license header changed."
+  "adaptation": "The three original Cobb-Douglas proof modules retain their imported proof bodies. General neoclassical modules are added from Acemoglu Chapter 2, with analytic helpers adapted from the project Cass work. Lean/Mathlib and the axiom verifier are upgraded; original source import hashes remain historical provenance.",
+  "extension_sources": {
+    "primary": "Daron Acemoglu, Introduction to Modern Economic Growth (Princeton University Press, 2009), Chapter 2",
+    "source_map": "docs/acemoglu-source-map.md",
+    "analytic_helpers": "LeanEconomics/EconomicGrowth commit b1e9dd2dfe5c7a6f69ac4713f419293d1d175d17, RamseyCassKoopmans/",
+    "theorydebugger": {
+      "repository": "https://github.com/mvazcar/TheoryDebugger",
+      "commit": "5c1fa57",
+      "cases": 10,
+      "certificates": 20
+    }
+  }
 }

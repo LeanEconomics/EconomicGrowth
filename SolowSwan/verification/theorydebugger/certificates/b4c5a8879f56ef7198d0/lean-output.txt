@@ -1,0 +1,5 @@
+C:\Users\admin\.codex\worktrees\a161\GURU\economicgrowth-solow-acemoglu\SolowSwan\verification\theorydebugger\certificates\b4c5a8879f56ef7198d0\Certificate.lean:29:59: warning: Unused tactic linter: `subst_vars` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+TheoryDebugger.Generated.claim : original
+'TheoryDebugger.Generated.claim' depends on axioms: [propext, Classical.choice, Quot.sound]

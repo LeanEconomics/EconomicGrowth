@@ -18,3 +18,11 @@ No LeanEconomics implementation, repository history, or upstream README is
 bundled. The original source commit and content hashes are in proof-manifest.json.
 
 Research papers are cited, not redistributed. Their copyrights are unaffected.
+
+The general neoclassical extension uses Acemoglu's *Introduction to Modern
+Economic Growth* (Princeton University Press, 2009), Chapter 2, and references
+his MIT 14.452 Fall 2016 Solow lectures. Neither publication is included or
+relicensed. See [the source map](docs/acemoglu-source-map.md) for precise locations
+and reference-file hashes. Selected original analytic helpers and Golden Rule
+proofs are adapted from this project's Cass development, which has the same
+Unlicense grant. The source map records the originating revision.

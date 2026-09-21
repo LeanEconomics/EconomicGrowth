@@ -1,0 +1,60 @@
+{
+  "variables": [
+    "s",
+    "m",
+    "k",
+    "y",
+    "mp"
+  ],
+  "assumptions": [
+    [
+      ">",
+      "s",
+      0
+    ],
+    [
+      ">",
+      "k",
+      0
+    ],
+    [
+      "=",
+      [
+        "*",
+        "s",
+        "y"
+      ],
+      [
+        "*",
+        "m",
+        "k"
+      ]
+    ],
+    [
+      "<",
+      [
+        "*",
+        "mp",
+        "k"
+      ],
+      "y"
+    ]
+  ],
+  "goal": [
+    "<",
+    [
+      "*",
+      "s",
+      "mp"
+    ],
+    "m"
+  ],
+  "witness": {
+    "s": "1/2",
+    "m": 1,
+    "k": 1,
+    "y": 2,
+    "mp": 1
+  },
+  "name": "strict_concavity_gives_negative_equilibrium_slope"
+}

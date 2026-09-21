@@ -1,16 +1,25 @@
-# Solow 1956 in Lean
+# Solow–Swan growth in Lean
 
 This is the `SolowSwan/` proof project in
 [LeanEconomics/EconomicGrowth](https://github.com/LeanEconomics/EconomicGrowth).
 Run the commands below from this directory: `cd SolowSwan` from the repository
 root. [Return to the growth library index](../README.md).
 
-A checked formalization of the Cobb–Douglas Solow–Swan growth model:
-**59 theorems**, including an explicit solution, existence, positivity,
-uniqueness among nonnegative differentiable paths, monotone adjustment,
-convergence, and comparative statics.
+A checked formalization of general neoclassical Solow–Swan growth using
+**Acemoglu, Chapter 2**, alongside the original Solow (1956) Cobb–Douglas proofs.
+The library contains **132 theorems** and audits **150 named declarations**.
+It constructs global positive solutions, proves uniqueness, strict monotone
+convergence and stability, establishes all eight source comparative-statics
+signs, and connects Golden Rule saving to the stationary Cass condition.
 
-## Exact model
+Start with the [general theorem and detailed proof](docs/acemoglu-general-solow.md)
+and the [Acemoglu source map](docs/acemoglu-source-map.md). The main theorem is
+`Solow1956.Neoclassical.general_solow`, for `k' = s f(k) - m k` with explicit
+neoclassical assumptions and `s,m,k₀>0`. Consumption additionally needs `s<1`.
+The code proves the assumptions for powers and sums of powers, including
+`f(k)=k^(1/2)+k^(1/3)`. Saving shocks and effective-labour convergence are included.
+
+## Original Cobb–Douglas model
 
 For $b,m,k_0>0$ and $0<\alpha<1$, consider
 
@@ -35,7 +44,8 @@ Economic Growth*, QJE 70(1), 65–94, [DOI 10.2307/1884513](https://doi.org/10.2
 The formalization follows the Cobb–Douglas example on pp. 76–77 and the
 normalization on p. 69. Swan's original article is credited as a founding
 reference, but its full text has not been inspected. This is not a formalization
-of every result in either original paper or of general neoclassical convergence.
+of every result in either original paper. The Acemoglu extension supplies general
+neoclassical convergence in the separately documented modules below.
 
 ## Library map
 
@@ -44,8 +54,15 @@ of every result in either original paper or of general neoclassical convergence.
 | [SolowSwan](Solow1956/Growth/SolowSwan.lean) | 16 | Normalization, square-root model, stationary states |
 | [SolowSwanDynamics](Solow1956/Growth/SolowSwanDynamics.lean) | 37 | General exponent, complete dynamics, comparative statics |
 | [SolowSwanExamples](Solow1956/Growth/SolowSwanExamples.lean) | 6 | Boundary checks and effective-labour bridge |
+| [Neoclassical](Solow1956/Growth/Neoclassical.lean) | 14 | Primitive assumptions, production geometry, stationary existence |
+| [GeneralSolow](Solow1956/Growth/GeneralSolow.lean) | 5 | Existence, positivity, uniqueness, strict monotone convergence |
+| [SolowComparative](Solow1956/Growth/SolowComparative.lean) | 18 | Differentiable stationary stock and all eight source partials |
+| [SolowGoldenRule](Solow1956/Growth/SolowGoldenRule.lean) | 9 | Golden Rule saving and stationary Cass connection |
+| [GeneralSolowApplications](Solow1956/Growth/GeneralSolowApplications.lean) | 4 | Stability, saving shock, effective-labour convergence |
+| [GeneralSolowExamples](Solow1956/Growth/GeneralSolowExamples.lean) | 6 | Powers, sums of powers, and assumption checks |
+| [Analysis helpers](Solow1956/Analysis/) | 17 | Global ODE construction, scalar dynamics, and limits |
 
-Import `Solow1956`. Start with
+Import `Solow1956`. For the original explicit solution, start with
 `Solow1956.SolowSwan.CobbDouglas.nonnegative_dynamics`; monotonicity and output
 limits are separate named theorems in the same namespace.
 
@@ -61,10 +78,10 @@ lake exe cache get
 python scripts/verify.py
 ```
 
-Lean and Mathlib are pinned to **v4.34.0-rc2**, with transitive revisions in
+Lean and Mathlib are pinned to **v4.34.0**, with transitive revisions in
 `lake-manifest.json`. The script builds the library, freshly recompiles the
 proof sources without importing their compiled project modules, and checks
-each named theorem's axiom dependencies. Only Lean's standard `propext`,
+each named declaration's axiom dependencies. Only Lean's standard `propext`,
 `Classical.choice`, and `Quot.sound` are allowed. Warnings, failed proofs, and
 placeholder axioms fail verification. Mathlib's Apache-specific header style
 rule is disabled because this independent distribution uses The Unlicense;
@@ -74,6 +91,18 @@ The checked source hashes, theorem names, and axiom lists are recorded in
 [verification/verification.json](verification/verification.json). GitHub Actions
 repeats the build and fresh audit on pushes and pull requests. A JSON record is
 evidence of a run; the Lean proof terms and kernel checks are the certificates.
+
+Ten saved TheoryDebugger diagnostics have twenty Lean certificates: seven valid
+algebraic claims, three refutations, and assumption-feasibility evidence.
+The normal audit validates their hashes. Regeneration requires TheoryDebugger
+revision `5c1fa57` and its CVC5 dependency:
+
+```sh
+python scripts/check_theorydebugger.py --theorydebugger /path/to/TheoryDebugger
+```
+
+These diagnostics check finite algebra. The analytic existence and convergence
+proofs are independently checked in Lean.
 
 ## Development and credit
 
@@ -90,10 +119,12 @@ still requires researcher review.
 Development and review used **Astra 6** with **Ultra** and **Extra High**
 reasoning settings.
 
-The modules were first developed as independent proposed LeanEconomics
-contributions. [proof-manifest.json](proof-manifest.json) records the original
-commits and source hashes. This standalone library changes the project namespace,
-imports, and license header while preserving the mathematical proof bodies.
+The original three Cobb–Douglas modules were developed as independent proposed
+LeanEconomics contributions. [proof-manifest.json](proof-manifest.json) preserves
+their import provenance and records the Acemoglu extension separately.
+Selected analytic helpers and Golden Rule arguments adapt our original Cass
+work, with fresh proof checking and local imports; the source map records that
+reuse. The Solow project has no build dependency on the Cass branch.
 
 [TheoryDebugger](https://github.com/mvazcar/TheoryDebugger) helped diagnose
 assumptions, boundary cases, and algebraic proof steps. Its external solver is
