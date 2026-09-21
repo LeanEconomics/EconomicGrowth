@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-09-21T20:59:12.012247+00:00",
+  "checked_at_utc": "2026-09-21T21:16:51.051113+00:00",
   "theorems": 132,
   "module_theorems": {
     "Solow1956/Growth/SolowSwan.lean": 16,
@@ -16,7 +16,7 @@
     "Solow1956/Growth/GeneralSolowApplications.lean": 4,
     "Solow1956/Growth/GeneralSolowExamples.lean": 6
   },
-  "audited_declarations": 150,
+  "audited_declarations": 159,
   "declarations": [
     {
       "name": "Solow1956.SolowSwan.capitalChange",
@@ -451,6 +451,51 @@
     {
       "name": "Solow1956.Neoclassical.Technology",
       "kind": "structure",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.mk",
+      "kind": "constructor",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.continuous",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.zero",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.differentiable",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.derivative_continuous",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.concave",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.marginal_positive",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.inada_zero",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.inada_top",
+      "kind": "projection",
       "module": "Solow1956/Growth/Neoclassical.lean"
     },
     {
@@ -1207,6 +1252,51 @@
       "Classical.choice",
       "Quot.sound"
     ],
+    "Solow1956.Neoclassical.Technology.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.differentiable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.derivative_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.concave": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.marginal_positive": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.inada_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.inada_top": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "Solow1956.Neoclassical.technology_of_second_derivative": [
       "propext",
       "Classical.choice",
@@ -1527,7 +1617,7 @@
     "Solow1956/Growth/SolowSwan.lean": "698d382425ecd5af5f73486fa2d73a11fa73e89735172160f60ed6c986e16447",
     "Solow1956/Growth/SolowSwanDynamics.lean": "130eea43d0210410674fb182dd6c7244a3274ed626676cc0f46cea1f98239071",
     "Solow1956/Growth/SolowSwanExamples.lean": "6766d7734315f5da6d8cdc9f6183732cf0f9aa588e6e10c94e1d9a57ac88fa4e",
-    "Solow1956/Analysis/GlobalFlow.lean": "6a4b1c7f04aeccd203c41ea363ac8804523d8ccbb4cbc7899e195bed77640e68",
+    "Solow1956/Analysis/GlobalFlow.lean": "53f685e81364c570dfc09f7641539eee3d1651d8860eafb62759dcc09b6ea714",
     "Solow1956/Analysis/CompactExtension.lean": "e0bdea1bc7b6d2637d15a4ba357e43e69b5f7de86040b91b6433126abbb792e6",
     "Solow1956/Analysis/AsymptoticODE.lean": "6a2660d23214f6c04cf86720c69ed785f2736f92a2ada0e69ed7edc2ca729ff4",
     "Solow1956/Analysis/ScalarFlow.lean": "49054cc9240ac9f19c41217c4fe7bf26be13ab3a642e3c9c8f079d59ded4a4e8",
@@ -1542,15 +1632,183 @@
     "lakefile.toml": "8559f1e70440e3b09240fd6519f80e89e1700d744cee7cd4dbcdde5553cdd319",
     "lake-manifest.json": "cdd8751d44aca7249c10ed225b3ca7685cce852223aa889b81784ab496fcb36d",
     "proof-manifest.json": "9756188db90e88654ad299ef3d2926b5d763eb389bafeb377a742bdae30fba44",
-    "scripts/verify.py": "303b7cc0e8bcebb83a3b745e63b8241ad759d7664cabc7b18d8cc699c663a745",
+    "scripts/verify.py": "fec6e33fb6df8900ecb65f5c0fbc133070f21ce7b1c08c2b64c4f54954877e0d",
+    "scripts/verify_evidence.py": "75518db86e6a5a21996cc87d7fe2492da49ab9aa47170ea1b074094247446f1e",
+    "scripts/check_theorydebugger.py": "594bccc70ef9fa416f3b6ebf8744d710947d7186a1805b746d30dcecf892b839",
     "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c"
   },
-  "fresh_audit_sha256": "fd2f202fc633f7019da5b8081cd4b6d9644084217f89b5b94d0fd69e8ddd4477",
+  "fresh_audit_sha256": "7c0da49359f644ee945c7e8ac6251e52cc66c77d126c734d1f61e21cf0c7212b",
   "lean_toolchain": "leanprover/lean4:v4.34.0",
   "scope": "General neoclassical continuous-time Solow-Swan growth from positive capital: existence, positivity, uniqueness among nonnegative classical paths, strict monotone convergence, Lyapunov stability, all eight Acemoglu comparative-statics partials, Golden Rule saving, a stationary Cass bridge, saving shocks, effective-labour convergence, and Cobb-Douglas closed forms.",
+  "source_provenance": "4bed57534cf4f5562be8b90c481bb3dd54360fe0",
   "theorydebugger": {
     "cases": 10,
     "certificates": 20,
-    "saved_evidence_hashes": "passed"
+    "saved_evidence_hashes": "passed",
+    "fresh_certificate_compilation": "passed",
+    "original_input_type_checks": "passed",
+    "fresh_certificates_sha256": "32febec3b163ed778e5a1a019ba0b4b55fb280501e940fa00cfd565a936dc6b9",
+    "axioms": {
+      "Evidence0.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence0.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence1.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence2.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence2.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence3.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence4.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence4.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence5.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence6.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence6.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence7.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence8.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence8.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence9.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence10.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence10.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence11.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence11.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence12.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence12.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence13.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence14.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence14.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence15.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence16.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence16.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence17.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence17.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence18.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence18.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence19.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
   }
 }

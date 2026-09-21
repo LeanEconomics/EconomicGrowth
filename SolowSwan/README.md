@@ -7,7 +7,7 @@ root. [Return to the growth library index](../README.md).
 
 A checked formalization of general neoclassical Solow–Swan growth using
 **Acemoglu, Chapter 2**, alongside the original Solow (1956) Cobb–Douglas proofs.
-The library contains **132 theorems** and audits **150 named declarations**.
+The library contains **132 theorems** and audits **159 declarations**, including structure constructors and projections.
 It constructs global positive solutions, proves uniqueness, strict monotone
 convergence and stability, establishes all eight source comparative-statics
 signs, and connects Golden Rule saving to the stationary Cass condition.
@@ -94,7 +94,9 @@ evidence of a run; the Lean proof terms and kernel checks are the certificates.
 
 Ten saved TheoryDebugger diagnostics have twenty Lean certificates: seven valid
 algebraic claims, three refutations, and assumption-feasibility evidence.
-The normal audit validates their hashes. Regeneration requires TheoryDebugger
+The normal audit validates input identities and hashes, freshly compiles all twenty
+certificate sources, and checks their theorem types against the original JSON
+propositions. Saved success labels alone cannot pass. Regeneration requires TheoryDebugger
 revision `5c1fa57` and its CVC5 dependency:
 
 ```sh

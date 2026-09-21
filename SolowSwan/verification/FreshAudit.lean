@@ -703,9 +703,9 @@ Analytic helpers adapted from the project's Cass formalization; see source-map.
 /-!
 # Global flows for bounded Lipschitz vector fields
 
-This analytic helper constructs trajectories and continuous dependence, rather
-than placing their existence in the assumptions of a shooting theorem. Economic
-vector fields will be extended from compact rectangles before it is applied.
+This analytic helper proves global existence for bounded Lipschitz vector fields
+on complete normed real vector spaces. The Solow construction applies it after
+clipping its scalar field to a compact positive capital interval.
 -/
 
 open Set Filter Metric
@@ -1996,6 +1996,15 @@ end Solow1956.Neoclassical
 #print axioms Solow1956.ODE.exponential_lower_bound
 #print axioms Solow1956.ODE.exists_attracting_scalar_path
 #print axioms Solow1956.Neoclassical.Technology
+#print axioms Solow1956.Neoclassical.Technology.mk
+#print axioms Solow1956.Neoclassical.Technology.continuous
+#print axioms Solow1956.Neoclassical.Technology.zero
+#print axioms Solow1956.Neoclassical.Technology.differentiable
+#print axioms Solow1956.Neoclassical.Technology.derivative_continuous
+#print axioms Solow1956.Neoclassical.Technology.concave
+#print axioms Solow1956.Neoclassical.Technology.marginal_positive
+#print axioms Solow1956.Neoclassical.Technology.inada_zero
+#print axioms Solow1956.Neoclassical.Technology.inada_top
 #print axioms Solow1956.Neoclassical.technology_of_second_derivative
 #print axioms Solow1956.Neoclassical.Technology.marginal_strictAnti
 #print axioms Solow1956.Neoclassical.Technology.output_gap

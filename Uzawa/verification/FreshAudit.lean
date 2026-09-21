@@ -11,6 +11,7 @@ import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Analysis.SpecialFunctions.Sqrt
+set_option autoImplicit false
 
 /-
 SPDX-License-Identifier: Unlicense
@@ -926,6 +927,7 @@ theorem zero_investment_no_neoclassical_representation
 
 end UzawaModern.VersionAudit
 
+#print axioms UzawaModern.Uzawa.trajectory
 #print axioms UzawaModern.Uzawa.trajectory_start
 #print axioms UzawaModern.Uzawa.trajectory_pos
 #print axioms UzawaModern.Uzawa.hasDerivAt_trajectory
@@ -934,6 +936,26 @@ end UzawaModern.VersionAudit
 #print axioms UzawaModern.Uzawa.rate_eq_of_weighted_moments
 #print axioms UzawaModern.Uzawa.outputGrowth_eq_investmentGrowth
 #print axioms UzawaModern.Uzawa.investmentGrowth_eq_capitalGrowth
+#print axioms UzawaModern.Uzawa.BalancedGrowthData
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.mk
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.start
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.outputInitial
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.consumptionInitial
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.investmentInitial
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.capitalInitial
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.laborInitial
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.outputGrowth
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.consumptionGrowth
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.investmentGrowth
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.capitalGrowth
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.laborGrowth
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.depreciation
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.output
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.consumption
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.investment
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.capital
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.labor
+#print axioms UzawaModern.Uzawa.BalancedGrowthData.technology
 #print axioms UzawaModern.Uzawa.BalancedGrowthData.technology_pos
 #print axioms UzawaModern.Uzawa.BalancedGrowthData.technology_start
 #print axioms UzawaModern.Uzawa.BalancedGrowthData.hasDerivAt_technology
@@ -945,16 +967,29 @@ end UzawaModern.VersionAudit
 #print axioms UzawaModern.UzawaElasticity.hasDerivAt_capitalOutputRatio
 #print axioms UzawaModern.UzawaElasticity.capitalOutputRatio_derivative_pos
 #print axioms UzawaModern.UzawaElasticity.output_capitalOutput_elasticity
+#print axioms UzawaModern.Uzawa.Examples.growingEconomy
+#print axioms UzawaModern.Uzawa.Examples.production
 #print axioms UzawaModern.Uzawa.Examples.resource
 #print axioms UzawaModern.Uzawa.Examples.accumulation
 #print axioms UzawaModern.Uzawa.Examples.production_on_path
 #print axioms UzawaModern.Uzawa.Examples.constant_returns
 #print axioms UzawaModern.Uzawa.Examples.labor_augmenting
 #print axioms UzawaModern.Uzawa.Examples.levels_positive
+#print axioms UzawaModern.UzawaSeparation.Technology
+#print axioms UzawaModern.UzawaSeparation.Technology.mk
+#print axioms UzawaModern.UzawaSeparation.Technology.output
+#print axioms UzawaModern.UzawaSeparation.Technology.marginal
+#print axioms UzawaModern.UzawaSeparation.Technology.output_pos
+#print axioms UzawaModern.UzawaSeparation.Technology.hasDerivAt_output
+#print axioms UzawaModern.UzawaSeparation.Technology.share_lt_one
+#print axioms UzawaModern.UzawaSeparation.Technology.ratio_surjective
+#print axioms UzawaModern.UzawaSeparation.Technology.ratio
+#print axioms UzawaModern.UzawaSeparation.Technology.share
 #print axioms UzawaModern.UzawaSeparation.Technology.ratio_pos
 #print axioms UzawaModern.UzawaSeparation.Technology.hasDerivAt_ratio
 #print axioms UzawaModern.UzawaSeparation.Technology.ratio_derivative_pos
 #print axioms UzawaModern.UzawaSeparation.Technology.ratio_strictMonoOn
+#print axioms UzawaModern.UzawaSeparation.Technology.capital
 #print axioms UzawaModern.UzawaSeparation.Technology.capital_pos
 #print axioms UzawaModern.UzawaSeparation.Technology.ratio_capital
 #print axioms UzawaModern.UzawaSeparation.Technology.capital_ratio
@@ -962,15 +997,20 @@ end UzawaModern.VersionAudit
 #print axioms UzawaModern.UzawaSeparation.Technology.capital_image
 #print axioms UzawaModern.UzawaSeparation.Technology.continuousAt_capital
 #print axioms UzawaModern.UzawaSeparation.Technology.hasDerivAt_capital
+#print axioms UzawaModern.UzawaSeparation.Technology.phi
+#print axioms UzawaModern.UzawaSeparation.Technology.phiDerivative
 #print axioms UzawaModern.UzawaSeparation.Technology.phi_pos
 #print axioms UzawaModern.UzawaSeparation.Technology.hasDerivAt_phi
 #print axioms UzawaModern.UzawaSeparation.Technology.capital_eq_ratio_mul_phi
 #print axioms UzawaModern.UzawaSeparation.Technology.elasticity
+#print axioms UzawaModern.UzawaSeparation.Technology.SharesInvariant
+#print axioms UzawaModern.UzawaSeparation.Technology.technology
 #print axioms UzawaModern.UzawaSeparation.Technology.technology_pos
 #print axioms UzawaModern.UzawaSeparation.Technology.technology_reference
 #print axioms UzawaModern.UzawaSeparation.Technology.hasDerivAt_phi_ratio_zero
 #print axioms UzawaModern.UzawaSeparation.Technology.separation
 #print axioms UzawaModern.UzawaSeparation.Technology.intensive_representation
+#print axioms UzawaModern.UzawaSeparation.Technology.production
 #print axioms UzawaModern.UzawaSeparation.Technology.production_eq_original
 #print axioms UzawaModern.UzawaSeparation.Technology.production_representation
 #print axioms UzawaModern.UzawaSeparation.Technology.original_production_representation
@@ -981,10 +1021,12 @@ end UzawaModern.VersionAudit
 #print axioms UzawaModern.UzawaSeparation.Technology.hasDerivWithinAt_technology_of_balanced_growth
 #print axioms UzawaModern.UzawaSeparation.Examples.sqrt_share
 #print axioms UzawaModern.UzawaSeparation.Examples.sqrt_ratio_square
+#print axioms UzawaModern.UzawaSeparation.Examples.sqrtTechnology
 #print axioms UzawaModern.UzawaSeparation.Examples.sqrt_capital
 #print axioms UzawaModern.UzawaSeparation.Examples.sqrt_phi
 #print axioms UzawaModern.UzawaSeparation.Examples.sqrt_shares_invariant
 #print axioms UzawaModern.UzawaSeparation.Examples.sqrt_technology
+#print axioms UzawaModern.UzawaSeparation.Examples.growingTechnology
 #print axioms UzawaModern.UzawaSeparation.Examples.growing_shares_invariant
 #print axioms UzawaModern.UzawaSeparation.Examples.growing_production
 #print axioms UzawaModern.UzawaSeparation.Examples.growing_labor_augmenting

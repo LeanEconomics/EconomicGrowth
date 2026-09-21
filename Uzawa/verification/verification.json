@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-09-20T21:01:57.242609+00:00",
+  "checked_at_utc": "2026-09-21T21:16:27.281842+00:00",
   "theorems": 66,
   "module_theorems": {
     "UzawaModern/Growth/Uzawa.lean": 16,
@@ -9,9 +9,552 @@
     "UzawaModern/Growth/UzawaSeparationExamples.lean": 10,
     "UzawaModern/VersionAudit.lean": 3
   },
+  "audited_declarations": 107,
+  "declarations": [
+    {
+      "name": "UzawaModern.Uzawa.trajectory",
+      "kind": "def",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.trajectory_start",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.trajectory_pos",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.hasDerivAt_trajectory",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.trajectory_one",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.trajectory_two",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.rate_eq_of_weighted_moments",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.outputGrowth_eq_investmentGrowth",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.investmentGrowth_eq_capitalGrowth",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData",
+      "kind": "structure",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.mk",
+      "kind": "constructor",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.start",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.outputInitial",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.consumptionInitial",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.investmentInitial",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.capitalInitial",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.laborInitial",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.outputGrowth",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.consumptionGrowth",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.investmentGrowth",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.capitalGrowth",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.laborGrowth",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.depreciation",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.output",
+      "kind": "def",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.consumption",
+      "kind": "def",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.investment",
+      "kind": "def",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.capital",
+      "kind": "def",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.labor",
+      "kind": "def",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.technology",
+      "kind": "def",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.technology_pos",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.technology_start",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.hasDerivAt_technology",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.technology_growthRate",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.technology_mul_labor",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.output_per_worker",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.outputGrowth_eq_capitalGrowth",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.BalancedGrowthData.labor_augmenting_representation",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/Uzawa.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaElasticity.hasDerivAt_capitalOutputRatio",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaElasticity.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaElasticity.capitalOutputRatio_derivative_pos",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaElasticity.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaElasticity.output_capitalOutput_elasticity",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaElasticity.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.Examples.growingEconomy",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaExamples.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.Examples.production",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaExamples.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.Examples.resource",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaExamples.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.Examples.accumulation",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaExamples.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.Examples.production_on_path",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaExamples.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.Examples.constant_returns",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaExamples.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.Examples.labor_augmenting",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaExamples.lean"
+    },
+    {
+      "name": "UzawaModern.Uzawa.Examples.levels_positive",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology",
+      "kind": "structure",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.mk",
+      "kind": "constructor",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.output",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.marginal",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.output_pos",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.hasDerivAt_output",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.share_lt_one",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.ratio_surjective",
+      "kind": "projection",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.ratio",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.share",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.ratio_pos",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.hasDerivAt_ratio",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.ratio_derivative_pos",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.ratio_strictMonoOn",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.capital",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.capital_pos",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.ratio_capital",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.capital_ratio",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.capital_strictMonoOn",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.capital_image",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.continuousAt_capital",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.hasDerivAt_capital",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.phi",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.phiDerivative",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.phi_pos",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.hasDerivAt_phi",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.capital_eq_ratio_mul_phi",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.elasticity",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.SharesInvariant",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.technology",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.technology_pos",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.technology_reference",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.hasDerivAt_phi_ratio_zero",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.separation",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.intensive_representation",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.production",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.production_eq_original",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.production_representation",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.original_production_representation",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.technology_eq_phi_ratio",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.phi_of_production",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.technology_eq_balanced_growth",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.repaired_labor_augmenting_representation",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Technology.hasDerivWithinAt_technology_of_balanced_growth",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparation.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.sqrt_share",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.sqrt_ratio_square",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.sqrtTechnology",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.sqrt_capital",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.sqrt_phi",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.sqrt_shares_invariant",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.sqrt_technology",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.growingTechnology",
+      "kind": "def",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.growing_shares_invariant",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.growing_production",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.growing_labor_augmenting",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.UzawaSeparation.Examples.growing_technology",
+      "kind": "theorem",
+      "module": "UzawaModern/Growth/UzawaSeparationExamples.lean"
+    },
+    {
+      "name": "UzawaModern.VersionAudit.zero_investment_positive_capital",
+      "kind": "theorem",
+      "module": "UzawaModern/VersionAudit.lean"
+    },
+    {
+      "name": "UzawaModern.VersionAudit.no_strict_capital_representation",
+      "kind": "theorem",
+      "module": "UzawaModern/VersionAudit.lean"
+    },
+    {
+      "name": "UzawaModern.VersionAudit.zero_investment_no_neoclassical_representation",
+      "kind": "theorem",
+      "module": "UzawaModern/VersionAudit.lean"
+    }
+  ],
   "full_build": "passed",
   "fresh_source_compilation": "passed",
   "axioms": {
+    "UzawaModern.Uzawa.trajectory": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "UzawaModern.Uzawa.trajectory_start": [
       "propext",
       "Classical.choice",
@@ -48,6 +591,106 @@
       "Quot.sound"
     ],
     "UzawaModern.Uzawa.investmentGrowth_eq_capitalGrowth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.start": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.outputInitial": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.consumptionInitial": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.investmentInitial": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.capitalInitial": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.laborInitial": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.outputGrowth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.consumptionGrowth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.investmentGrowth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.capitalGrowth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.laborGrowth": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.depreciation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.output": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.consumption": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.investment": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.capital": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.labor": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.BalancedGrowthData.technology": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -107,6 +750,16 @@
       "Classical.choice",
       "Quot.sound"
     ],
+    "UzawaModern.Uzawa.Examples.growingEconomy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.Uzawa.Examples.production": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "UzawaModern.Uzawa.Examples.resource": [
       "propext",
       "Classical.choice",
@@ -137,6 +790,56 @@
       "Classical.choice",
       "Quot.sound"
     ],
+    "UzawaModern.UzawaSeparation.Technology": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.output": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.marginal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.output_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.hasDerivAt_output": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.share_lt_one": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.ratio_surjective": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.ratio": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.share": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "UzawaModern.UzawaSeparation.Technology.ratio_pos": [
       "propext",
       "Classical.choice",
@@ -153,6 +856,11 @@
       "Quot.sound"
     ],
     "UzawaModern.UzawaSeparation.Technology.ratio_strictMonoOn": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.capital": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -192,6 +900,16 @@
       "Classical.choice",
       "Quot.sound"
     ],
+    "UzawaModern.UzawaSeparation.Technology.phi": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.phiDerivative": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "UzawaModern.UzawaSeparation.Technology.phi_pos": [
       "propext",
       "Classical.choice",
@@ -208,6 +926,16 @@
       "Quot.sound"
     ],
     "UzawaModern.UzawaSeparation.Technology.elasticity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.SharesInvariant": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.technology": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -233,6 +961,11 @@
       "Quot.sound"
     ],
     "UzawaModern.UzawaSeparation.Technology.intensive_representation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Technology.production": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -287,6 +1020,11 @@
       "Classical.choice",
       "Quot.sound"
     ],
+    "UzawaModern.UzawaSeparation.Examples.sqrtTechnology": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "UzawaModern.UzawaSeparation.Examples.sqrt_capital": [
       "propext",
       "Classical.choice",
@@ -303,6 +1041,11 @@
       "Quot.sound"
     ],
     "UzawaModern.UzawaSeparation.Examples.sqrt_technology": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UzawaModern.UzawaSeparation.Examples.growingTechnology": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -350,14 +1093,15 @@
     "UzawaModern/Growth/UzawaSeparation.lean": "a80aa30185ac4327414c249544b92a22177a553503c068651628bc98a619cb56",
     "UzawaModern/Growth/UzawaSeparationExamples.lean": "5ba684ce8d5482a8a14c597cc07720727f6b0eed329475603191ebf9f1638f31",
     "UzawaModern/VersionAudit.lean": "1dfb160f107a9f85b7e25623081a1e4f0c518fd1a6756ac2fc64034cac81f12b",
+    "UzawaModern.lean": "ac1b0544e3ac89aef8afa8cf190d1dd00c8e435e64221eac97d2a87979e6f202",
     "lean-toolchain": "8190e75a201741065fe508b28955dd64dd72d090babe5f70ce6848879d68ae88",
     "lakefile.toml": "2c071f168525b3a8cc5ab3df02efcab6331892d213d144597e567fd88e5a9fcb",
     "lake-manifest.json": "af96cfb5a366f14893613c5952f006bc7a58607720cf5de5903e93e7e0c4c5d7",
     "proof-manifest.json": "13c0e79383fbdf69380df6a3b883950a99d3d7fd6cb685058838b1cded6a63ff",
-    "scripts/verify.py": "508215d14b1fcfb912379eeca887db57c08131595737231aad36d6234f2324c6",
+    "scripts/verify.py": "b5cf1c24780458d88199d151c6c400858f93f1c51e356313816b36dadebcb3b8",
     "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c"
   },
-  "fresh_audit_sha256": "82b6d76bc42a2b2061d64cc4f1eef8936a1d8a219ef0f234fb24a97109bdefde",
+  "fresh_audit_sha256": "011ff6394235a728633c8981d7af8f371f3d0f7e59d2ac99f153ee5b36d1abee",
   "lean_toolchain": "leanprover/lean4:v4.34.0-rc2",
   "scope": "Published Jones-Scrimgeour/Schlicht on-path representation and a strengthened domain-wide elasticity route; 63 main theorems and 3 additional obstruction lemmas. Not a proof of the literal November 2004 statement.",
   "source_provenance": "3086d5eece57e5f9f69ebf73e28be5efa0595fcf"

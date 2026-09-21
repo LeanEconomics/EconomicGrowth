@@ -9,9 +9,9 @@ import Mathlib.Tactic.Linarith
 /-!
 # Global flows for bounded Lipschitz vector fields
 
-This analytic helper constructs trajectories and continuous dependence, rather
-than placing their existence in the assumptions of a shooting theorem. Economic
-vector fields will be extended from compact rectangles before it is applied.
+This analytic helper proves global existence for bounded Lipschitz vector fields
+on complete normed real vector spaces. The Solow construction applies it after
+clipping its scalar field to a compact positive capital interval.
 -/
 
 open Set Filter Metric

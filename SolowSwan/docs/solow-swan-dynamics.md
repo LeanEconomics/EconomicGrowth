@@ -7,8 +7,8 @@ checks both developments on Lean/Mathlib `v4.34.0`.
 
 > Research note from TheoryDebugger. Links to diagnostic examples and archived
 > contribution checks point to that repository. The standalone modules here have
-> their own build and fresh axiom audit: run `python scripts/verify.py` from this
-> repository root and consult `verification/verification.json`. Our original
+> their own build and fresh axiom audit: run `python scripts/verify.py` from the
+> `SolowSwan/` project directory and consult `verification/verification.json`. Our original
 > material in this standalone distribution uses The Unlicense.
 
 This extends the [original square-root case study](https://github.com/mvazcar/TheoryDebugger/blob/codex/initial-version/docs/solow-swan.md) to **every
@@ -29,7 +29,7 @@ printed pp. 69, 76 and 77 were visually checked.
 
 | Source location | Content | Formal counterpart |
 | --- | --- | --- |
-| p. 67 | Accumulation uses output net of depreciation | Original model has no separate depreciation term |
+| p. 66 | Accumulation uses output net of depreciation | Original model has no separate depreciation term |
 | p. 69, equation (6) | Capital/labour normalization | `hasDerivAt_capitalPerWorker`, `intensiveForm_of_homogeneous` |
 | pp. 70–71, footnote 4 | Zero-capital boundary | `rate_zero`, `rate_eq_zero_iff`, actual `zero_solution` |
 | p. 76, Example 2 and equation (7) | General Cobb–Douglas explicit solution | `hasDerivAt_power`, `hasDerivAt_path`, `positive_dynamics` |
@@ -198,7 +198,10 @@ elaboration variables are now substituted before checking closure. Regression
 tests require both validity and feasibility, while rejecting genuinely unresolved
 propositions and hidden local dependencies.
 
-Reproduce the native checks:
+Run these archived native checks from the root of the referenced
+[TheoryDebugger checkout](https://github.com/mvazcar/TheoryDebugger/tree/codex/initial-version).
+These scripts belong to TheoryDebugger; this SolowSwan project uses the
+`scripts/verify.py` command above.
 
 ```sh
 python scripts/verify_solow.py

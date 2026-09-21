@@ -215,7 +215,9 @@ python scripts/check_theorydebugger.py --theorydebugger /path/to/TheoryDebugger
 
 Lean and Mathlib are pinned to `v4.34.0`. Replaying solver searches additionally
 requires TheoryDebugger and its CVC5 dependency. The normal proof audit uses
-Lean and Python and validates the saved diagnostic evidence's source hashes.
+Lean and Python: it validates the saved inputs and hashes, freshly recompiles
+all twenty certificates, checks the proof types against the original JSON
+propositions, and audits their axiom dependencies. It does not rerun CVC5.
 
 Original formalization and exposition: OpenAI Codex under the direction of
 [@mvazcar](https://github.com/mvazcar), using Astra 6 Ultra and Extra High.
