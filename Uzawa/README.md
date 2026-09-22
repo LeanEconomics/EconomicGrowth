@@ -56,7 +56,7 @@ claimed. The repaired route is explicitly stronger than the 2004 statement.
 | --- | ---: | --- |
 | [Uzawa](UzawaModern/Growth/Uzawa.lean) | 16 | Growth accounting and published representation |
 | [UzawaElasticity](UzawaModern/Growth/UzawaElasticity.lean) | 3 | Ratio derivative and elasticity identities |
-| [UzawaExamples](UzawaModern/Growth/UzawaExamples.lean) | 6 | Positive example and boundary cases |
+| [UzawaExamples](UzawaModern/Growth/UzawaExamples.lean) | 6 | Positive economy satisfying the published theorem's hypotheses |
 | [UzawaSeparation](UzawaModern/Growth/UzawaSeparation.lean) | 28 | Inverse coordinate, separation, global representation, calibration |
 | [UzawaSeparationExamples](UzawaModern/Growth/UzawaSeparationExamples.lean) | 10 | Actual technology satisfying the repaired assumptions |
 | [VersionAudit](UzawaModern/VersionAudit.lean) | 3 | Two-point obstruction for the 2004 boundary case |
@@ -80,7 +80,10 @@ python scripts/verify.py
 Lean and Mathlib are pinned to **v4.34.0-rc2**, with transitive revisions in
 `lake-manifest.json`. The script builds the library, freshly recompiles the
 proof sources without importing their compiled project modules, and checks
-each named theorem's axiom dependencies. Only Lean's standard `propext`,
+107 declarations, including all 66 theorems, definitions, structures, their
+constructors, and field projections. It also checks that every library module
+is listed and imported, and rejects unchecked constructs even when unused.
+Only Lean's standard `propext`,
 `Classical.choice`, and `Quot.sound` are allowed. Warnings, failed proofs, and
 placeholder axioms fail verification. Mathlib's Apache-specific header style
 rule is disabled because this independent distribution uses The Unlicense;

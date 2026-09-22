@@ -1,0 +1,39 @@
+{
+  "variables": [
+    "d",
+    "m",
+    "mp"
+  ],
+  "assumptions": [
+    [
+      ">=",
+      "d",
+      0
+    ],
+    [
+      ">",
+      "m",
+      0
+    ],
+    [
+      "=",
+      "mp",
+      [
+        "+",
+        "d",
+        "m"
+      ]
+    ]
+  ],
+  "goal": [
+    ">",
+    "mp",
+    "m"
+  ],
+  "witness": {
+    "d": 0,
+    "m": 1,
+    "mp": 1
+  },
+  "name": "zero_discount_has_no_strict_marginal_gap"
+}

@@ -1,0 +1,2869 @@
+[
+  {
+    "schema_version": 2,
+    "name": "rate_factorization",
+    "problem": {
+      "variables": [
+        "s",
+        "m",
+        "k",
+        "y",
+        "average"
+      ],
+      "assumptions": [
+        [
+          "=",
+          "y",
+          [
+            "*",
+            "average",
+            "k"
+          ]
+        ]
+      ],
+      "goal": [
+        "=",
+        [
+          "-",
+          [
+            "*",
+            "s",
+            "y"
+          ],
+          [
+            "*",
+            "m",
+            "k"
+          ]
+        ],
+        [
+          "*",
+          "k",
+          [
+            "-",
+            [
+              "*",
+              "s",
+              "average"
+            ],
+            "m"
+          ]
+        ]
+      ]
+    },
+    "problem_sha256": "f8fd34217cb2dd9469083edc57b4e59bf4631daf68f302c3fd761ae5228756cf",
+    "solver": {
+      "assumptions": {
+        "status": "sat",
+        "witness": {
+          "s": "0",
+          "m": "0",
+          "k": "0",
+          "y": "0",
+          "average": "0"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "0.0",
+          "m": "0.0",
+          "k": "0.0",
+          "y": "0.0",
+          "average": "0.0"
+        }
+      },
+      "satisfying_query": {
+        "status": "sat",
+        "witness": {
+          "s": "0",
+          "m": "0",
+          "k": "0",
+          "y": "0",
+          "average": "0"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "0.0",
+          "m": "0.0",
+          "k": "0.0",
+          "y": "0.0",
+          "average": "0.0"
+        }
+      },
+      "counterexample_query": {
+        "status": "unsat",
+        "witness": null,
+        "detail": "",
+        "raw_model": {}
+      },
+      "classification": "true"
+    },
+    "consistency": {
+      "status": "consistent",
+      "evidence": "lean_kernel"
+    },
+    "validity": {
+      "status": "valid",
+      "evidence": "lean_kernel"
+    },
+    "cases": {
+      "satisfying": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "s": "1/2",
+          "m": "1",
+          "k": "1",
+          "y": "2",
+          "average": "2"
+        }
+      },
+      "refuting": {
+        "status": "absent",
+        "evidence": "lean_kernel"
+      }
+    },
+    "certificates": [
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/f598e158dbbdb16d9079/Certificate.lean",
+        "source_sha256": "f598e158dbbdb16d90793017b3d36af2742bc42e3076fe4d47a164b78ae6ef66",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), \u2200 (v4 : \u211d), (v3 = (v4 * v2)) \u2192 (((v0 * v3) - (v1 * v2)) = (v2 * ((v0 * v4) - v1)))",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "((2 : \u211d) = ((2 : \u211d) * (1 : \u211d)))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 17,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), \u2203 (_v4 : \u211d), ((_v3 = (_v4 * _v2)))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.satisfying",
+            "line": 21,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), \u2203 (_v4 : \u211d), (((_v3 = (_v4 * _v2))) \u2227 (((_v0 * _v3) - (_v1 * _v2)) = (_v2 * ((_v0 * _v4) - _v1))))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.satisfying": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/f598e158dbbdb16d9079/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.satisfying"
+        ],
+        "kind": "satisfying"
+      },
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/ae74cbb07abab264c8b8/Certificate.lean",
+        "source_sha256": "ae74cbb07abab264c8b8551a5ff8606631ffbb2f75d168f6e1a8bf79d25068a0",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), \u2200 (v4 : \u211d), (v3 = (v4 * v2)) \u2192 (((v0 * v3) - (v1 * v2)) = (v2 * ((v0 * v4) - v1)))",
+        "steps": [
+          {
+            "local_lemma": "square_0",
+            "explanation": "The square of s is nonnegative.",
+            "statement": "0 \u2264 v0 ^ 2",
+            "line": 17
+          },
+          {
+            "local_lemma": "square_1",
+            "explanation": "The square of m is nonnegative.",
+            "statement": "0 \u2264 v1 ^ 2",
+            "line": 18
+          },
+          {
+            "local_lemma": "square_2",
+            "explanation": "The square of k is nonnegative.",
+            "statement": "0 \u2264 v2 ^ 2",
+            "line": 19
+          },
+          {
+            "local_lemma": "square_3",
+            "explanation": "The square of y is nonnegative.",
+            "statement": "0 \u2264 v3 ^ 2",
+            "line": 20
+          },
+          {
+            "local_lemma": "square_4",
+            "explanation": "The square of average is nonnegative.",
+            "statement": "0 \u2264 v4 ^ 2",
+            "line": 21
+          },
+          {
+            "local_lemma": "equality_product_0_0",
+            "explanation": "Multiply equality assumption 1 by s.",
+            "statement": "(v3) * v0 = ((v4 * v2)) * v0",
+            "line": 22
+          },
+          {
+            "local_lemma": "equality_product_0_1",
+            "explanation": "Multiply equality assumption 1 by m.",
+            "statement": "(v3) * v1 = ((v4 * v2)) * v1",
+            "line": 23
+          },
+          {
+            "local_lemma": "equality_product_0_2",
+            "explanation": "Multiply equality assumption 1 by k.",
+            "statement": "(v3) * v2 = ((v4 * v2)) * v2",
+            "line": 24
+          },
+          {
+            "local_lemma": "equality_product_0_3",
+            "explanation": "Multiply equality assumption 1 by y.",
+            "statement": "(v3) * v3 = ((v4 * v2)) * v3",
+            "line": 25
+          },
+          {
+            "local_lemma": "equality_product_0_4",
+            "explanation": "Multiply equality assumption 1 by average.",
+            "statement": "(v3) * v4 = ((v4 * v2)) * v4",
+            "line": 26
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.claim",
+            "line": 14,
+            "statement": "original",
+            "explanation": "The original goal follows by checked arithmetic or sign reasoning from the listed assumptions and nonnegative squares."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.claim": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/ae74cbb07abab264c8b8/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.claim"
+        ],
+        "kind": "valid"
+      }
+    ],
+    "witness": {
+      "s": "1/2",
+      "m": "1",
+      "k": "1",
+      "y": "2",
+      "average": "2"
+    },
+    "warnings": [],
+    "classification": "true",
+    "classification_evidence": "lean_kernel",
+    "explanation": "The goal holds throughout a nonempty feasible model."
+  },
+  {
+    "schema_version": 2,
+    "name": "strict_concavity_gives_negative_equilibrium_slope",
+    "problem": {
+      "variables": [
+        "s",
+        "m",
+        "k",
+        "y",
+        "mp"
+      ],
+      "assumptions": [
+        [
+          ">",
+          "s",
+          "0"
+        ],
+        [
+          ">",
+          "k",
+          "0"
+        ],
+        [
+          "=",
+          [
+            "*",
+            "s",
+            "y"
+          ],
+          [
+            "*",
+            "m",
+            "k"
+          ]
+        ],
+        [
+          "<",
+          [
+            "*",
+            "mp",
+            "k"
+          ],
+          "y"
+        ]
+      ],
+      "goal": [
+        "<",
+        [
+          "*",
+          "s",
+          "mp"
+        ],
+        "m"
+      ]
+    },
+    "problem_sha256": "3d4f38b6af1d8cce5eeb673631a4111ddd6a5aa72fd683d605f61f008873a093",
+    "solver": {
+      "assumptions": {
+        "status": "sat",
+        "witness": {
+          "s": "1",
+          "m": "1",
+          "k": "1",
+          "y": "1",
+          "mp": "0"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "1.0",
+          "m": "1.0",
+          "k": "1.0",
+          "y": "1.0",
+          "mp": "0.0"
+        }
+      },
+      "satisfying_query": {
+        "status": "sat",
+        "witness": {
+          "s": "1",
+          "m": "1",
+          "k": "1",
+          "y": "1",
+          "mp": "0"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "1.0",
+          "m": "1.0",
+          "k": "1.0",
+          "y": "1.0",
+          "mp": "0.0"
+        }
+      },
+      "counterexample_query": {
+        "status": "unsat",
+        "witness": null,
+        "detail": "",
+        "raw_model": {}
+      },
+      "classification": "true"
+    },
+    "consistency": {
+      "status": "consistent",
+      "evidence": "lean_kernel"
+    },
+    "validity": {
+      "status": "valid",
+      "evidence": "lean_kernel"
+    },
+    "cases": {
+      "satisfying": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "s": "1/2",
+          "m": "1",
+          "k": "1",
+          "y": "2",
+          "mp": "1"
+        }
+      },
+      "refuting": {
+        "status": "absent",
+        "evidence": "lean_kernel"
+      }
+    },
+    "certificates": [
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/6a3a7b783a8a3d8e7fa1/Certificate.lean",
+        "source_sha256": "6a3a7b783a8a3d8e7fa1a643b5fe6b18c6fce7ea429f689392b5d3d43fe776e7",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), \u2200 (v4 : \u211d), (v0 > (0 : \u211d)) \u2192 (v2 > (0 : \u211d)) \u2192 ((v0 * v3) = (v1 * v2)) \u2192 ((v4 * v2) < v3) \u2192 ((v0 * v4) < v1)",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "(((1 : \u211d) / 2) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h1",
+            "line": 17,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 2 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h2",
+            "line": 20,
+            "statement": "((((1 : \u211d) / 2) * (2 : \u211d)) = ((1 : \u211d) * (1 : \u211d)))",
+            "explanation": "Exact substitution verifies assumption 3 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h3",
+            "line": 23,
+            "statement": "(((1 : \u211d) * (1 : \u211d)) < (2 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 4 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 26,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), \u2203 (_v4 : \u211d), ((_v0 > (0 : \u211d)) \u2227 (_v2 > (0 : \u211d)) \u2227 ((_v0 * _v3) = (_v1 * _v2)) \u2227 ((_v4 * _v2) < _v3))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.satisfying",
+            "line": 30,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), \u2203 (_v4 : \u211d), (((_v0 > (0 : \u211d)) \u2227 (_v2 > (0 : \u211d)) \u2227 ((_v0 * _v3) = (_v1 * _v2)) \u2227 ((_v4 * _v2) < _v3)) \u2227 ((_v0 * _v4) < _v1))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h1": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h2": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h3": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.satisfying": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/6a3a7b783a8a3d8e7fa1/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.sample_h1",
+          "TheoryDebugger.Generated.sample_h2",
+          "TheoryDebugger.Generated.sample_h3",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.satisfying"
+        ],
+        "kind": "satisfying"
+      },
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/b4c5a8879f56ef7198d0/Certificate.lean",
+        "source_sha256": "b4c5a8879f56ef7198d01f6c7eed7e55b9426275bdd0b21f413a8c565863b064",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), \u2200 (v4 : \u211d), (v0 > (0 : \u211d)) \u2192 (v2 > (0 : \u211d)) \u2192 ((v0 * v3) = (v1 * v2)) \u2192 ((v4 * v2) < v3) \u2192 ((v0 * v4) < v1)",
+        "steps": [
+          {
+            "local_lemma": "square_0",
+            "explanation": "The square of s is nonnegative.",
+            "statement": "0 \u2264 v0 ^ 2",
+            "line": 17
+          },
+          {
+            "local_lemma": "square_1",
+            "explanation": "The square of m is nonnegative.",
+            "statement": "0 \u2264 v1 ^ 2",
+            "line": 18
+          },
+          {
+            "local_lemma": "square_2",
+            "explanation": "The square of k is nonnegative.",
+            "statement": "0 \u2264 v2 ^ 2",
+            "line": 19
+          },
+          {
+            "local_lemma": "square_3",
+            "explanation": "The square of y is nonnegative.",
+            "statement": "0 \u2264 v3 ^ 2",
+            "line": 20
+          },
+          {
+            "local_lemma": "square_4",
+            "explanation": "The square of mp is nonnegative.",
+            "statement": "0 \u2264 v4 ^ 2",
+            "line": 21
+          },
+          {
+            "local_lemma": "positive_square_0",
+            "explanation": "Assumption 1 says s is positive, so its square is strictly positive.",
+            "statement": "0 < v0 ^ 2",
+            "line": 22
+          },
+          {
+            "local_lemma": "positive_square_1",
+            "explanation": "Assumption 2 says k is positive, so its square is strictly positive.",
+            "statement": "0 < v2 ^ 2",
+            "line": 23
+          },
+          {
+            "local_lemma": "equality_product_2_0",
+            "explanation": "Multiply equality assumption 3 by s.",
+            "statement": "((v0 * v3)) * v0 = ((v1 * v2)) * v0",
+            "line": 24
+          },
+          {
+            "local_lemma": "equality_product_2_1",
+            "explanation": "Multiply equality assumption 3 by m.",
+            "statement": "((v0 * v3)) * v1 = ((v1 * v2)) * v1",
+            "line": 25
+          },
+          {
+            "local_lemma": "equality_product_2_2",
+            "explanation": "Multiply equality assumption 3 by k.",
+            "statement": "((v0 * v3)) * v2 = ((v1 * v2)) * v2",
+            "line": 26
+          },
+          {
+            "local_lemma": "equality_product_2_3",
+            "explanation": "Multiply equality assumption 3 by y.",
+            "statement": "((v0 * v3)) * v3 = ((v1 * v2)) * v3",
+            "line": 27
+          },
+          {
+            "local_lemma": "equality_product_2_4",
+            "explanation": "Multiply equality assumption 3 by mp.",
+            "statement": "((v0 * v3)) * v4 = ((v1 * v2)) * v4",
+            "line": 28
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.claim",
+            "line": 14,
+            "statement": "original",
+            "explanation": "The original goal follows by checked arithmetic or sign reasoning from the listed assumptions and nonnegative squares."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.claim": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/b4c5a8879f56ef7198d0/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.claim"
+        ],
+        "kind": "valid"
+      }
+    ],
+    "witness": {
+      "s": "1/2",
+      "m": "1",
+      "k": "1",
+      "y": "2",
+      "mp": "1"
+    },
+    "warnings": [],
+    "classification": "true",
+    "classification_evidence": "lean_kernel",
+    "explanation": "The goal holds throughout a nonempty feasible model."
+  },
+  {
+    "schema_version": 2,
+    "name": "saving_derivative_positive",
+    "problem": {
+      "variables": [
+        "D",
+        "y",
+        "response"
+      ],
+      "assumptions": [
+        [
+          ">",
+          "D",
+          "0"
+        ],
+        [
+          ">",
+          "y",
+          "0"
+        ],
+        [
+          "=",
+          [
+            "*",
+            "D",
+            "response"
+          ],
+          "y"
+        ]
+      ],
+      "goal": [
+        ">",
+        "response",
+        "0"
+      ]
+    },
+    "problem_sha256": "ee34742a0c402da64e01c5a34c1a015979cb3be15f3416c3469b483847651ad0",
+    "solver": {
+      "assumptions": {
+        "status": "sat",
+        "witness": {
+          "D": "1",
+          "y": "1",
+          "response": "1"
+        },
+        "detail": "",
+        "raw_model": {
+          "D": "1.0",
+          "y": "1.0",
+          "response": "1.0"
+        }
+      },
+      "satisfying_query": {
+        "status": "sat",
+        "witness": {
+          "D": "1",
+          "y": "1",
+          "response": "1"
+        },
+        "detail": "",
+        "raw_model": {
+          "D": "1.0",
+          "y": "1.0",
+          "response": "1.0"
+        }
+      },
+      "counterexample_query": {
+        "status": "unsat",
+        "witness": null,
+        "detail": "",
+        "raw_model": {}
+      },
+      "classification": "true"
+    },
+    "consistency": {
+      "status": "consistent",
+      "evidence": "lean_kernel"
+    },
+    "validity": {
+      "status": "valid",
+      "evidence": "lean_kernel"
+    },
+    "cases": {
+      "satisfying": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "D": "1",
+          "y": "2",
+          "response": "2"
+        }
+      },
+      "refuting": {
+        "status": "absent",
+        "evidence": "lean_kernel"
+      }
+    },
+    "certificates": [
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/c5431853b5ba47301ed5/Certificate.lean",
+        "source_sha256": "c5431853b5ba47301ed5e0687e16ef0e60fe2c1fa15253240a6d02fe3985101c",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), (v0 > (0 : \u211d)) \u2192 (v1 > (0 : \u211d)) \u2192 ((v0 * v2) = v1) \u2192 (v2 > (0 : \u211d))",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h1",
+            "line": 17,
+            "statement": "((2 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 2 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h2",
+            "line": 20,
+            "statement": "(((1 : \u211d) * (2 : \u211d)) = (2 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 3 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 23,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), ((_v0 > (0 : \u211d)) \u2227 (_v1 > (0 : \u211d)) \u2227 ((_v0 * _v2) = _v1))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.satisfying",
+            "line": 27,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), (((_v0 > (0 : \u211d)) \u2227 (_v1 > (0 : \u211d)) \u2227 ((_v0 * _v2) = _v1)) \u2227 (_v2 > (0 : \u211d)))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h1": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h2": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.satisfying": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/c5431853b5ba47301ed5/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.sample_h1",
+          "TheoryDebugger.Generated.sample_h2",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.satisfying"
+        ],
+        "kind": "satisfying"
+      },
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/aacebb3ff7975107e8cd/Certificate.lean",
+        "source_sha256": "aacebb3ff7975107e8cda7c945e1461d15875de5001462f89d77b9b21a216954",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), (v0 > (0 : \u211d)) \u2192 (v1 > (0 : \u211d)) \u2192 ((v0 * v2) = v1) \u2192 (v2 > (0 : \u211d))",
+        "steps": [
+          {
+            "local_lemma": "square_0",
+            "explanation": "The square of D is nonnegative.",
+            "statement": "0 \u2264 v0 ^ 2",
+            "line": 17
+          },
+          {
+            "local_lemma": "square_1",
+            "explanation": "The square of y is nonnegative.",
+            "statement": "0 \u2264 v1 ^ 2",
+            "line": 18
+          },
+          {
+            "local_lemma": "square_2",
+            "explanation": "The square of response is nonnegative.",
+            "statement": "0 \u2264 v2 ^ 2",
+            "line": 19
+          },
+          {
+            "local_lemma": "positive_square_0",
+            "explanation": "Assumption 1 says D is positive, so its square is strictly positive.",
+            "statement": "0 < v0 ^ 2",
+            "line": 20
+          },
+          {
+            "local_lemma": "positive_square_1",
+            "explanation": "Assumption 2 says y is positive, so its square is strictly positive.",
+            "statement": "0 < v1 ^ 2",
+            "line": 21
+          },
+          {
+            "local_lemma": "equality_product_2_0",
+            "explanation": "Multiply equality assumption 3 by D.",
+            "statement": "((v0 * v2)) * v0 = (v1) * v0",
+            "line": 22
+          },
+          {
+            "local_lemma": "equality_product_2_1",
+            "explanation": "Multiply equality assumption 3 by y.",
+            "statement": "((v0 * v2)) * v1 = (v1) * v1",
+            "line": 23
+          },
+          {
+            "local_lemma": "equality_product_2_2",
+            "explanation": "Multiply equality assumption 3 by response.",
+            "statement": "((v0 * v2)) * v2 = (v1) * v2",
+            "line": 24
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.claim",
+            "line": 14,
+            "statement": "original",
+            "explanation": "The original goal follows by checked arithmetic or sign reasoning from the listed assumptions and nonnegative squares."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.claim": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/aacebb3ff7975107e8cd/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.claim"
+        ],
+        "kind": "valid"
+      }
+    ],
+    "witness": {
+      "D": "1",
+      "y": "2",
+      "response": "2"
+    },
+    "warnings": [],
+    "classification": "true",
+    "classification_evidence": "lean_kernel",
+    "explanation": "The goal holds throughout a nonempty feasible model."
+  },
+  {
+    "schema_version": 2,
+    "name": "dilution_derivative_negative",
+    "problem": {
+      "variables": [
+        "D",
+        "k",
+        "response"
+      ],
+      "assumptions": [
+        [
+          ">",
+          "D",
+          "0"
+        ],
+        [
+          ">",
+          "k",
+          "0"
+        ],
+        [
+          "=",
+          [
+            "*",
+            "D",
+            "response"
+          ],
+          [
+            "*",
+            "-1",
+            "k"
+          ]
+        ]
+      ],
+      "goal": [
+        "<",
+        "response",
+        "0"
+      ]
+    },
+    "problem_sha256": "c206ce7dccc98b7a7e7029dd7e4e4a297524b525ec9ccbf10a8881115cb15519",
+    "solver": {
+      "assumptions": {
+        "status": "sat",
+        "witness": {
+          "D": "1",
+          "k": "1",
+          "response": "-1"
+        },
+        "detail": "",
+        "raw_model": {
+          "D": "1.0",
+          "k": "1.0",
+          "response": "(- 1.0)"
+        }
+      },
+      "satisfying_query": {
+        "status": "sat",
+        "witness": {
+          "D": "1",
+          "k": "1",
+          "response": "-1"
+        },
+        "detail": "",
+        "raw_model": {
+          "D": "1.0",
+          "k": "1.0",
+          "response": "(- 1.0)"
+        }
+      },
+      "counterexample_query": {
+        "status": "unsat",
+        "witness": null,
+        "detail": "",
+        "raw_model": {}
+      },
+      "classification": "true"
+    },
+    "consistency": {
+      "status": "consistent",
+      "evidence": "lean_kernel"
+    },
+    "validity": {
+      "status": "valid",
+      "evidence": "lean_kernel"
+    },
+    "cases": {
+      "satisfying": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "D": "1",
+          "k": "2",
+          "response": "-2"
+        }
+      },
+      "refuting": {
+        "status": "absent",
+        "evidence": "lean_kernel"
+      }
+    },
+    "certificates": [
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/2fedee7d7c78c84f6b47/Certificate.lean",
+        "source_sha256": "2fedee7d7c78c84f6b47e5e9cd867cdc516cf82f3ad257a7d738c10a6bab38b9",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), (v0 > (0 : \u211d)) \u2192 (v1 > (0 : \u211d)) \u2192 ((v0 * v2) = ((-1 : \u211d) * v1)) \u2192 (v2 < (0 : \u211d))",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h1",
+            "line": 17,
+            "statement": "((2 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 2 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h2",
+            "line": 20,
+            "statement": "(((1 : \u211d) * (-2 : \u211d)) = ((-1 : \u211d) * (2 : \u211d)))",
+            "explanation": "Exact substitution verifies assumption 3 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 23,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), ((_v0 > (0 : \u211d)) \u2227 (_v1 > (0 : \u211d)) \u2227 ((_v0 * _v2) = ((-1 : \u211d) * _v1)))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.satisfying",
+            "line": 27,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), (((_v0 > (0 : \u211d)) \u2227 (_v1 > (0 : \u211d)) \u2227 ((_v0 * _v2) = ((-1 : \u211d) * _v1))) \u2227 (_v2 < (0 : \u211d)))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h1": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h2": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.satisfying": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/2fedee7d7c78c84f6b47/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.sample_h1",
+          "TheoryDebugger.Generated.sample_h2",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.satisfying"
+        ],
+        "kind": "satisfying"
+      },
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/50633e05d6da05b487f8/Certificate.lean",
+        "source_sha256": "50633e05d6da05b487f8403f93f0304d03ef0964475721409bfb08723e4184bc",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), (v0 > (0 : \u211d)) \u2192 (v1 > (0 : \u211d)) \u2192 ((v0 * v2) = ((-1 : \u211d) * v1)) \u2192 (v2 < (0 : \u211d))",
+        "steps": [
+          {
+            "local_lemma": "square_0",
+            "explanation": "The square of D is nonnegative.",
+            "statement": "0 \u2264 v0 ^ 2",
+            "line": 17
+          },
+          {
+            "local_lemma": "square_1",
+            "explanation": "The square of k is nonnegative.",
+            "statement": "0 \u2264 v1 ^ 2",
+            "line": 18
+          },
+          {
+            "local_lemma": "square_2",
+            "explanation": "The square of response is nonnegative.",
+            "statement": "0 \u2264 v2 ^ 2",
+            "line": 19
+          },
+          {
+            "local_lemma": "positive_square_0",
+            "explanation": "Assumption 1 says D is positive, so its square is strictly positive.",
+            "statement": "0 < v0 ^ 2",
+            "line": 20
+          },
+          {
+            "local_lemma": "positive_square_1",
+            "explanation": "Assumption 2 says k is positive, so its square is strictly positive.",
+            "statement": "0 < v1 ^ 2",
+            "line": 21
+          },
+          {
+            "local_lemma": "equality_product_2_0",
+            "explanation": "Multiply equality assumption 3 by D.",
+            "statement": "((v0 * v2)) * v0 = (((-1 : \u211d) * v1)) * v0",
+            "line": 22
+          },
+          {
+            "local_lemma": "equality_product_2_1",
+            "explanation": "Multiply equality assumption 3 by k.",
+            "statement": "((v0 * v2)) * v1 = (((-1 : \u211d) * v1)) * v1",
+            "line": 23
+          },
+          {
+            "local_lemma": "equality_product_2_2",
+            "explanation": "Multiply equality assumption 3 by response.",
+            "statement": "((v0 * v2)) * v2 = (((-1 : \u211d) * v1)) * v2",
+            "line": 24
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.claim",
+            "line": 14,
+            "statement": "original",
+            "explanation": "The original goal follows by checked arithmetic or sign reasoning from the listed assumptions and nonnegative squares."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.claim": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/50633e05d6da05b487f8/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.claim"
+        ],
+        "kind": "valid"
+      }
+    ],
+    "witness": {
+      "D": "1",
+      "k": "2",
+      "response": "-2"
+    },
+    "warnings": [],
+    "classification": "true",
+    "classification_evidence": "lean_kernel",
+    "explanation": "The goal holds throughout a nonempty feasible model."
+  },
+  {
+    "schema_version": 2,
+    "name": "reversed_dilution_effect_is_false",
+    "problem": {
+      "variables": [
+        "D",
+        "k",
+        "response"
+      ],
+      "assumptions": [
+        [
+          ">",
+          "D",
+          "0"
+        ],
+        [
+          ">",
+          "k",
+          "0"
+        ],
+        [
+          "=",
+          [
+            "*",
+            "D",
+            "response"
+          ],
+          [
+            "*",
+            "-1",
+            "k"
+          ]
+        ]
+      ],
+      "goal": [
+        ">",
+        "response",
+        "0"
+      ]
+    },
+    "problem_sha256": "fb60dd6757ab46e470a7972fe7f261aed9dc995d42a51c6cdec129ed1fe14fbd",
+    "solver": {
+      "assumptions": {
+        "status": "sat",
+        "witness": {
+          "D": "1",
+          "k": "1",
+          "response": "-1"
+        },
+        "detail": "",
+        "raw_model": {
+          "D": "1.0",
+          "k": "1.0",
+          "response": "(- 1.0)"
+        }
+      },
+      "satisfying_query": {
+        "status": "unsat",
+        "witness": null,
+        "detail": "",
+        "raw_model": {}
+      },
+      "counterexample_query": {
+        "status": "sat",
+        "witness": {
+          "D": "1",
+          "k": "1",
+          "response": "-1"
+        },
+        "detail": "",
+        "raw_model": {
+          "D": "1.0",
+          "k": "1.0",
+          "response": "(- 1.0)"
+        }
+      },
+      "classification": "false"
+    },
+    "consistency": {
+      "status": "consistent",
+      "evidence": "lean_kernel"
+    },
+    "validity": {
+      "status": "refuted",
+      "evidence": "lean_kernel"
+    },
+    "cases": {
+      "satisfying": {
+        "status": "absent",
+        "evidence": "lean_kernel"
+      },
+      "refuting": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "D": "1",
+          "k": "2",
+          "response": "-2"
+        }
+      }
+    },
+    "certificates": [
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/d4a9d0af36db7bcd851c/Certificate.lean",
+        "source_sha256": "d4a9d0af36db7bcd851c0c74a5560af85e6b6486f094ed7cbf1daa7d2680a4a9",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), (v0 > (0 : \u211d)) \u2192 (v1 > (0 : \u211d)) \u2192 ((v0 * v2) = ((-1 : \u211d) * v1)) \u2192 (v2 > (0 : \u211d))",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h1",
+            "line": 17,
+            "statement": "((2 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 2 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h2",
+            "line": 20,
+            "statement": "(((1 : \u211d) * (-2 : \u211d)) = ((-1 : \u211d) * (2 : \u211d)))",
+            "explanation": "Exact substitution verifies assumption 3 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 23,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), ((_v0 > (0 : \u211d)) \u2227 (_v1 > (0 : \u211d)) \u2227 ((_v0 * _v2) = ((-1 : \u211d) * _v1)))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.refuting",
+            "line": 27,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), (((_v0 > (0 : \u211d)) \u2227 (_v1 > (0 : \u211d)) \u2227 ((_v0 * _v2) = ((-1 : \u211d) * _v1))) \u2227 \u00ac (_v2 > (0 : \u211d)))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_not_goal",
+            "line": 31,
+            "statement": "\u00ac ((-2 : \u211d) > (0 : \u211d))",
+            "explanation": "At the same assignment the original conclusion is false."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.refutation",
+            "line": 34,
+            "statement": "\u00ac original",
+            "explanation": "Applying the original universal claim to this witness contradicts the checked failed conclusion."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h1": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h2": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.refuting": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_not_goal": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.refutation": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/d4a9d0af36db7bcd851c/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.sample_h1",
+          "TheoryDebugger.Generated.sample_h2",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.refuting",
+          "TheoryDebugger.Generated.sample_not_goal",
+          "TheoryDebugger.Generated.refutation"
+        ],
+        "kind": "counterexample"
+      },
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/123f8a8942b591218f31/Certificate.lean",
+        "source_sha256": "123f8a8942b591218f31c7e4dd655e1a228d862735eba9222e5db1eb76f05b74",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), (v0 > (0 : \u211d)) \u2192 (v1 > (0 : \u211d)) \u2192 ((v0 * v2) = ((-1 : \u211d) * v1)) \u2192 (v2 > (0 : \u211d))",
+        "steps": [
+          {
+            "local_lemma": "square_0",
+            "explanation": "The square of D is nonnegative.",
+            "statement": "0 \u2264 v0 ^ 2",
+            "line": 16
+          },
+          {
+            "local_lemma": "square_1",
+            "explanation": "The square of k is nonnegative.",
+            "statement": "0 \u2264 v1 ^ 2",
+            "line": 17
+          },
+          {
+            "local_lemma": "square_2",
+            "explanation": "The square of response is nonnegative.",
+            "statement": "0 \u2264 v2 ^ 2",
+            "line": 18
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.no_satisfying",
+            "line": 14,
+            "statement": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), (v0 > (0 : \u211d)) \u2192 (v1 > (0 : \u211d)) \u2192 ((v0 * v2) = ((-1 : \u211d) * v1)) \u2192 \u00ac (v2 > (0 : \u211d))",
+            "explanation": "The goal fails under every feasible assignment."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.no_satisfying": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/123f8a8942b591218f31/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.no_satisfying"
+        ],
+        "kind": "false_throughout"
+      }
+    ],
+    "witness": {
+      "D": "1",
+      "k": "2",
+      "response": "-2"
+    },
+    "warnings": [],
+    "classification": "false",
+    "classification_evidence": "lean_kernel",
+    "explanation": "The goal fails throughout a nonempty feasible model."
+  },
+  {
+    "schema_version": 2,
+    "name": "weak_concavity_does_not_give_strict_slope",
+    "problem": {
+      "variables": [
+        "s",
+        "m",
+        "k",
+        "y",
+        "mp"
+      ],
+      "assumptions": [
+        [
+          ">",
+          "s",
+          "0"
+        ],
+        [
+          ">",
+          "k",
+          "0"
+        ],
+        [
+          "=",
+          [
+            "*",
+            "s",
+            "y"
+          ],
+          [
+            "*",
+            "m",
+            "k"
+          ]
+        ],
+        [
+          "<=",
+          [
+            "*",
+            "mp",
+            "k"
+          ],
+          "y"
+        ]
+      ],
+      "goal": [
+        "<",
+        [
+          "*",
+          "s",
+          "mp"
+        ],
+        "m"
+      ]
+    },
+    "problem_sha256": "54abdab70bd41820d40313fd8971363d398d38ab50c9cc65eb6c2c14ef59f5ec",
+    "solver": {
+      "assumptions": {
+        "status": "sat",
+        "witness": {
+          "s": "1",
+          "m": "0",
+          "k": "1",
+          "y": "0",
+          "mp": "0"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "1.0",
+          "m": "0.0",
+          "k": "1.0",
+          "y": "0.0",
+          "mp": "0.0"
+        }
+      },
+      "satisfying_query": {
+        "status": "sat",
+        "witness": {
+          "s": "1",
+          "m": "1",
+          "k": "1",
+          "y": "1",
+          "mp": "-1"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "1.0",
+          "m": "1.0",
+          "k": "1.0",
+          "y": "1.0",
+          "mp": "(- 1.0)"
+        }
+      },
+      "counterexample_query": {
+        "status": "sat",
+        "witness": {
+          "s": "1",
+          "m": "0",
+          "k": "1",
+          "y": "0",
+          "mp": "0"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "1.0",
+          "m": "0.0",
+          "k": "1.0",
+          "y": "0.0",
+          "mp": "0.0"
+        }
+      },
+      "classification": "mixed"
+    },
+    "consistency": {
+      "status": "consistent",
+      "evidence": "lean_kernel"
+    },
+    "validity": {
+      "status": "refuted",
+      "evidence": "lean_kernel"
+    },
+    "cases": {
+      "satisfying": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "s": "1",
+          "m": "1",
+          "k": "1",
+          "y": "1",
+          "mp": "-1"
+        }
+      },
+      "refuting": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "s": "1/2",
+          "m": "1",
+          "k": "1",
+          "y": "2",
+          "mp": "2"
+        }
+      }
+    },
+    "certificates": [
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/1c579b7e58fae4c9c560/Certificate.lean",
+        "source_sha256": "1c579b7e58fae4c9c56080039e76e54b0b35603c5b44147419ea97caf6364b99",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), \u2200 (v4 : \u211d), (v0 > (0 : \u211d)) \u2192 (v2 > (0 : \u211d)) \u2192 ((v0 * v3) = (v1 * v2)) \u2192 ((v4 * v2) \u2264 v3) \u2192 ((v0 * v4) < v1)",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "(((1 : \u211d) / 2) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h1",
+            "line": 17,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 2 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h2",
+            "line": 20,
+            "statement": "((((1 : \u211d) / 2) * (2 : \u211d)) = ((1 : \u211d) * (1 : \u211d)))",
+            "explanation": "Exact substitution verifies assumption 3 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h3",
+            "line": 23,
+            "statement": "(((2 : \u211d) * (1 : \u211d)) \u2264 (2 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 4 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 26,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), \u2203 (_v4 : \u211d), ((_v0 > (0 : \u211d)) \u2227 (_v2 > (0 : \u211d)) \u2227 ((_v0 * _v3) = (_v1 * _v2)) \u2227 ((_v4 * _v2) \u2264 _v3))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.refuting",
+            "line": 30,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), \u2203 (_v4 : \u211d), (((_v0 > (0 : \u211d)) \u2227 (_v2 > (0 : \u211d)) \u2227 ((_v0 * _v3) = (_v1 * _v2)) \u2227 ((_v4 * _v2) \u2264 _v3)) \u2227 \u00ac ((_v0 * _v4) < _v1))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_not_goal",
+            "line": 34,
+            "statement": "\u00ac ((((1 : \u211d) / 2) * (2 : \u211d)) < (1 : \u211d))",
+            "explanation": "At the same assignment the original conclusion is false."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.refutation",
+            "line": 37,
+            "statement": "\u00ac original",
+            "explanation": "Applying the original universal claim to this witness contradicts the checked failed conclusion."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h1": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h2": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h3": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.refuting": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_not_goal": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.refutation": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/1c579b7e58fae4c9c560/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.sample_h1",
+          "TheoryDebugger.Generated.sample_h2",
+          "TheoryDebugger.Generated.sample_h3",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.refuting",
+          "TheoryDebugger.Generated.sample_not_goal",
+          "TheoryDebugger.Generated.refutation"
+        ],
+        "kind": "counterexample"
+      },
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/aa03a153615a4323fc0c/Certificate.lean",
+        "source_sha256": "aa03a153615a4323fc0cf98581cad65467b2fc23d63593acd7ffcf7147551293",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), \u2200 (v4 : \u211d), (v0 > (0 : \u211d)) \u2192 (v2 > (0 : \u211d)) \u2192 ((v0 * v3) = (v1 * v2)) \u2192 ((v4 * v2) \u2264 v3) \u2192 ((v0 * v4) < v1)",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h1",
+            "line": 17,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 2 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h2",
+            "line": 20,
+            "statement": "(((1 : \u211d) * (1 : \u211d)) = ((1 : \u211d) * (1 : \u211d)))",
+            "explanation": "Exact substitution verifies assumption 3 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h3",
+            "line": 23,
+            "statement": "(((-1 : \u211d) * (1 : \u211d)) \u2264 (1 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 4 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 26,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), \u2203 (_v4 : \u211d), ((_v0 > (0 : \u211d)) \u2227 (_v2 > (0 : \u211d)) \u2227 ((_v0 * _v3) = (_v1 * _v2)) \u2227 ((_v4 * _v2) \u2264 _v3))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.satisfying",
+            "line": 30,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), \u2203 (_v4 : \u211d), (((_v0 > (0 : \u211d)) \u2227 (_v2 > (0 : \u211d)) \u2227 ((_v0 * _v3) = (_v1 * _v2)) \u2227 ((_v4 * _v2) \u2264 _v3)) \u2227 ((_v0 * _v4) < _v1))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h1": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h2": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h3": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.satisfying": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/aa03a153615a4323fc0c/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.sample_h1",
+          "TheoryDebugger.Generated.sample_h2",
+          "TheoryDebugger.Generated.sample_h3",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.satisfying"
+        ],
+        "kind": "satisfying"
+      }
+    ],
+    "witness": {
+      "s": "1/2",
+      "m": "1",
+      "k": "1",
+      "y": "2",
+      "mp": "2"
+    },
+    "warnings": [],
+    "classification": "mixed",
+    "classification_evidence": "lean_kernel",
+    "explanation": "There are checked feasible assignments where the goal holds and where it fails."
+  },
+  {
+    "schema_version": 2,
+    "name": "steady_consumption_resource_identity",
+    "problem": {
+      "variables": [
+        "s",
+        "m",
+        "k",
+        "y"
+      ],
+      "assumptions": [
+        [
+          "=",
+          [
+            "*",
+            "s",
+            "y"
+          ],
+          [
+            "*",
+            "m",
+            "k"
+          ]
+        ]
+      ],
+      "goal": [
+        "=",
+        [
+          "*",
+          [
+            "-",
+            "1",
+            "s"
+          ],
+          "y"
+        ],
+        [
+          "-",
+          "y",
+          [
+            "*",
+            "m",
+            "k"
+          ]
+        ]
+      ]
+    },
+    "problem_sha256": "dc50f19f5cbda0a4a54bacfb70a4a5f2203537f564790e39dfe6bd391c0e4658",
+    "solver": {
+      "assumptions": {
+        "status": "sat",
+        "witness": {
+          "s": "0",
+          "m": "0",
+          "k": "0",
+          "y": "0"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "0.0",
+          "m": "0.0",
+          "k": "0.0",
+          "y": "0.0"
+        }
+      },
+      "satisfying_query": {
+        "status": "sat",
+        "witness": {
+          "s": "0",
+          "m": "0",
+          "k": "0",
+          "y": "0"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "0.0",
+          "m": "0.0",
+          "k": "0.0",
+          "y": "0.0"
+        }
+      },
+      "counterexample_query": {
+        "status": "unsat",
+        "witness": null,
+        "detail": "",
+        "raw_model": {}
+      },
+      "classification": "true"
+    },
+    "consistency": {
+      "status": "consistent",
+      "evidence": "lean_kernel"
+    },
+    "validity": {
+      "status": "valid",
+      "evidence": "lean_kernel"
+    },
+    "cases": {
+      "satisfying": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "s": "1/2",
+          "m": "1",
+          "k": "1",
+          "y": "2"
+        }
+      },
+      "refuting": {
+        "status": "absent",
+        "evidence": "lean_kernel"
+      }
+    },
+    "certificates": [
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/d95f5bdacc6f6754bb77/Certificate.lean",
+        "source_sha256": "d95f5bdacc6f6754bb774c946fec3a84813ff35097a5a841a605e83531e7078b",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), ((v0 * v3) = (v1 * v2)) \u2192 ((((1 : \u211d) - v0) * v3) = (v3 - (v1 * v2)))",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "((((1 : \u211d) / 2) * (2 : \u211d)) = ((1 : \u211d) * (1 : \u211d)))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 17,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), (((_v0 * _v3) = (_v1 * _v2)))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.satisfying",
+            "line": 21,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), ((((_v0 * _v3) = (_v1 * _v2))) \u2227 ((((1 : \u211d) - _v0) * _v3) = (_v3 - (_v1 * _v2))))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.satisfying": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/d95f5bdacc6f6754bb77/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.satisfying"
+        ],
+        "kind": "satisfying"
+      },
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/95ed14e9da0cd6e50bb5/Certificate.lean",
+        "source_sha256": "95ed14e9da0cd6e50bb521e2e4e5fd43dd4f32ab40a73849d6b9f2a514bcecee",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), ((v0 * v3) = (v1 * v2)) \u2192 ((((1 : \u211d) - v0) * v3) = (v3 - (v1 * v2)))",
+        "steps": [
+          {
+            "local_lemma": "square_0",
+            "explanation": "The square of s is nonnegative.",
+            "statement": "0 \u2264 v0 ^ 2",
+            "line": 17
+          },
+          {
+            "local_lemma": "square_1",
+            "explanation": "The square of m is nonnegative.",
+            "statement": "0 \u2264 v1 ^ 2",
+            "line": 18
+          },
+          {
+            "local_lemma": "square_2",
+            "explanation": "The square of k is nonnegative.",
+            "statement": "0 \u2264 v2 ^ 2",
+            "line": 19
+          },
+          {
+            "local_lemma": "square_3",
+            "explanation": "The square of y is nonnegative.",
+            "statement": "0 \u2264 v3 ^ 2",
+            "line": 20
+          },
+          {
+            "local_lemma": "equality_product_0_0",
+            "explanation": "Multiply equality assumption 1 by s.",
+            "statement": "((v0 * v3)) * v0 = ((v1 * v2)) * v0",
+            "line": 21
+          },
+          {
+            "local_lemma": "equality_product_0_1",
+            "explanation": "Multiply equality assumption 1 by m.",
+            "statement": "((v0 * v3)) * v1 = ((v1 * v2)) * v1",
+            "line": 22
+          },
+          {
+            "local_lemma": "equality_product_0_2",
+            "explanation": "Multiply equality assumption 1 by k.",
+            "statement": "((v0 * v3)) * v2 = ((v1 * v2)) * v2",
+            "line": 23
+          },
+          {
+            "local_lemma": "equality_product_0_3",
+            "explanation": "Multiply equality assumption 1 by y.",
+            "statement": "((v0 * v3)) * v3 = ((v1 * v2)) * v3",
+            "line": 24
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.claim",
+            "line": 14,
+            "statement": "original",
+            "explanation": "The original goal follows by checked arithmetic or sign reasoning from the listed assumptions and nonnegative squares."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.claim": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/95ed14e9da0cd6e50bb5/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.claim"
+        ],
+        "kind": "valid"
+      }
+    ],
+    "witness": {
+      "s": "1/2",
+      "m": "1",
+      "k": "1",
+      "y": "2"
+    },
+    "warnings": [],
+    "classification": "true",
+    "classification_evidence": "lean_kernel",
+    "explanation": "The goal holds throughout a nonempty feasible model."
+  },
+  {
+    "schema_version": 2,
+    "name": "golden_saving_below_one",
+    "problem": {
+      "variables": [
+        "sg",
+        "m",
+        "k",
+        "y"
+      ],
+      "assumptions": [
+        [
+          ">",
+          "m",
+          "0"
+        ],
+        [
+          ">",
+          "k",
+          "0"
+        ],
+        [
+          ">",
+          "y",
+          "0"
+        ],
+        [
+          "<",
+          [
+            "*",
+            "m",
+            "k"
+          ],
+          "y"
+        ],
+        [
+          "=",
+          [
+            "*",
+            "sg",
+            "y"
+          ],
+          [
+            "*",
+            "m",
+            "k"
+          ]
+        ]
+      ],
+      "goal": [
+        "<",
+        "sg",
+        "1"
+      ]
+    },
+    "problem_sha256": "a41d2bf2c5d597c69f36fad9ef9b895cd586ff35d6404883a1ed08f30296bd50",
+    "solver": {
+      "assumptions": {
+        "status": "sat",
+        "witness": {
+          "sg": "1/2",
+          "m": "1",
+          "k": "1/2",
+          "y": "1"
+        },
+        "detail": "",
+        "raw_model": {
+          "sg": "(/ 1 2)",
+          "m": "1.0",
+          "k": "(/ 1 2)",
+          "y": "1.0"
+        }
+      },
+      "satisfying_query": {
+        "status": "sat",
+        "witness": {
+          "sg": "1/2",
+          "m": "1",
+          "k": "1/2",
+          "y": "1"
+        },
+        "detail": "",
+        "raw_model": {
+          "sg": "(/ 1 2)",
+          "m": "1.0",
+          "k": "(/ 1 2)",
+          "y": "1.0"
+        }
+      },
+      "counterexample_query": {
+        "status": "unsat",
+        "witness": null,
+        "detail": "",
+        "raw_model": {}
+      },
+      "classification": "true"
+    },
+    "consistency": {
+      "status": "consistent",
+      "evidence": "lean_kernel"
+    },
+    "validity": {
+      "status": "valid",
+      "evidence": "lean_kernel"
+    },
+    "cases": {
+      "satisfying": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "sg": "1/2",
+          "m": "1",
+          "k": "1",
+          "y": "2"
+        }
+      },
+      "refuting": {
+        "status": "absent",
+        "evidence": "lean_kernel"
+      }
+    },
+    "certificates": [
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/5f470e2de01570e86dbf/Certificate.lean",
+        "source_sha256": "5f470e2de01570e86dbf32cbbd7d4e4a9984688f1097451697d3f4b162e70762",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), (v1 > (0 : \u211d)) \u2192 (v2 > (0 : \u211d)) \u2192 (v3 > (0 : \u211d)) \u2192 ((v1 * v2) < v3) \u2192 ((v0 * v3) = (v1 * v2)) \u2192 (v0 < (1 : \u211d))",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h1",
+            "line": 17,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 2 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h2",
+            "line": 20,
+            "statement": "((2 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 3 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h3",
+            "line": 23,
+            "statement": "(((1 : \u211d) * (1 : \u211d)) < (2 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 4 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h4",
+            "line": 26,
+            "statement": "((((1 : \u211d) / 2) * (2 : \u211d)) = ((1 : \u211d) * (1 : \u211d)))",
+            "explanation": "Exact substitution verifies assumption 5 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 29,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), ((_v1 > (0 : \u211d)) \u2227 (_v2 > (0 : \u211d)) \u2227 (_v3 > (0 : \u211d)) \u2227 ((_v1 * _v2) < _v3) \u2227 ((_v0 * _v3) = (_v1 * _v2)))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.satisfying",
+            "line": 33,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), (((_v1 > (0 : \u211d)) \u2227 (_v2 > (0 : \u211d)) \u2227 (_v3 > (0 : \u211d)) \u2227 ((_v1 * _v2) < _v3) \u2227 ((_v0 * _v3) = (_v1 * _v2))) \u2227 (_v0 < (1 : \u211d)))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h1": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h2": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h3": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h4": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.satisfying": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/5f470e2de01570e86dbf/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.sample_h1",
+          "TheoryDebugger.Generated.sample_h2",
+          "TheoryDebugger.Generated.sample_h3",
+          "TheoryDebugger.Generated.sample_h4",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.satisfying"
+        ],
+        "kind": "satisfying"
+      },
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/51f8aeb10f0ac8a0cb72/Certificate.lean",
+        "source_sha256": "51f8aeb10f0ac8a0cb721c55625be91a9560ba98600556783dc485dd0a8cba9f",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), (v1 > (0 : \u211d)) \u2192 (v2 > (0 : \u211d)) \u2192 (v3 > (0 : \u211d)) \u2192 ((v1 * v2) < v3) \u2192 ((v0 * v3) = (v1 * v2)) \u2192 (v0 < (1 : \u211d))",
+        "steps": [
+          {
+            "local_lemma": "square_0",
+            "explanation": "The square of sg is nonnegative.",
+            "statement": "0 \u2264 v0 ^ 2",
+            "line": 17
+          },
+          {
+            "local_lemma": "square_1",
+            "explanation": "The square of m is nonnegative.",
+            "statement": "0 \u2264 v1 ^ 2",
+            "line": 18
+          },
+          {
+            "local_lemma": "square_2",
+            "explanation": "The square of k is nonnegative.",
+            "statement": "0 \u2264 v2 ^ 2",
+            "line": 19
+          },
+          {
+            "local_lemma": "square_3",
+            "explanation": "The square of y is nonnegative.",
+            "statement": "0 \u2264 v3 ^ 2",
+            "line": 20
+          },
+          {
+            "local_lemma": "positive_square_0",
+            "explanation": "Assumption 1 says m is positive, so its square is strictly positive.",
+            "statement": "0 < v1 ^ 2",
+            "line": 21
+          },
+          {
+            "local_lemma": "positive_square_1",
+            "explanation": "Assumption 2 says k is positive, so its square is strictly positive.",
+            "statement": "0 < v2 ^ 2",
+            "line": 22
+          },
+          {
+            "local_lemma": "positive_square_2",
+            "explanation": "Assumption 3 says y is positive, so its square is strictly positive.",
+            "statement": "0 < v3 ^ 2",
+            "line": 23
+          },
+          {
+            "local_lemma": "equality_product_4_0",
+            "explanation": "Multiply equality assumption 5 by sg.",
+            "statement": "((v0 * v3)) * v0 = ((v1 * v2)) * v0",
+            "line": 24
+          },
+          {
+            "local_lemma": "equality_product_4_1",
+            "explanation": "Multiply equality assumption 5 by m.",
+            "statement": "((v0 * v3)) * v1 = ((v1 * v2)) * v1",
+            "line": 25
+          },
+          {
+            "local_lemma": "equality_product_4_2",
+            "explanation": "Multiply equality assumption 5 by k.",
+            "statement": "((v0 * v3)) * v2 = ((v1 * v2)) * v2",
+            "line": 26
+          },
+          {
+            "local_lemma": "equality_product_4_3",
+            "explanation": "Multiply equality assumption 5 by y.",
+            "statement": "((v0 * v3)) * v3 = ((v1 * v2)) * v3",
+            "line": 27
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.claim",
+            "line": 14,
+            "statement": "original",
+            "explanation": "The original goal follows by checked arithmetic or sign reasoning from the listed assumptions and nonnegative squares."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.claim": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/51f8aeb10f0ac8a0cb72/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.claim"
+        ],
+        "kind": "valid"
+      }
+    ],
+    "witness": {
+      "sg": "1/2",
+      "m": "1",
+      "k": "1",
+      "y": "2"
+    },
+    "warnings": [],
+    "classification": "true",
+    "classification_evidence": "lean_kernel",
+    "explanation": "The goal holds throughout a nonempty feasible model."
+  },
+  {
+    "schema_version": 2,
+    "name": "zero_discount_has_no_strict_marginal_gap",
+    "problem": {
+      "variables": [
+        "d",
+        "m",
+        "mp"
+      ],
+      "assumptions": [
+        [
+          ">=",
+          "d",
+          "0"
+        ],
+        [
+          ">",
+          "m",
+          "0"
+        ],
+        [
+          "=",
+          "mp",
+          [
+            "+",
+            "d",
+            "m"
+          ]
+        ]
+      ],
+      "goal": [
+        ">",
+        "mp",
+        "m"
+      ]
+    },
+    "problem_sha256": "0a2494e5ce10a1e66957c98395cd66d6709993fd39423e6dffe5482c53554d64",
+    "solver": {
+      "assumptions": {
+        "status": "sat",
+        "witness": {
+          "d": "0",
+          "m": "1",
+          "mp": "1"
+        },
+        "detail": "",
+        "raw_model": {
+          "d": "0.0",
+          "m": "1.0",
+          "mp": "1.0"
+        }
+      },
+      "satisfying_query": {
+        "status": "sat",
+        "witness": {
+          "d": "1",
+          "m": "1",
+          "mp": "2"
+        },
+        "detail": "",
+        "raw_model": {
+          "d": "1.0",
+          "m": "1.0",
+          "mp": "2.0"
+        }
+      },
+      "counterexample_query": {
+        "status": "sat",
+        "witness": {
+          "d": "0",
+          "m": "1",
+          "mp": "1"
+        },
+        "detail": "",
+        "raw_model": {
+          "d": "0.0",
+          "m": "1.0",
+          "mp": "1.0"
+        }
+      },
+      "classification": "mixed"
+    },
+    "consistency": {
+      "status": "consistent",
+      "evidence": "lean_kernel"
+    },
+    "validity": {
+      "status": "refuted",
+      "evidence": "lean_kernel"
+    },
+    "cases": {
+      "satisfying": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "d": "1",
+          "m": "1",
+          "mp": "2"
+        }
+      },
+      "refuting": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "d": "0",
+          "m": "1",
+          "mp": "1"
+        }
+      }
+    },
+    "certificates": [
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/3da158e185769eaa88cf/Certificate.lean",
+        "source_sha256": "3da158e185769eaa88cfc7fdcdcc44b035beafd994daf2a2bc60c94e0ddb39c1",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), (v0 \u2265 (0 : \u211d)) \u2192 (v1 > (0 : \u211d)) \u2192 (v2 = (v0 + v1)) \u2192 (v2 > v1)",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "((0 : \u211d) \u2265 (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h1",
+            "line": 17,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 2 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h2",
+            "line": 20,
+            "statement": "((1 : \u211d) = ((0 : \u211d) + (1 : \u211d)))",
+            "explanation": "Exact substitution verifies assumption 3 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 23,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), ((_v0 \u2265 (0 : \u211d)) \u2227 (_v1 > (0 : \u211d)) \u2227 (_v2 = (_v0 + _v1)))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.refuting",
+            "line": 27,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), (((_v0 \u2265 (0 : \u211d)) \u2227 (_v1 > (0 : \u211d)) \u2227 (_v2 = (_v0 + _v1))) \u2227 \u00ac (_v2 > _v1))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_not_goal",
+            "line": 31,
+            "statement": "\u00ac ((1 : \u211d) > (1 : \u211d))",
+            "explanation": "At the same assignment the original conclusion is false."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.refutation",
+            "line": 34,
+            "statement": "\u00ac original",
+            "explanation": "Applying the original universal claim to this witness contradicts the checked failed conclusion."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h1": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h2": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.refuting": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_not_goal": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.refutation": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/3da158e185769eaa88cf/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.sample_h1",
+          "TheoryDebugger.Generated.sample_h2",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.refuting",
+          "TheoryDebugger.Generated.sample_not_goal",
+          "TheoryDebugger.Generated.refutation"
+        ],
+        "kind": "counterexample"
+      },
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/6a9eb61170ce067db19d/Certificate.lean",
+        "source_sha256": "6a9eb61170ce067db19d59f15012df7ff678f6de33400c8d2659aa7970fae352",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), (v0 \u2265 (0 : \u211d)) \u2192 (v1 > (0 : \u211d)) \u2192 (v2 = (v0 + v1)) \u2192 (v2 > v1)",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h0",
+            "line": 14,
+            "statement": "((1 : \u211d) \u2265 (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 1 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h1",
+            "line": 17,
+            "statement": "((1 : \u211d) > (0 : \u211d))",
+            "explanation": "Exact substitution verifies assumption 2 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.sample_h2",
+            "line": 20,
+            "statement": "((2 : \u211d) = ((1 : \u211d) + (1 : \u211d)))",
+            "explanation": "Exact substitution verifies assumption 3 at the displayed witness."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 23,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), ((_v0 \u2265 (0 : \u211d)) \u2227 (_v1 > (0 : \u211d)) \u2227 (_v2 = (_v0 + _v1)))",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.satisfying",
+            "line": 27,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), (((_v0 \u2265 (0 : \u211d)) \u2227 (_v1 > (0 : \u211d)) \u2227 (_v2 = (_v0 + _v1))) \u2227 (_v2 > _v1))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.sample_h0": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h1": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.sample_h2": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.satisfying": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/6a9eb61170ce067db19d/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.sample_h0",
+          "TheoryDebugger.Generated.sample_h1",
+          "TheoryDebugger.Generated.sample_h2",
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.satisfying"
+        ],
+        "kind": "satisfying"
+      }
+    ],
+    "witness": {
+      "d": "0",
+      "m": "1",
+      "mp": "1"
+    },
+    "warnings": [],
+    "classification": "mixed",
+    "classification_evidence": "lean_kernel",
+    "explanation": "There are checked feasible assignments where the goal holds and where it fails."
+  },
+  {
+    "schema_version": 2,
+    "name": "effective_dilution_includes_technology",
+    "problem": {
+      "variables": [
+        "s",
+        "y",
+        "k",
+        "n",
+        "g",
+        "delta"
+      ],
+      "assumptions": [],
+      "goal": [
+        "=",
+        [
+          "-",
+          [
+            "-",
+            [
+              "*",
+              "s",
+              "y"
+            ],
+            [
+              "*",
+              "delta",
+              "k"
+            ]
+          ],
+          [
+            "*",
+            [
+              "+",
+              "n",
+              "g"
+            ],
+            "k"
+          ]
+        ],
+        [
+          "-",
+          [
+            "*",
+            "s",
+            "y"
+          ],
+          [
+            "*",
+            [
+              "+",
+              [
+                "+",
+                "delta",
+                "n"
+              ],
+              "g"
+            ],
+            "k"
+          ]
+        ]
+      ]
+    },
+    "problem_sha256": "3b8f5c99e7a14e4a72b18e1198a821b5def926912b7f8953e2060120f3ca839f",
+    "solver": {
+      "assumptions": {
+        "status": "sat",
+        "witness": {
+          "s": "0",
+          "y": "0",
+          "k": "0",
+          "n": "0",
+          "g": "0",
+          "delta": "0"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "0.0",
+          "y": "0.0",
+          "k": "0.0",
+          "n": "0.0",
+          "g": "0.0",
+          "delta": "0.0"
+        }
+      },
+      "satisfying_query": {
+        "status": "sat",
+        "witness": {
+          "s": "0",
+          "y": "0",
+          "k": "0",
+          "n": "0",
+          "g": "0",
+          "delta": "0"
+        },
+        "detail": "",
+        "raw_model": {
+          "s": "0.0",
+          "y": "0.0",
+          "k": "0.0",
+          "n": "0.0",
+          "g": "0.0",
+          "delta": "0.0"
+        }
+      },
+      "counterexample_query": {
+        "status": "unsat",
+        "witness": null,
+        "detail": "",
+        "raw_model": {}
+      },
+      "classification": "true"
+    },
+    "consistency": {
+      "status": "consistent",
+      "evidence": "lean_kernel"
+    },
+    "validity": {
+      "status": "valid",
+      "evidence": "lean_kernel"
+    },
+    "cases": {
+      "satisfying": {
+        "status": "present",
+        "evidence": "lean_kernel",
+        "witness": {
+          "s": "1/2",
+          "y": "2",
+          "k": "1",
+          "n": "1",
+          "g": "1",
+          "delta": "1"
+        }
+      },
+      "refuting": {
+        "status": "absent",
+        "evidence": "lean_kernel"
+      }
+    },
+    "certificates": [
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/b3e92255db2497edeba7/Certificate.lean",
+        "source_sha256": "b3e92255db2497edeba7beda7785c1a7d0aaa1686c8018d9ba30405297d4600b",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), \u2200 (v4 : \u211d), \u2200 (v5 : \u211d), ((((v0 * v1) - (v5 * v2)) - ((v3 + v4) * v2)) = ((v0 * v1) - (((v5 + v3) + v4) * v2)))",
+        "steps": [
+          {
+            "declaration": "TheoryDebugger.Generated.feasible",
+            "line": 14,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), \u2203 (_v4 : \u211d), \u2203 (_v5 : \u211d), True",
+            "explanation": "This exact real assignment satisfies all original assumptions together."
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.satisfying",
+            "line": 18,
+            "statement": "\u2203 (_v0 : \u211d), \u2203 (_v1 : \u211d), \u2203 (_v2 : \u211d), \u2203 (_v3 : \u211d), \u2203 (_v4 : \u211d), \u2203 (_v5 : \u211d), (True \u2227 ((((_v0 * _v1) - (_v5 * _v2)) - ((_v3 + _v4) * _v2)) = ((_v0 * _v1) - (((_v5 + _v3) + _v4) * _v2))))",
+            "explanation": "This assignment jointly satisfies the assumptions and the stated side of the goal."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.feasible": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ],
+          "TheoryDebugger.Generated.satisfying": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/b3e92255db2497edeba7/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.feasible",
+          "TheoryDebugger.Generated.satisfying"
+        ],
+        "kind": "satisfying"
+      },
+      {
+        "status": "lean_verified",
+        "source": "verification/theorydebugger/certificates/6f000ea4f82ba76f1422/Certificate.lean",
+        "source_sha256": "6f000ea4f82ba76f142222e5bce5fa496e9f2c241328344d6a63c8e79f4defd6",
+        "formal_goal": "\u2200 (v0 : \u211d), \u2200 (v1 : \u211d), \u2200 (v2 : \u211d), \u2200 (v3 : \u211d), \u2200 (v4 : \u211d), \u2200 (v5 : \u211d), ((((v0 * v1) - (v5 * v2)) - ((v3 + v4) * v2)) = ((v0 * v1) - (((v5 + v3) + v4) * v2)))",
+        "steps": [
+          {
+            "local_lemma": "square_0",
+            "explanation": "The square of s is nonnegative.",
+            "statement": "0 \u2264 v0 ^ 2",
+            "line": 17
+          },
+          {
+            "local_lemma": "square_1",
+            "explanation": "The square of y is nonnegative.",
+            "statement": "0 \u2264 v1 ^ 2",
+            "line": 18
+          },
+          {
+            "local_lemma": "square_2",
+            "explanation": "The square of k is nonnegative.",
+            "statement": "0 \u2264 v2 ^ 2",
+            "line": 19
+          },
+          {
+            "local_lemma": "square_3",
+            "explanation": "The square of n is nonnegative.",
+            "statement": "0 \u2264 v3 ^ 2",
+            "line": 20
+          },
+          {
+            "local_lemma": "square_4",
+            "explanation": "The square of g is nonnegative.",
+            "statement": "0 \u2264 v4 ^ 2",
+            "line": 21
+          },
+          {
+            "local_lemma": "square_5",
+            "explanation": "The square of delta is nonnegative.",
+            "statement": "0 \u2264 v5 ^ 2",
+            "line": 22
+          },
+          {
+            "declaration": "TheoryDebugger.Generated.claim",
+            "line": 14,
+            "statement": "original",
+            "explanation": "The original goal follows by checked arithmetic or sign reasoning from the listed assumptions and nonnegative squares."
+          }
+        ],
+        "axioms": {
+          "TheoryDebugger.Generated.claim": [
+            "propext",
+            "Classical.choice",
+            "Quot.sound"
+          ]
+        },
+        "compiler_exit_code": 0,
+        "compiler_log": "verification/theorydebugger/certificates/6f000ea4f82ba76f1422/lean-output.txt",
+        "declarations": [
+          "TheoryDebugger.Generated.claim"
+        ],
+        "kind": "valid"
+      }
+    ],
+    "witness": {
+      "s": "1/2",
+      "y": "2",
+      "k": "1",
+      "n": "1",
+      "g": "1",
+      "delta": "1"
+    },
+    "warnings": [],
+    "classification": "true",
+    "classification_evidence": "lean_kernel",
+    "explanation": "The goal holds throughout a nonempty feasible model."
+  }
+]

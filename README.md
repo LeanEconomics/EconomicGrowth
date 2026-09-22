@@ -7,17 +7,20 @@ project with a precise statement, sources, examples, and reproducible proof chec
 
 | Project | Checked results | Start here |
 | --- | --- | --- |
-| [SolowSwan](SolowSwan/README.md) | 59 theorems: Cobb–Douglas existence, positivity, uniqueness, monotone adjustment, convergence, comparative statics, and normalization | [Detailed statement and proof](SolowSwan/docs/solow-swan-dynamics.md) |
+| [SolowSwan](SolowSwan/README.md) | 132 theorems: general neoclassical existence, uniqueness, stability, convergence, comparative statics, Golden Rule saving, and Cobb–Douglas closed forms | [Acemoglu statement and proof](SolowSwan/docs/acemoglu-general-solow.md) |
 | [Uzawa](Uzawa/README.md) | 63 main theorems plus 3 obstruction lemmas: the published Jones–Scrimgeour/Schlicht route and a repaired elasticity route | [Comparison of the source versions](Uzawa/docs/uzawa-versions-comparison.md) |
 | [RamseyCassKoopmans](RamseyCassKoopmans/README.md) | 423 theorems: general Cass existence, uniqueness, monotone convergence, all-competitor asymptotic welfare comparison, explicit corner dynamics, and a regular Koopmans Euler-path obstruction | [General Cass proof](RamseyCassKoopmans/docs/cass-general.md) and [Koopmans boundary analysis](RamseyCassKoopmans/docs/koopmans-boundary-obstruction.md) |
 
 ## Scope
 
-Solow–Swan here means the Cobb–Douglas equation $k'=bk^alpha-mk$, with
-$b,m,k_0>0$ and $0<alpha<1$. The library constructs the solution and proves
-uniqueness among nonnegative differentiable future paths with positive initial
-capital. It does not claim convergence for every neoclassical production function
-or uniqueness for zero initial capital.
+Solow–Swan covers $k'=s f(k)-mk$ under explicit neoclassical assumptions, with
+$s,m,k_0>0$, following Acemoglu's Chapter 2. It constructs the solution and proves
+uniqueness among nonnegative classical future paths, strict monotone convergence,
+and stability. It also proves all eight source comparative statics, Golden Rule
+saving, a stationary connection to Cass, and adjustment to a saving increase.
+The original Cobb–Douglas closed forms remain available. Uniqueness at zero
+initial capital is not claimed. See the [source map](SolowSwan/docs/acemoglu-source-map.md)
+for the exact correspondence with Acemoglu's results.
 
 The published Uzawa route proves a labour-augmenting representation along an
 exponential balanced-growth path with positive investment. The repaired elasticity
@@ -38,9 +41,9 @@ theorem and Ramsey's undiscounted bliss criterion are not claimed as completed.
 ## Build and verify
 
 Install [elan](https://github.com/leanprover/elan) and Python 3.12+. Each project
-pins Lean and Mathlib in its own toolchain and Lake manifest: SolowSwan and
-Uzawa use `v4.34.0-rc2`, and RamseyCassKoopmans uses `v4.34.0`.
-From the repository root:
+pins its own Lean and Mathlib versions: SolowSwan and RamseyCassKoopmans use
+`v4.34.0`, and Uzawa uses `v4.34.0-rc2`. Each Lake manifest pins transitive
+dependencies. From the repository root:
 
 ```sh
 cd SolowSwan

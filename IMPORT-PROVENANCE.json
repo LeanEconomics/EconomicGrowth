@@ -286,5 +286,22 @@
         "theorydebugger_certificates": 48
       }
     }
+  ],
+  "developments": [
+    {
+      "directory": "SolowSwan",
+      "name": "General neoclassical Solow-Swan from Acemoglu",
+      "base_commit": "1204a44",
+      "source_map": "SolowSwan/docs/acemoglu-source-map.md",
+      "proof_manifest": "SolowSwan/proof-manifest.json",
+      "changes": "Adds general production and scalar ODE proofs, comparative statics, Golden Rule and stationary Cass comparison, saving shocks, effective-labour convergence, examples, and checked TheoryDebugger diagnostics. Upgrades Lean/Mathlib to v4.34.0 and expands the fresh source/axiom audit.",
+      "original_import_records": "The imports array records the original import, not the current state of subsequently developed files.",
+      "reused_original_helpers": {
+        "repository": "https://github.com/LeanEconomics/EconomicGrowth",
+        "commit": "b1e9dd2dfe5c7a6f69ac4713f419293d1d175d17",
+        "directory": "RamseyCassKoopmans",
+        "license": "Unlicense"
+      }
+    }
   ]
 }
