@@ -3,3 +3,10 @@ __pycache__/
 *.pyc
 verification/build.txt
 verification/fresh-audit.txt
+verification/theorydebugger/certificates/**/*.olean
+verification/theorydebugger/certificates/**/*.ilean
+verification/theorydebugger/certificates/**/*.c
+
+verification/FreshCertificates.lean
+
+verification/fresh-certificates.txt

@@ -2,8 +2,8 @@
 
 > Research note from TheoryDebugger. Links to diagnostic examples and archived
 > contribution checks point to that repository. The standalone modules here have
-> their own build and fresh axiom audit: run `python scripts/verify.py` from this
-> repository root and consult `verification/verification.json`. Our original
+> their own build and fresh axiom audit: run `python scripts/verify.py` from the
+> `Uzawa/` project directory and consult `Uzawa/verification/verification.json`. Our original
 > material in this standalone distribution uses The Unlicense.
 
 Research comparison, 20 September 2026. This note distinguishes the papers'

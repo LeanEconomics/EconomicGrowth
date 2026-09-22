@@ -1,0 +1,39 @@
+{
+  "variables": [
+    "D",
+    "y",
+    "response"
+  ],
+  "assumptions": [
+    [
+      ">",
+      "D",
+      0
+    ],
+    [
+      ">",
+      "y",
+      0
+    ],
+    [
+      "=",
+      [
+        "*",
+        "D",
+        "response"
+      ],
+      "y"
+    ]
+  ],
+  "goal": [
+    ">",
+    "response",
+    0
+  ],
+  "witness": {
+    "D": 1,
+    "y": 2,
+    "response": 2
+  },
+  "name": "saving_derivative_positive"
+}

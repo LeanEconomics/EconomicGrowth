@@ -1,0 +1,32 @@
+{
+  "checked_at_utc": "2026-09-21T20:54:08.962315+00:00",
+  "scope": "Ten finite polynomial diagnostics; the analytic results are proved independently in Lean.",
+  "lean": "Lean (version 4.34.0, x86_64-w64-windows-gnu, commit 293d5d0c0c3f3dded4688b3ccd6a33939ac5102b, Release)",
+  "cvc5": "1.4.0",
+  "mathlib_manifest_sha256": "cdd8751d44aca7249c10ed225b3ca7685cce852223aa889b81784ab496fcb36d",
+  "script_sha256": "594bccc70ef9fa416f3b6ebf8744d710947d7186a1805b746d30dcecf892b839",
+  "theorydebugger_source_sha256": {
+    "src/theorydebugger/__init__.py": "5dfab9bcd6227b3ee36bde7e96495cb9b2518a250c000338e27d12084f926d68",
+    "src/theorydebugger/__main__.py": "8b49242564a0ddb76701c7389b54cca02924dea9d331bdce4747bd934b96f847",
+    "src/theorydebugger/backend.py": "ef7fab88a09d545189f8c89ab995f80b104e989ad3ba40375cc5a17c446a3ce1",
+    "src/theorydebugger/bridge.py": "3018846da47ca2a130beed58e1b113defa725a5f60d2c72e26cd1b39d271336e",
+    "src/theorydebugger/certificates.py": "14d6c58bc2c4cedc723a5d4911b64ae1f717165cd057228cc33eb47bcf22119f",
+    "src/theorydebugger/diagnose.py": "53bff89666c860092bb5a7ef8af0b7653a6d52e423ee900f2cee784c351aeb4c",
+    "src/theorydebugger/ir.py": "65f93d747fc6aabe25f4fb681383b123b96cd73be10a469ac30ab26ba355cb40",
+    "src/theorydebugger/repair.py": "2184789dbef0ca048d129eb8b422902f049f494914c0f02c80cec7d84a44d066"
+  },
+  "cases": 10,
+  "certificates": 20,
+  "input_sha256": {
+    "dilution_derivative_negative.json": "67a1ec29d4f71108d3bf5b2a83e01a5af2f879e2d52031432446d80160785f1c",
+    "effective_dilution_includes_technology.json": "6f026f111a247f314c7ff816d3866486cc89ce87fb674e70cd6a525ce391295a",
+    "golden_saving_below_one.json": "a9c23965e865fbbaf7d7265cc6879a8d0346dcdbefa7cffb947f48b8eb304c86",
+    "rate_factorization.json": "de0b58c46d457a48128fa3cf74590e75364005d4c419ce61e46832fd130d9f4d",
+    "reversed_dilution_effect_is_false.json": "97aa8baa8ab4636790596643fdb51abc8e467a026ee63563176771bbaec71faf",
+    "saving_derivative_positive.json": "51071f26cb0b7b6638232291f111b9aeefc58315a1a7b320ee41baa36919ae0c",
+    "steady_consumption_resource_identity.json": "24b0f3e31de055a9e21140b5dd648b88ab8fd7dc9e364f62d29c6ad3e45a6b54",
+    "strict_concavity_gives_negative_equilibrium_slope.json": "2cc90fdd9f8f4422a326c08aabe573d6cfa9e70081cc3aefee973e4459a22836",
+    "weak_concavity_does_not_give_strict_slope.json": "972c42eea83735009fd3379af2fa1b7a7a2d760dafe9cc0c0ff5c742bcf40629",
+    "zero_discount_has_no_strict_marginal_gap.json": "3402eea9cc0f03518288e7832f08876beec8feb925cec05f871c1fdb183007ec"
+  }
+}

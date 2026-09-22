@@ -1,20 +1,843 @@
 {
-  "checked_at_utc": "2026-09-20T21:01:56.137350+00:00",
-  "theorems": 59,
+  "checked_at_utc": "2026-09-21T21:16:51.051113+00:00",
+  "theorems": 132,
   "module_theorems": {
     "Solow1956/Growth/SolowSwan.lean": 16,
     "Solow1956/Growth/SolowSwanDynamics.lean": 37,
-    "Solow1956/Growth/SolowSwanExamples.lean": 6
+    "Solow1956/Growth/SolowSwanExamples.lean": 6,
+    "Solow1956/Analysis/GlobalFlow.lean": 1,
+    "Solow1956/Analysis/CompactExtension.lean": 5,
+    "Solow1956/Analysis/AsymptoticODE.lean": 10,
+    "Solow1956/Analysis/ScalarFlow.lean": 1,
+    "Solow1956/Growth/Neoclassical.lean": 14,
+    "Solow1956/Growth/GeneralSolow.lean": 5,
+    "Solow1956/Growth/SolowComparative.lean": 18,
+    "Solow1956/Growth/SolowGoldenRule.lean": 9,
+    "Solow1956/Growth/GeneralSolowApplications.lean": 4,
+    "Solow1956/Growth/GeneralSolowExamples.lean": 6
   },
+  "audited_declarations": 159,
+  "declarations": [
+    {
+      "name": "Solow1956.SolowSwan.capitalChange",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.hasDerivAt_capitalPerWorker",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.intensiveForm_of_homogeneous",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.production",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.steadyState",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.steadyState_pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.sqrt_steadyState",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.capitalChange_zero",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.capitalChange_factor",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.capitalChange_steadyState",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.eq_steadyState_of_pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.capitalChange_eq_zero_iff",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.existsUnique_positive_steadyState",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.capitalChange_pos_of_lt",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.capitalChange_neg_of_gt",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.steadyState_strictMono_saving",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.steadyState_strictMono_productivity",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.steadyState_strictAnti_population",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.SquareRoot.steadyState_capital_output_ratio",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwan.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.hasDerivAt_capitalPerEffectiveWorker",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.rate",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.steadyState",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.transformedPath",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.path",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.steadyState_pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.rate_zero",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.rate_factor",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.steadyState_power",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.rate_steadyState",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.eq_steadyState_of_pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.existsUnique_positive_steadyState",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.rate_eq_zero_iff",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.transformedPath_zero",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.transformedPath_pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.path_pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.path_zero",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.hasDerivAt_transformedPath",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.hasDerivAt_power",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.hasDerivAt_path",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.eq_transformedPath_of_hasDerivAt",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.solution_eq_path",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.tendsto_transformedPath",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.tendsto_path",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.path_power_gap",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.IsPositiveSolution",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.positive_dynamics",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.rate_pos_of_lt",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.rate_neg_of_gt",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.steadyState_strictMono_investment",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.steadyState_strictAnti_dilution",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.steadyState_strictMono_saving",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.steadyState_capital_output_ratio",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.path_lt_steadyState_iff",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.tendsto_of_isPositiveSolution",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.path_monotoneOn_of_le",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.path_antitoneOn_of_le",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.tendsto_output",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.weightedCapital_monotoneOn",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.positive_of_nonnegative_solution",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.IsNonnegativeSolution",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.IsNonnegativeSolution.isPositiveSolution",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.nonnegative_dynamics",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanDynamics.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.example_positive_path",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanExamples.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.normalized_steadyState",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanExamples.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.zero_solution",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanExamples.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.zero_solution_not_positive",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanExamples.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.no_positive_stationary_at_exponent_one",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanExamples.lean"
+    },
+    {
+      "name": "Solow1956.SolowSwan.CobbDouglas.hasDerivAt_effectiveLabour",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowSwanExamples.lean"
+    },
+    {
+      "name": "Solow1956.ODE.exists_global_solution",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/GlobalFlow.lean"
+    },
+    {
+      "name": "Solow1956.ODE.clip",
+      "kind": "def",
+      "module": "Solow1956/Analysis/CompactExtension.lean"
+    },
+    {
+      "name": "Solow1956.ODE.clip_mem",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/CompactExtension.lean"
+    },
+    {
+      "name": "Solow1956.ODE.clip_eq",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/CompactExtension.lean"
+    },
+    {
+      "name": "Solow1956.ODE.monotone_clip",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/CompactExtension.lean"
+    },
+    {
+      "name": "Solow1956.ODE.lipschitz_clip",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/CompactExtension.lean"
+    },
+    {
+      "name": "Solow1956.ODE.bounded_lipschitz_clip",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/CompactExtension.lean"
+    },
+    {
+      "name": "Solow1956.ODE.linear_lower_bound_on",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/AsymptoticODE.lean"
+    },
+    {
+      "name": "Solow1956.ODE.linear_upper_bound_on",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/AsymptoticODE.lean"
+    },
+    {
+      "name": "Solow1956.ODE.linear_lower_bound",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/AsymptoticODE.lean"
+    },
+    {
+      "name": "Solow1956.ODE.linear_upper_bound",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/AsymptoticODE.lean"
+    },
+    {
+      "name": "Solow1956.ODE.not_bounded_below_of_negative_drift",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/AsymptoticODE.lean"
+    },
+    {
+      "name": "Solow1956.ODE.not_bounded_above_of_positive_drift",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/AsymptoticODE.lean"
+    },
+    {
+      "name": "Solow1956.ODE.derivative_limit_zero",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/AsymptoticODE.lean"
+    },
+    {
+      "name": "Solow1956.ODE.exists_limit_of_monotone_bounded",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/AsymptoticODE.lean"
+    },
+    {
+      "name": "Solow1956.ODE.exists_limit_of_antitone_bounded",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/AsymptoticODE.lean"
+    },
+    {
+      "name": "Solow1956.ODE.exponential_lower_bound",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/AsymptoticODE.lean"
+    },
+    {
+      "name": "Solow1956.ODE.exists_attracting_scalar_path",
+      "kind": "theorem",
+      "module": "Solow1956/Analysis/ScalarFlow.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology",
+      "kind": "structure",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.mk",
+      "kind": "constructor",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.continuous",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.zero",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.differentiable",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.derivative_continuous",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.concave",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.marginal_positive",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.inada_zero",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.inada_top",
+      "kind": "projection",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.technology_of_second_derivative",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.marginal_strictAnti",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.output_gap",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.output_pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.output_nonneg",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.output_strictMono",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.average_strictAnti",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.rate",
+      "kind": "def",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.rate_zero",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.rate_hasDerivAt",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.rate_derivative_continuous",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.exists_capacity",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.existsUnique_steadyState",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.rate_pos_below",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.rate_neg_above",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/Neoclassical.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.capital_lower_bound",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolow.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.capital_positive",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolow.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.path_unique",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolow.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.general_solow",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolow.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.output_consumption_limit",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolow.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.capitalAtRatio",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.capitalAtRatio_spec",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.capitalAtRatio_average",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.capitalAtRatio_strictAnti",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.averageSlope",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.averageSlope_neg",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.average_hasStrictDerivAt",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.capitalAtRatio_hasDerivAt",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.steadyCapital",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.steadyCapital_spec",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.steadyCapital_eq",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.steadyCapital_strictMono_saving",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.steadyCapital_strictAnti_dilution",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.savingResponse",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.dilutionResponse",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.steadyCapital_hasDerivAt_saving",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.steadyCapital_hasDerivAt_dilution",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.savingResponse_pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.dilutionResponse_neg",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.steadyCapital_derivative_signs",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.output_derivative_signs",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.acemoglu_capital_partials",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.acemoglu_output_partials",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowComparative.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.existsUnique_marginal_root",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowGoldenRule.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.golden_rule_maximizes",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowGoldenRule.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.sustainingSaving",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowGoldenRule.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.sustainingSaving_bounds",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowGoldenRule.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.sustainingSaving_equilibrium",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowGoldenRule.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.sustainingSaving_stock",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowGoldenRule.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.sustainingSaving_strictMono",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowGoldenRule.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.stationary_consumption_identity",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowGoldenRule.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.exists_unique_golden_saving",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowGoldenRule.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.cass_stationary_bridge",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowGoldenRule.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.every_path_converges",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolowApplications.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.path_stable",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolowApplications.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.saving_increase_transition",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolowApplications.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.effective_labour_convergence",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolowApplications.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.technology_rpow",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolowExamples.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.Technology.add",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolowExamples.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.mixed_power_technology",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolowExamples.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.mixed_power_steady_exists",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolowExamples.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.no_positive_steady_without_dilution",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolowExamples.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.linear_technology_multiple_steady",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/GeneralSolowExamples.lean"
+    }
+  ],
   "full_build": "passed",
   "fresh_source_compilation": "passed",
   "axioms": {
+    "Solow1956.SolowSwan.capitalChange": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "Solow1956.SolowSwan.hasDerivAt_capitalPerWorker": [
       "propext",
       "Classical.choice",
       "Quot.sound"
     ],
     "Solow1956.SolowSwan.intensiveForm_of_homogeneous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.production": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.SquareRoot.steadyState": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -90,6 +913,26 @@
       "Quot.sound"
     ],
     "Solow1956.SolowSwan.hasDerivAt_capitalPerEffectiveWorker": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.rate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.steadyState": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.transformedPath": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.SolowSwan.CobbDouglas.path": [
       "propext",
       "Classical.choice",
       "Quot.sound"
@@ -194,6 +1037,11 @@
       "Classical.choice",
       "Quot.sound"
     ],
+    "Solow1956.SolowSwan.CobbDouglas.IsPositiveSolution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "Solow1956.SolowSwan.CobbDouglas.positive_dynamics": [
       "propext",
       "Classical.choice",
@@ -264,6 +1112,11 @@
       "Classical.choice",
       "Quot.sound"
     ],
+    "Solow1956.SolowSwan.CobbDouglas.IsNonnegativeSolution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
     "Solow1956.SolowSwan.CobbDouglas.IsNonnegativeSolution.isPositiveSolution": [
       "propext",
       "Classical.choice",
@@ -303,21 +1156,659 @@
       "propext",
       "Classical.choice",
       "Quot.sound"
+    ],
+    "Solow1956.ODE.exists_global_solution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.clip": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.clip_mem": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.clip_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.monotone_clip": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.lipschitz_clip": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.bounded_lipschitz_clip": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.linear_lower_bound_on": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.linear_upper_bound_on": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.linear_lower_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.linear_upper_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.not_bounded_below_of_negative_drift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.not_bounded_above_of_positive_drift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.derivative_limit_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.exists_limit_of_monotone_bounded": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.exists_limit_of_antitone_bounded": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.exponential_lower_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.ODE.exists_attracting_scalar_path": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.differentiable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.derivative_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.concave": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.marginal_positive": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.inada_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.inada_top": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.technology_of_second_derivative": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.marginal_strictAnti": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.output_gap": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.output_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.output_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.output_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.average_strictAnti": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.rate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.rate_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.rate_hasDerivAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.rate_derivative_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.exists_capacity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.existsUnique_steadyState": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.rate_pos_below": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.rate_neg_above": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.capital_lower_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.capital_positive": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.path_unique": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.general_solow": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.output_consumption_limit": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.capitalAtRatio": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.capitalAtRatio_spec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.capitalAtRatio_average": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.capitalAtRatio_strictAnti": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.averageSlope": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.averageSlope_neg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.average_hasStrictDerivAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.capitalAtRatio_hasDerivAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.steadyCapital": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.steadyCapital_spec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.steadyCapital_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.steadyCapital_strictMono_saving": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.steadyCapital_strictAnti_dilution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.savingResponse": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.dilutionResponse": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.steadyCapital_hasDerivAt_saving": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.steadyCapital_hasDerivAt_dilution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.savingResponse_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.dilutionResponse_neg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.steadyCapital_derivative_signs": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.output_derivative_signs": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.acemoglu_capital_partials": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.acemoglu_output_partials": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.existsUnique_marginal_root": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.golden_rule_maximizes": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.sustainingSaving": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.sustainingSaving_bounds": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.sustainingSaving_equilibrium": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.sustainingSaving_stock": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.sustainingSaving_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.stationary_consumption_identity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.exists_unique_golden_saving": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.cass_stationary_bridge": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.every_path_converges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.path_stable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.saving_increase_transition": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.effective_labour_convergence": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.technology_rpow": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.Technology.add": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.mixed_power_technology": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.mixed_power_steady_exists": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.no_positive_steady_without_dilution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.linear_technology_multiple_steady": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
     ]
   },
   "source_sha256": {
     "Solow1956/Growth/SolowSwan.lean": "698d382425ecd5af5f73486fa2d73a11fa73e89735172160f60ed6c986e16447",
     "Solow1956/Growth/SolowSwanDynamics.lean": "130eea43d0210410674fb182dd6c7244a3274ed626676cc0f46cea1f98239071",
     "Solow1956/Growth/SolowSwanExamples.lean": "6766d7734315f5da6d8cdc9f6183732cf0f9aa588e6e10c94e1d9a57ac88fa4e",
-    "lean-toolchain": "8190e75a201741065fe508b28955dd64dd72d090babe5f70ce6848879d68ae88",
-    "lakefile.toml": "10542f7b43e56829165cba4e0e8cff7b4edd997d92057343b3adea501a586c87",
-    "lake-manifest.json": "618413521d3ad7501dd3d2efe1aff5777695e6e023684e59b878372d976c8722",
-    "proof-manifest.json": "476bcb93acf4da91ff8d775452c4daf3a099ee632f4f4f6e1a8d99955522986e",
-    "scripts/verify.py": "508215d14b1fcfb912379eeca887db57c08131595737231aad36d6234f2324c6",
+    "Solow1956/Analysis/GlobalFlow.lean": "53f685e81364c570dfc09f7641539eee3d1651d8860eafb62759dcc09b6ea714",
+    "Solow1956/Analysis/CompactExtension.lean": "e0bdea1bc7b6d2637d15a4ba357e43e69b5f7de86040b91b6433126abbb792e6",
+    "Solow1956/Analysis/AsymptoticODE.lean": "6a2660d23214f6c04cf86720c69ed785f2736f92a2ada0e69ed7edc2ca729ff4",
+    "Solow1956/Analysis/ScalarFlow.lean": "49054cc9240ac9f19c41217c4fe7bf26be13ab3a642e3c9c8f079d59ded4a4e8",
+    "Solow1956/Growth/Neoclassical.lean": "3e9f0c8fcc2ba209301c355f26d4561ca2c09a75c834a34c683c820936566243",
+    "Solow1956/Growth/GeneralSolow.lean": "70b7d8aedd3dc388b3fe404b6a3a244d8a7bcf7baf59b8749161c8421be2b2dc",
+    "Solow1956/Growth/SolowComparative.lean": "5a88a34ff2fc0488f23a476ae7194a9e404ed92b57f728bfa514d0e1a5cc832a",
+    "Solow1956/Growth/SolowGoldenRule.lean": "b039517230a47dc0f6e08e6090dd067388710addfe5ec9e09fabc848c698eb33",
+    "Solow1956/Growth/GeneralSolowApplications.lean": "eb3515028f0d0a76bcb56c8287fdb4e18fb38e9e8f5f6c656cbb58bff02b11b1",
+    "Solow1956/Growth/GeneralSolowExamples.lean": "1c9efe6b2cace2f1742f2c6db4cb450c12e9ef8944d274de37526e6eac4a340d",
+    "Solow1956.lean": "987d25656dfa1e2215722c53ff7a1a87508a642be30857b7ef22ccd1fc66246b",
+    "lean-toolchain": "8733782dc070a99b312039cda424f601b80f3be6f6f512627da5ba25adc27632",
+    "lakefile.toml": "8559f1e70440e3b09240fd6519f80e89e1700d744cee7cd4dbcdde5553cdd319",
+    "lake-manifest.json": "cdd8751d44aca7249c10ed225b3ca7685cce852223aa889b81784ab496fcb36d",
+    "proof-manifest.json": "9756188db90e88654ad299ef3d2926b5d763eb389bafeb377a742bdae30fba44",
+    "scripts/verify.py": "fec6e33fb6df8900ecb65f5c0fbc133070f21ce7b1c08c2b64c4f54954877e0d",
+    "scripts/verify_evidence.py": "75518db86e6a5a21996cc87d7fe2492da49ab9aa47170ea1b074094247446f1e",
+    "scripts/check_theorydebugger.py": "594bccc70ef9fa416f3b6ebf8744d710947d7186a1805b746d30dcecf892b839",
     "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c"
   },
-  "fresh_audit_sha256": "8337d078389a08c1e8b47f8f04769b7b34dc5e61bf9d871a75f47f3a3637bac1",
-  "lean_toolchain": "leanprover/lean4:v4.34.0-rc2",
-  "scope": "Cobb-Douglas Solow-Swan dynamics for 0 < alpha < 1 and b,m,k0 > 0: constructive existence, positivity, uniqueness among nonnegative differentiable solutions, monotonicity, convergence, and comparative statics.",
-  "source_provenance": "4bed57534cf4f5562be8b90c481bb3dd54360fe0"
+  "fresh_audit_sha256": "7c0da49359f644ee945c7e8ac6251e52cc66c77d126c734d1f61e21cf0c7212b",
+  "lean_toolchain": "leanprover/lean4:v4.34.0",
+  "scope": "General neoclassical continuous-time Solow-Swan growth from positive capital: existence, positivity, uniqueness among nonnegative classical paths, strict monotone convergence, Lyapunov stability, all eight Acemoglu comparative-statics partials, Golden Rule saving, a stationary Cass bridge, saving shocks, effective-labour convergence, and Cobb-Douglas closed forms.",
+  "source_provenance": "4bed57534cf4f5562be8b90c481bb3dd54360fe0",
+  "theorydebugger": {
+    "cases": 10,
+    "certificates": 20,
+    "saved_evidence_hashes": "passed",
+    "fresh_certificate_compilation": "passed",
+    "original_input_type_checks": "passed",
+    "fresh_certificates_sha256": "32febec3b163ed778e5a1a019ba0b4b55fb280501e940fa00cfd565a936dc6b9",
+    "axioms": {
+      "Evidence0.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence0.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence1.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence2.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence2.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence3.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence4.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence4.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence5.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence6.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence6.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence7.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence8.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence8.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence9.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence10.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence10.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence11.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence11.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence12.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence12.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence13.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence14.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence14.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence15.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence16.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence16.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence17.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence17.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence18.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence18.checkedFeasible": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Evidence19.checkedClaim": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
+  }
 }

@@ -1,0 +1,8 @@
+C:\Users\admin\.codex\worktrees\a161\GURU\economicgrowth-solow-acemoglu\SolowSwan\verification\theorydebugger\certificates\ae74cbb07abab264c8b8\Certificate.lean:27:80: warning: Unused tactic linter: `nlinarith` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+C:\Users\admin\.codex\worktrees\a161\GURU\economicgrowth-solow-acemoglu\SolowSwan\verification\theorydebugger\certificates\ae74cbb07abab264c8b8\Certificate.lean:27:80: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+TheoryDebugger.Generated.claim : original
+'TheoryDebugger.Generated.claim' depends on axioms: [propext, Classical.choice, Quot.sound]

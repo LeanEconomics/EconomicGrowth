@@ -36,5 +36,10 @@ jobs:
                      if line.startswith('import Mathlib.')}
           subprocess.run(['lake', 'exe', 'cache', 'get', *sorted(imports)], check=True)
           PY
+      - name: Test verification failure paths
+        if: ${{ hashFiles(format('{0}/scripts/test_*.py', matrix.project)) != '' }}
+        env:
+          GROWTH_TEST_LEAN: '1'
+        run: GROWTH_LAKE="$(command -v lake)" python -m unittest discover -s scripts -p 'test_*.py' -v
       - name: Build and audit every proof
         run: python scripts/verify.py

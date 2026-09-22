@@ -1,0 +1,43 @@
+{
+  "variables": [
+    "D",
+    "k",
+    "response"
+  ],
+  "assumptions": [
+    [
+      ">",
+      "D",
+      0
+    ],
+    [
+      ">",
+      "k",
+      0
+    ],
+    [
+      "=",
+      [
+        "*",
+        "D",
+        "response"
+      ],
+      [
+        "*",
+        -1,
+        "k"
+      ]
+    ]
+  ],
+  "goal": [
+    "<",
+    "response",
+    0
+  ],
+  "witness": {
+    "D": 1,
+    "k": 2,
+    "response": -2
+  },
+  "name": "dilution_derivative_negative"
+}
