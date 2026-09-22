@@ -1,0 +1,8 @@
+C:\Users\admin\.codex\worktrees\a161\GURU\ramsey-cass-koopmans-lean\verification\theorydebugger\certificates\26c7c31b2303d350ab98\Certificate.lean:26:59: warning: Unused tactic linter: `subst_vars` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+C:\Users\admin\.codex\worktrees\a161\GURU\ramsey-cass-koopmans-lean\verification\theorydebugger\certificates\26c7c31b2303d350ab98\Certificate.lean:26:71: warning: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+TheoryDebugger.Generated.claim : original
+'TheoryDebugger.Generated.claim' depends on axioms: [propext, Classical.choice, Quot.sound]

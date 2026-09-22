@@ -1,0 +1,18 @@
+name = "RamseyCassKoopmans"
+version = "0.1.0"
+defaultTargets = ["RamseyCassKoopmans"]
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+# The original contribution uses Unlicense rather than Mathlib's Apache header.
+linter.style.header = false
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "v4.34.0"
+
+[[lean_lib]]
+name = "RamseyCassKoopmans"

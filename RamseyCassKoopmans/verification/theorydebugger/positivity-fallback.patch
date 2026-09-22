@@ -1,0 +1,18 @@
+--- a/src/theorydebugger/certificates.py
++++ b/src/theorydebugger/certificates.py
+@@ -86,13 +86,13 @@
+         if kind == "false_throughout":
+             proof += "  intro h_goal\n"
+         proof += "  exact True.intro" if kind == "valid" and p.goal.op == "true" else \
+-            "  first | (solve | norm_num at *) | nlinarith"
++            "  first | (solve | norm_num at *) | positivity | nlinarith"
+         statement = "original" if kind == "valid" else formal_goal(p, "False")
+         if kind == "false_throughout":
+             statement = formal_goal(p, f"¬ {render(p.goal, symbols(p))}")
+         add({"valid": "claim", "inconsistent": "contradiction", "false_throughout": "no_satisfying"}[kind],
+             statement, proof,
+-            "The original goal follows by checked arithmetic from the listed assumptions and nonnegative squares."
++            "The original goal follows by checked arithmetic or sign reasoning from the listed assumptions and nonnegative squares."
+             if kind == "valid" else "The goal fails under every feasible assignment."
+             if kind == "false_throughout" else "The listed assumptions imply False; there is no feasible real assignment.")
+         if kind == "inconsistent":

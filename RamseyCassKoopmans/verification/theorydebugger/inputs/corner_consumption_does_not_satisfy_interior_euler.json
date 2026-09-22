@@ -1,0 +1,38 @@
+{
+  "variables": [
+    "r"
+  ],
+  "assumptions": [
+    [
+      ">",
+      "r",
+      0
+    ],
+    [
+      "<=",
+      "r",
+      1
+    ]
+  ],
+  "goal": [
+    "=",
+    "-1/2",
+    [
+      "-",
+      [
+        "*",
+        3,
+        [
+          "^",
+          "r",
+          2
+        ]
+      ],
+      4
+    ]
+  ],
+  "witness": {
+    "r": 1
+  },
+  "name": "corner_consumption_does_not_satisfy_interior_euler"
+}

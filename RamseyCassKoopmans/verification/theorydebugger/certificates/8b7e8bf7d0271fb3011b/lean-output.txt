@@ -1,0 +1,5 @@
+C:\Users\admin\.codex\worktrees\a161\GURU\ramsey-cass-koopmans-lean\verification\theorydebugger\certificates\8b7e8bf7d0271fb3011b\Certificate.lean:23:59: warning: Unused tactic linter: `subst_vars` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+TheoryDebugger.Generated.claim : original
+'TheoryDebugger.Generated.claim' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,12 @@
+TheoryDebugger.Generated.sample_h0 : 1 > 0
+'TheoryDebugger.Generated.sample_h0' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.sample_h1 : 1 ≤ 1
+'TheoryDebugger.Generated.sample_h1' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.feasible : ∃ _v0 > 0, _v0 ≤ 1
+'TheoryDebugger.Generated.feasible' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.refuting : ∃ _v0, (_v0 > 0 ∧ _v0 ≤ 1) ∧ ¬-1 / 2 = 3 * _v0 ^ 2 - 4
+'TheoryDebugger.Generated.refuting' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.sample_not_goal : ¬-1 / 2 = 3 * 1 ^ 2 - 4
+'TheoryDebugger.Generated.sample_not_goal' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.refutation : ¬original
+'TheoryDebugger.Generated.refutation' depends on axioms: [propext, Classical.choice, Quot.sound]

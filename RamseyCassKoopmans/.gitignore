@@ -1,0 +1,8 @@
+.lake/
+__pycache__/
+*.pyc
+*.olean
+
+verification/FreshCertificates.lean
+
+verification/fresh-certificates.txt

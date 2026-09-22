@@ -1,0 +1,9 @@
+TheoryDebugger.Generated.feasible : ∃ _v0 _v1 _v2 _v3 _v4 _v5 _v6 _v7, True
+'TheoryDebugger.Generated.feasible' depends on axioms: [propext, Classical.choice, Quot.sound]
+TheoryDebugger.Generated.satisfying :
+  ∃ _v0 _v1 _v2 _v3 _v4 _v5 _v6 _v7,
+    True ∧
+      _v0 =
+        _v0 - _v5 * (_v1 - _v2) + _v5 * (_v1 - _v4 * _v3) + (_v6 - _v5) * _v2 -
+          ((_v7 * _v6 - _v5 * _v4) * _v3 + _v6 * (_v2 - _v7 * _v3))
+'TheoryDebugger.Generated.satisfying' depends on axioms: [propext, Classical.choice, Quot.sound]
