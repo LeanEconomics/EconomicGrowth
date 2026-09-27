@@ -1,6 +1,6 @@
 name = "RamseyCassKoopmans"
 version = "0.1.0"
-defaultTargets = ["RamseyCassKoopmans"]
+defaultTargets = ["RamseyCassKoopmans", "DiscreteTime"]
 
 [leanOptions]
 autoImplicit = false
@@ -16,3 +16,6 @@ rev = "v4.34.0"
 
 [[lean_lib]]
 name = "RamseyCassKoopmans"
+
+[[lean_lib]]
+name = "DiscreteTime"

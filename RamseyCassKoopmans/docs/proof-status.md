@@ -90,8 +90,9 @@ state (assuming `f''(k*) < 0`); comparative statics with derivatives and compara
 dynamics of a change in patience; the value function's monotonicity, strict
 concavity and envelope theorem; and both welfare theorems for a competitive
 decentralization with irreversible investment. See
-[the extensions](cass-extensions.md). The fresh source audit now checks 507
-theorems and 722 declarations in 60 modules.
+[the extensions](cass-extensions.md). A discrete-time library covers the
+standard discrete model ([discrete time](discrete-time.md)). The fresh source audit
+now checks 581 theorems and 830 declarations in 65 modules.
 
 ## Koopmans boundary obstruction
 
