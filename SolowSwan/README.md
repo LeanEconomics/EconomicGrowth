@@ -7,7 +7,7 @@ root. [Return to the growth library index](../README.md).
 
 A checked formalization of general neoclassical Solow–Swan growth using
 **Acemoglu, Chapter 2**, alongside the original Solow (1956) Cobb–Douglas proofs.
-The library contains **132 theorems** and audits **159 declarations**, including structure constructors and projections.
+The library contains **162 theorems** and audits **196 declarations**, including structure constructors and projections.
 It constructs global positive solutions, proves uniqueness, strict monotone
 convergence and stability, establishes all eight source comparative-statics
 signs, and connects Golden Rule saving to the stationary Cass condition.
@@ -60,6 +60,7 @@ neoclassical convergence in the separately documented modules below.
 | [SolowGoldenRule](Solow1956/Growth/SolowGoldenRule.lean) | 9 | Golden Rule saving and stationary Cass connection |
 | [GeneralSolowApplications](Solow1956/Growth/GeneralSolowApplications.lean) | 4 | Stability, saving shock, effective-labour convergence |
 | [GeneralSolowExamples](Solow1956/Growth/GeneralSolowExamples.lean) | 6 | Powers, sums of powers, and assumption checks |
+| [SolowConvergence](Solow1956/Growth/SolowConvergence.lean) | 30 | Absolute convergence of identical economies: no crossing, poorer grows faster, uniform exponential rate, sharp rate `m - s f'(k*)` (`(1-α)m` for Cobb–Douglas) |
 | [Analysis helpers](Solow1956/Analysis/) | 17 | Global ODE construction, scalar dynamics, and limits |
 
 Import `Solow1956`. For the original explicit solution, start with

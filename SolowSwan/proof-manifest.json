@@ -13,7 +13,8 @@
     "Solow1956/Growth/SolowComparative.lean",
     "Solow1956/Growth/SolowGoldenRule.lean",
     "Solow1956/Growth/GeneralSolowApplications.lean",
-    "Solow1956/Growth/GeneralSolowExamples.lean"
+    "Solow1956/Growth/GeneralSolowExamples.lean",
+    "Solow1956/Growth/SolowConvergence.lean"
   ],
   "theorem_counts": {
     "Solow1956/Growth/SolowSwan.lean": 16,
@@ -28,9 +29,10 @@
     "Solow1956/Growth/SolowComparative.lean": 18,
     "Solow1956/Growth/SolowGoldenRule.lean": 9,
     "Solow1956/Growth/GeneralSolowApplications.lean": 4,
-    "Solow1956/Growth/GeneralSolowExamples.lean": 6
+    "Solow1956/Growth/GeneralSolowExamples.lean": 6,
+    "Solow1956/Growth/SolowConvergence.lean": 30
   },
-  "scope": "General neoclassical continuous-time Solow-Swan growth from positive capital: existence, positivity, uniqueness among nonnegative classical paths, strict monotone convergence, Lyapunov stability, all eight Acemoglu comparative-statics partials, Golden Rule saving, a stationary Cass bridge, saving shocks, effective-labour convergence, and Cobb-Douglas closed forms.",
+  "scope": "General neoclassical continuous-time Solow-Swan growth from positive capital: existence, positivity, uniqueness among nonnegative classical paths, strict monotone convergence, Lyapunov stability, all eight Acemoglu comparative-statics partials, Golden Rule saving, a stationary Cass bridge, saving shocks, effective-labour convergence, and Cobb-Douglas closed forms, absolute convergence among identical economies with a uniform exponential rate and the sharp asymptotic rate m - s f'(k*).",
   "source_commit": "4bed57534cf4f5562be8b90c481bb3dd54360fe0",
   "source_files": {
     "Solow1956/Growth/SolowSwan.lean": {
