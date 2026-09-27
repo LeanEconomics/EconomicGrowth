@@ -1,5 +1,8 @@
 {
   "library": "RamseyCassKoopmans",
+  "additional_libraries": [
+    "DiscreteTime"
+  ],
   "modules": [
     "RamseyCassKoopmans/Model.lean",
     "RamseyCassKoopmans/Algebra.lean",
@@ -52,7 +55,20 @@
     "RamseyCassKoopmans/Hamiltonian.lean",
     "RamseyCassKoopmans/KoopmansBoundaryEconomy.lean",
     "RamseyCassKoopmans/KoopmansBoundaryCompetitor.lean",
-    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean"
+    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean",
+    "RamseyCassKoopmans/CassCertified.lean",
+    "RamseyCassKoopmans/CassPolicy.lean",
+    "RamseyCassKoopmans/RiccatiRate.lean",
+    "RamseyCassKoopmans/CassRate.lean",
+    "RamseyCassKoopmans/CassComparative.lean",
+    "RamseyCassKoopmans/CassValue.lean",
+    "RamseyCassKoopmans/CassEnvelope.lean",
+    "RamseyCassKoopmans/CassDecentralization.lean",
+    "DiscreteTime/Model.lean",
+    "DiscreteTime/Bellman.lean",
+    "DiscreteTime/Euler.lean",
+    "DiscreteTime/Dynamics.lean",
+    "DiscreteTime/Envelope.lean"
   ],
   "theorem_counts": {
     "RamseyCassKoopmans/Model.lean": 5,
@@ -106,7 +122,20 @@
     "RamseyCassKoopmans/Hamiltonian.lean": 3,
     "RamseyCassKoopmans/KoopmansBoundaryEconomy.lean": 24,
     "RamseyCassKoopmans/KoopmansBoundaryCompetitor.lean": 7,
-    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean": 5
+    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean": 5,
+    "RamseyCassKoopmans/CassCertified.lean": 17,
+    "RamseyCassKoopmans/CassPolicy.lean": 11,
+    "RamseyCassKoopmans/RiccatiRate.lean": 4,
+    "RamseyCassKoopmans/CassRate.lean": 13,
+    "RamseyCassKoopmans/CassComparative.lean": 18,
+    "RamseyCassKoopmans/CassValue.lean": 13,
+    "RamseyCassKoopmans/CassEnvelope.lean": 4,
+    "RamseyCassKoopmans/CassDecentralization.lean": 4,
+    "DiscreteTime/Model.lean": 20,
+    "DiscreteTime/Bellman.lean": 16,
+    "DiscreteTime/Euler.lean": 12,
+    "DiscreteTime/Dynamics.lean": 22,
+    "DiscreteTime/Envelope.lean": 4
   },
-  "scope": "General positive-discount Cass constructed existence, capital and consumption monotonicity, convergence, eventual positive investment, finite candidate welfare, all-competitor asymptotic welfare dominance, and finite-welfare optimality/uniqueness from primitive Inada and C2 assumptions. Explicit square-root specialization. Certified obstruction to the regular convergent Euler characterization under Koopmans appendix scalar assumptions. Original undiscounted Ramsey and zero/negative-discount extensions are outside scope."
+  "scope": "General positive-discount Cass constructed existence, capital and consumption monotonicity, convergence, eventual positive investment, finite candidate welfare, all-competitor asymptotic welfare dominance, and finite-welfare optimality/uniqueness from primitive Inada and C2 assumptions. Explicit square-root specialization. Certified obstruction to the regular convergent Euler characterization under Koopmans appendix scalar assumptions. Original undiscounted Ramsey and zero/negative-discount extensions are outside scope. A discrete-time library (DiscreteTime/) proves existence, uniqueness, the Bellman and Euler equations, the policy function, monotone convergence, and the envelope theorem for the discrete Ramsey-Cass model."
 }

@@ -44,6 +44,34 @@ class VerifierTests(unittest.TestCase):
             with self.assertRaisesRegex(verify.VerificationError, "only imports"):
                 verify.validate_inventory(root, config)
 
+    def make_additional_library(self, root, config):
+        (root / "Extra").mkdir()
+        (root / "Extra/B.lean").write_text(
+            "namespace Extra\nlemma checked : True := by trivial\nend Extra\n",
+            encoding="utf-8")
+        (root / "Extra.lean").write_text("import Extra.B\n", encoding="utf-8")
+        config["additional_libraries"] = ["Extra"]
+        config["modules"].append("Extra/B.lean")
+        config["theorem_counts"]["Extra/B.lean"] = 1
+        return config
+
+    def test_additional_library_is_audited(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = self.make_additional_library(root, self.make_library(root))
+            verify.validate_inventory(root, config)
+            (root / "Extra/Omitted.lean").write_text("", encoding="utf-8")
+            with self.assertRaisesRegex(verify.VerificationError, "every library module"):
+                verify.validate_inventory(root, config)
+
+    def test_additional_library_root_must_import_its_modules(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = self.make_additional_library(root, self.make_library(root))
+            (root / "Extra.lean").write_text("/- import Extra.B -/\n", encoding="utf-8")
+            with self.assertRaisesRegex(verify.VerificationError, "every audited module"):
+                verify.validate_inventory(root, config)
+
     def test_manifest_duplicate_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -138,7 +166,8 @@ for check in checks:
             self.assertIn("#print axioms " + declaration["name"], fresh)
         self.assertTrue(any(d["kind"] == "constructor" for d in declarations))
         self.assertTrue(any(d["kind"] == "projection" for d in declarations))
-        self.assertNotIn("import " + config["library"], fresh)
+        for library in verify.libraries(config):
+            self.assertNotIn("import " + library, fresh)
 
 
 if __name__ == "__main__":

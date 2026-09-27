@@ -103,27 +103,39 @@ def imports_on_line(line):
     return modules
 
 
+def libraries(config):
+    """The primary library followed by any additional audited libraries."""
+    return [config["library"]] + list(config.get("additional_libraries", []))
+
+
+def is_library_import(item, config):
+    return any(item == lib or item.startswith(lib + ".") for lib in libraries(config))
+
+
 def validate_inventory(root, config):
-    library = config["library"]
     modules = config["modules"]
     require(len(modules) == len(set(modules)), "Duplicate modules in proof manifest")
-    inventory = {p.relative_to(root).as_posix() for p in (root / library).rglob("*.lean")}
+    inventory = set()
+    for library in libraries(config):
+        inventory |= {p.relative_to(root).as_posix() for p in (root / library).rglob("*.lean")}
     require(set(modules) == inventory,
             f"Proof manifest must cover every library module: {set(modules) ^ inventory}")
     require(set(config["theorem_counts"]) == inventory,
             "Theorem-count inventory must match all library modules")
-    root_source = uncomment((root / f"{library}.lean").read_text(encoding="utf-8"))
-    check_source(root_source, f"{library}.lean")
-    root_imports = set()
-    for line in root_source.splitlines():
-        if not line.strip():
-            continue
-        imported = imports_on_line(line)
-        require(imported is not None, "Root library must contain only imports and comments")
-        root_imports.update(item.replace(".", "/") + ".lean" for item in imported
-                            if item.startswith(library + "."))
-    require(root_imports == inventory,
-            f"Root library must import every audited module: {root_imports ^ inventory}")
+    for library in libraries(config):
+        library_modules = {m for m in inventory if m.startswith(library + "/")}
+        root_source = uncomment((root / f"{library}.lean").read_text(encoding="utf-8"))
+        check_source(root_source, f"{library}.lean")
+        root_imports = set()
+        for line in root_source.splitlines():
+            if not line.strip():
+                continue
+            imported = imports_on_line(line)
+            require(imported is not None, "Root library must contain only imports and comments")
+            root_imports.update(item.replace(".", "/") + ".lean" for item in imported
+                                if item.startswith(library + "."))
+        require(root_imports == library_modules,
+                f"Root library must import every audited module: {root_imports ^ library_modules}")
 
 
 def scan_declarations(clean, module):
@@ -174,7 +186,6 @@ def scan_declarations(clean, module):
 def collect_sources(root, config):
     validate_inventory(root, config)
     imports, bodies, declarations, counts, hashes = [], [], [], {}, {}
-    library = config["library"]
     for module in config["modules"]:
         path = root / module
         raw = path.read_text(encoding="utf-8")
@@ -190,7 +201,7 @@ def collect_sources(root, config):
                 body.append(raw_line)
             else:
                 for item in imported:
-                    if item != library and not item.startswith(library + "."):
+                    if not is_library_import(item, config):
                         statement = "import " + item
                         if statement not in imports:
                             imports.append(statement)
@@ -251,7 +262,8 @@ def main():
     axioms = audit_axioms(log, declarations)
     evidence = verify_evidence(ROOT, cases(), uncomment, lambda path:
         run([args.lake, "env", "lean", str(path)], "fresh-certificates.txt"))
-    for name in (f"{config['library']}.lean", "lean-toolchain", "lakefile.toml",
+    for name in (*(f"{library}.lean" for library in libraries(config)),
+                 "lean-toolchain", "lakefile.toml",
                  "lake-manifest.json", "proof-manifest.json", "scripts/verify.py", "scripts/verify_evidence.py",
                  "scripts/check_theorydebugger.py", "UNLICENSE"):
         hashes[name] = digest(ROOT / name)

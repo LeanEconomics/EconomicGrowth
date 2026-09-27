@@ -25,6 +25,11 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.Order.Lattice
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
+import Mathlib.Analysis.Normed.Group.FunctionSeries
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 set_option autoImplicit false
 
 
@@ -6690,6 +6695,4079 @@ theorem no_convergent_euler_path (a : FeasiblePath production 1) (cd : ℝ → �
 
 end RamseyCassKoopmans.KoopmansBoundary
 
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# Certified Cass optima, time shifts, and time consistency
+
+`CassPrimitives` bundles the Inada and curvature assumptions of
+`cass_general_dynamic`. `CassCertificate` records a current-value costate with
+the wedge, complementary slackness and transversality conditions. We prove:
+
+* `exists_certified`: from every positive stock the constructed optimum carries
+  a certificate;
+* `CassCertificate.isCassOptimal`, `CassCertificate.eq_of_isCassOptimal`: a
+  certificate makes a path optimal, and every optimum with the same initial stock
+  coincides with it;
+* `FeasiblePath.shift`, `CassCertificate.shift`: the tail of a certified path
+  after any date is a certified path from the stock it has reached;
+* `CassCertificate.dynamics`: every certified path converges monotonically to the
+  steady state (transferred from the construction by uniqueness);
+* `CassCertificate.tail_eq`: time consistency, the tail of an optimum is the
+  optimum from the stock reached.
+-/
+
+open Set Filter
+open scoped Topology
+
+namespace RamseyCassKoopmans
+
+variable {f U : ℝ → ℝ} {d m : ℝ}
+
+/-- The primitive assumptions of `cass_general_dynamic`. -/
+structure CassPrimitives (f U : ℝ → ℝ) (d m : ℝ) : Prop where
+  d_pos : 0 < d
+  m_pos : 0 < m
+  f_conc : StrictConcaveOn ℝ (Ici 0) f
+  f_zero : f 0 = 0
+  f_diff : ∀ k, 0 < k → DifferentiableAt ℝ f k
+  f_prime_cont : ContinuousOn (deriv f) (Ioi 0)
+  f_prime_pos : ∀ k, 0 < k → 0 < deriv f k
+  f_second : ∀ k, 0 < k → DifferentiableAt ℝ (deriv f) k
+  f_second_cont : ContinuousOn (deriv (deriv f)) (Ioi 0)
+  f_inada0 : Tendsto (deriv f) (𝓝[>] (0 : ℝ)) atTop
+  f_inadaTop : Tendsto (deriv f) atTop (𝓝 (0 : ℝ))
+  U_conc : StrictConcaveOn ℝ (Ioi 0) U
+  U_diff : ∀ c, 0 < c → DifferentiableAt ℝ U c
+  U_prime_pos : ∀ c, 0 < c → 0 < deriv U c
+  U_second : ∀ c, 0 < c → DifferentiableAt ℝ (deriv U) c
+  U_second_cont : ContinuousOn (deriv (deriv U)) (Ioi 0)
+  U_second_neg : ∀ c, 0 < c → deriv (deriv U) c < 0
+  U_inada0 : Tendsto (deriv U) (𝓝[>] (0 : ℝ)) atTop
+
+theorem CassPrimitives.U_cont (P : CassPrimitives f U d m) : ContinuousOn U (Ioi 0) :=
+  fun c hc => (P.U_diff c hc).continuousAt.continuousWithinAt
+
+theorem CassPrimitives.U_prime_cont (P : CassPrimitives f U d m) :
+    ContinuousOn (deriv U) (Ioi 0) :=
+  fun c hc => (P.U_second c hc).continuousAt.continuousWithinAt
+
+theorem CassPrimitives.existsUnique_steady (P : CassPrimitives f U d m) :
+    ∃! k : ℝ, 0 < k ∧ deriv f k = d + m :=
+  existsUnique_stationary_capital_of_inada f d m (add_pos P.d_pos P.m_pos) P.f_conc
+    P.f_diff P.f_prime_cont P.f_inada0 P.f_inadaTop
+
+/-- The modified-Golden-Rule steady state, `f'(k*) = d + m`. -/
+noncomputable def cassSteady (P : CassPrimitives f U d m) : ℝ :=
+  Classical.choose P.existsUnique_steady.exists
+
+theorem cassSteady_spec (P : CassPrimitives f U d m) :
+    0 < cassSteady P ∧ deriv f (cassSteady P) = d + m :=
+  Classical.choose_spec P.existsUnique_steady.exists
+
+theorem cassSteady_eq (P : CassPrimitives f U d m) {k : ℝ} (hk : 0 < k)
+    (he : deriv f k = d + m) : cassSteady P = k :=
+  P.existsUnique_steady.unique (cassSteady_spec P) ⟨hk, he⟩
+
+theorem CassPrimitives.exists_capacity (P : CassPrimitives f U d m) (k0 : ℝ) :
+    ∃ K, k0 ≤ K ∧ ∀ k, K ≤ k → f k ≤ m * k :=
+  exists_capacity_of_marginal_tendsto_zero f P.m_pos P.f_conc.concaveOn P.f_diff
+    (fun k hk => (P.f_prime_pos k hk).le) P.f_inadaTop
+
+/-- A current-value costate certifying a Cass path: the costate equation, the
+investment wedge, complementary slackness, transversality and finite welfare. -/
+structure CassCertificate (f U : ℝ → ℝ) (d m : ℝ) (a : FeasiblePath f m) (q : ℝ → ℝ) : Prop where
+  capital_pos : ∀ t, 0 ≤ t → 0 < a.capital t
+  investment_nonneg : a.NonnegativeInvestment
+  price_nonneg : ∀ t, 0 ≤ t → 0 ≤ q t
+  costate : ∀ t, 0 ≤ t → HasDerivAt q
+    ((d + m) * q t - deriv U (a.consumption t) * deriv f (a.capital t)) t
+  wedge : ∀ t, 0 ≤ t → q t ≤ deriv U (a.consumption t)
+  slack : ∀ t, 0 ≤ t → (q t - deriv U (a.consumption t)) * a.investment t = 0
+  transversality : Tendsto (fun t => discount d t * q t) atTop (𝓝 0)
+  welfare : ∃ J, HasWelfare U (discount d) a.consumption J
+
+/-- From every positive stock, the constructed optimum carries a certificate. -/
+theorem exists_certified (P : CassPrimitives f U d m) {k0 : ℝ} (hk0 : 0 < k0) :
+    ∃ a : FeasiblePath f m, ∃ q : ℝ → ℝ, a.capital 0 = k0 ∧ CassCertificate f U d m a q := by
+  obtain ⟨ks, _, _, ⟨D⟩⟩ := exists_cass_data_of_inada f U d m k0 P.d_pos P.m_pos hk0
+    P.f_conc P.f_zero P.f_diff P.f_prime_cont P.f_prime_pos P.f_second P.f_second_cont
+    P.f_inada0 P.f_inadaTop P.U_conc P.U_diff P.U_prime_pos P.U_second P.U_second_cont
+    P.U_second_neg P.U_inada0
+  let p := D.phase
+  obtain ⟨_, _, hCLip, _⟩ := D.demand_bounded
+  obtain ⟨_, _, hFLip, _⟩ := D.production_bounded
+  obtain ⟨γ, h0, hd, hclipq, hlim, -, -, -⟩ := p.exists_convergent_trajectory
+    D.bounded D.net_mono D.consumption_mem D.net_gap D.time_nonneg D.price_large
+    D.time_large D.initial_mem
+  have hclip := fun t ht => (hclipq t ht).1
+  have hmul : p.μ = deriv U := D.marginalUtility_eq
+  have hmp : p.mp = deriv p.f := by rw [D.production_eq]; exact D.marginalProduct_eq
+  have hres : ∃ a : FeasiblePath p.f p.m, ∃ q : ℝ → ℝ, a.capital 0 = k0 ∧
+      CassCertificate p.f U p.d p.m a q := by
+    let a := p.feasiblePath γ hCLip.continuous hFLip.continuous hd hclip
+    have hcostate := p.path_costate hd hclip
+    rw [hmp, hmul] at hcostate
+    have hwedge := p.path_wedge_slack hclip
+    rw [hmul] at hwedge
+    refine ⟨a, fun t => (γ t).2, h0, ⟨p.path_capital_pos γ hclip,
+      fun t _ => cass_investment_nonneg p.f p.C (p.point (γ t)), ?_, hcostate,
+      fun t ht => (hwedge t ht).1, fun t ht => (hwedge t ht).2,
+      Terminal.discounted_price_tendsto_zero p.d_pos hlim.snd_nhds, ?_⟩⟩
+    · intro t ht
+      have hq := congrArg Prod.snd (hclip t ht)
+      exact hq ▸ (p.price_mem (γ t).2).1
+    · exact exists_hasWelfare_of_compact_consumption U a.consumption p.d_pos p.ca_le_cb
+        (P.U_cont.mono (fun _ hx => p.ca_pos.trans_le hx.1)) a.consumption_continuous
+        (fun t _ => p.consumption_mem (γ t))
+  rw [D.production_eq, D.dilution_eq, D.discount_eq] at hres
+  exact hres
+
+/-- A certificate makes the path optimal in the library's Cass class. -/
+theorem CassCertificate.isCassOptimal (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) {J : ℝ}
+    (hJ : HasWelfare U (discount d) a.consumption J) : IsCassOptimal U d a J := by
+  obtain ⟨K, hK, hcap⟩ := P.exists_capacity (a.capital 0)
+  exact cass_certificate_is_optimal f U q d m K J a P.f_conc.concaveOn P.U_conc.concaveOn
+    P.U_cont P.f_diff P.U_diff P.f_prime_cont P.U_prime_cont hc.capital_pos hc.price_nonneg
+    hc.costate hc.wedge hc.slack hc.investment_nonneg hcap hK hJ hc.transversality
+
+/-- Every optimum with the same initial stock coincides with a certified path. -/
+theorem CassCertificate.eq_of_isCassOptimal (P : CassPrimitives f U d m)
+    {a b : FeasiblePath f m} {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) {Ja Jb : ℝ}
+    (ha : HasWelfare U (discount d) a.consumption Ja) (hb : IsCassOptimal U d b Jb)
+    (hi : a.capital 0 = b.capital 0) :
+    Jb = Ja ∧ ∀ t, 0 ≤ t → b.capital t = a.capital t ∧
+      b.consumption t = a.consumption t ∧ b.investment t = a.investment t := by
+  obtain ⟨K, hK, hcap⟩ := P.exists_capacity (a.capital 0)
+  have hopt := hc.isCassOptimal P ha
+  have heq : Jb = Ja := le_antisymm (hopt.2.2 b hb.1 hi Jb hb.2.1)
+    (hb.2.2 a hc.investment_nonneg hi.symm Ja ha)
+  refine ⟨heq, cass_certificate_unique f U q d m K Ja Jb a b P.f_conc P.U_conc P.U_cont
+    P.f_diff P.U_diff P.f_prime_cont P.U_prime_cont hc.capital_pos ?_ hc.costate hc.wedge
+    hc.slack hb.1 hi hcap hK ha hb.2.1 hc.transversality heq⟩
+  exact fun t ht => P.U_prime_pos _ (a.consumption_pos t ht)
+
+/-- Two certified paths from the same stock coincide at every nonnegative time. -/
+theorem CassCertificate.eq (P : CassPrimitives f U d m) {a b : FeasiblePath f m}
+    {qa qb : ℝ → ℝ} (ha : CassCertificate f U d m a qa) (hb : CassCertificate f U d m b qb)
+    (hi : a.capital 0 = b.capital 0) :
+    ∀ t, 0 ≤ t → b.capital t = a.capital t ∧
+      b.consumption t = a.consumption t ∧ b.investment t = a.investment t := by
+  obtain ⟨Ja, hJa⟩ := ha.welfare
+  obtain ⟨Jb, hJb⟩ := hb.welfare
+  exact (ha.eq_of_isCassOptimal P hJa (hb.isCassOptimal P hJb) hi).2
+
+/-- The path from date `T` on, re-indexed to start at time zero. -/
+noncomputable def FeasiblePath.shift (a : FeasiblePath f m) (T : ℝ) (hT : 0 ≤ T) :
+    FeasiblePath f m where
+  capital := fun t => a.capital (T + t)
+  consumption := fun t => a.consumption (T + t)
+  investment := fun t => a.investment (T + t)
+  capital_nonneg := fun _ ht => a.capital_nonneg _ (add_nonneg hT ht)
+  consumption_pos := fun _ ht => a.consumption_pos _ (add_nonneg hT ht)
+  consumption_continuous := a.consumption_continuous.comp
+    (continuous_const.add continuous_id).continuousOn
+    (fun _ ht => add_nonneg hT (mem_Ici.mp ht))
+  investment_continuous := a.investment_continuous.comp
+    (continuous_const.add continuous_id).continuousOn
+    (fun _ ht => add_nonneg hT (mem_Ici.mp ht))
+  resource := fun _ ht => a.resource _ (add_nonneg hT ht)
+  dynamics := fun t ht => (a.dynamics _ (add_nonneg hT ht)).comp_const_add T t
+
+@[simp] theorem FeasiblePath.shift_capital (a : FeasiblePath f m) {T : ℝ} (hT : 0 ≤ T)
+    (t : ℝ) : (a.shift T hT).capital t = a.capital (T + t) := rfl
+
+@[simp] theorem FeasiblePath.shift_consumption (a : FeasiblePath f m) {T : ℝ} (hT : 0 ≤ T)
+    (t : ℝ) : (a.shift T hT).consumption t = a.consumption (T + t) := rfl
+
+@[simp] theorem FeasiblePath.shift_investment (a : FeasiblePath f m) {T : ℝ} (hT : 0 ≤ T)
+    (t : ℝ) : (a.shift T hT).investment t = a.investment (T + t) := rfl
+
+/-- Welfare of the tail: `W_tail = (J - W(T)) / discount T`. -/
+theorem hasWelfare_shift (P : CassPrimitives f U d m) (a : FeasiblePath f m) {T J : ℝ}
+    (hT : 0 ≤ T) (hJ : HasWelfare U (discount d) a.consumption J) :
+    HasWelfare U (discount d) (a.shift T hT).consumption
+      ((J - welfare U (discount d) a.consumption T) / discount d T) := by
+  have hcont : ContinuousOn (fun t => discount d t * U (a.consumption t)) (Ici 0) :=
+    (discount_continuous d).continuousOn.mul
+      (P.U_cont.comp a.consumption_continuous (fun t ht => a.consumption_pos t ht))
+  have hsplit : ∀ s, 0 ≤ s → welfare U (discount d) (a.shift T hT).consumption s =
+      (welfare U (discount d) a.consumption (T + s) -
+        welfare U (discount d) a.consumption T) / discount d T := by
+    intro s hs
+    have h := welfare_of_tail_eq (tail := (a.shift T hT).consumption) (T := T + s) hT
+      (by linarith) hcont (fun t ht => by
+        simp only [FeasiblePath.shift_consumption]
+        congr 1
+        ring)
+    rw [show T + s - T = s by ring] at h
+    rw [h]
+    field_simp [(discount_pos d T).ne']
+    ring
+  have hlim : Tendsto (fun s => (welfare U (discount d) a.consumption (T + s) -
+      welfare U (discount d) a.consumption T) / discount d T) atTop
+      (𝓝 ((J - welfare U (discount d) a.consumption T) / discount d T)) :=
+    ((hJ.comp (tendsto_atTop_add_const_left atTop T tendsto_id)).sub_const _).div_const _
+  exact hlim.congr' (by
+    filter_upwards [eventually_ge_atTop (0 : ℝ)] with s hs
+    exact (hsplit s hs).symm)
+
+/-- The tail of a certified path is certified from the stock it has reached. -/
+theorem CassCertificate.shift (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) {T : ℝ} (hT : 0 ≤ T) :
+    CassCertificate f U d m (a.shift T hT) (fun t => q (T + t)) := by
+  obtain ⟨J, hJ⟩ := hc.welfare
+  refine ⟨fun t ht => hc.capital_pos _ (add_nonneg hT ht),
+    fun t ht => hc.investment_nonneg _ (add_nonneg hT ht),
+    fun t ht => hc.price_nonneg _ (add_nonneg hT ht),
+    fun t ht => (hc.costate _ (add_nonneg hT ht)).comp_const_add T t,
+    fun t ht => hc.wedge _ (add_nonneg hT ht), fun t ht => hc.slack _ (add_nonneg hT ht),
+    ?_, ⟨_, hasWelfare_shift P a hT hJ⟩⟩
+  have h := (hc.transversality.comp (tendsto_atTop_add_const_left atTop T tendsto_id)).const_mul
+    (Real.exp (d * T))
+  rw [mul_zero] at h
+  refine h.congr (fun t => ?_)
+  simp only [Function.comp_apply, discount, id]
+  rw [← mul_assoc, ← Real.exp_add]
+  congr 2
+  ring
+
+/-- Every certified path converges monotonically to the steady state; the facts are
+transferred from the construction of `cass_general_dynamic` by uniqueness. -/
+theorem CassCertificate.dynamics (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) :
+    Tendsto a.capital atTop (𝓝 (cassSteady P)) ∧
+      Tendsto a.consumption atTop
+        (𝓝 (f (cassSteady P) - m * cassSteady P)) ∧
+      (a.capital 0 < cassSteady P →
+        StrictMonoOn a.capital (Ici 0) ∧ StrictMonoOn a.consumption (Ici 0)) ∧
+      (cassSteady P < a.capital 0 →
+        StrictAntiOn a.capital (Ici 0) ∧ StrictAntiOn a.consumption (Ici 0)) ∧
+      (a.capital 0 = cassSteady P → ∀ t, 0 ≤ t → a.capital t = cassSteady P ∧
+        a.consumption t = f (cassSteady P) - m * cassSteady P) := by
+  obtain ⟨ks, hks, hstat, b, Jb, hb0, hbopt, hbk, hbc, hbmk, hbak, hbmc, hbac, -, hbconst,
+    -, -, -⟩ := cass_general_dynamic f U d m (a.capital 0) P.d_pos P.m_pos (hc.capital_pos 0 le_rfl)
+    P.f_conc P.f_zero P.f_diff P.f_prime_cont P.f_prime_pos P.f_second P.f_second_cont
+    P.f_inada0 P.f_inadaTop P.U_conc P.U_diff P.U_prime_pos P.U_second P.U_second_cont
+    P.U_second_neg P.U_inada0
+  have hks' : cassSteady P = ks := cassSteady_eq P hks hstat
+  obtain ⟨Ja, hJa⟩ := hc.welfare
+  have heq := (hc.eq_of_isCassOptimal P hJa hbopt hb0.symm).2
+  have hk : EqOn a.capital b.capital (Ici 0) := fun t ht => ((heq t ht).1).symm
+  have hcon : EqOn a.consumption b.consumption (Ici 0) := fun t ht => ((heq t ht).2.1).symm
+  have hev : ∀ᶠ t in atTop, t ∈ Ici (0 : ℝ) := eventually_ge_atTop 0
+  rw [hks']
+  refine ⟨hbk.congr' (hev.mono fun t ht => (hk ht).symm),
+    hbc.congr' (hev.mono fun t ht => (hcon ht).symm), fun h => ?_, fun h => ?_, fun h t ht => ?_⟩
+  · exact ⟨(hbmk h).congr hk.symm, (hbmc h).congr hcon.symm⟩
+  · exact ⟨(hbak h).congr hk.symm, (hbac h).congr hcon.symm⟩
+  · obtain ⟨h1, h2, -⟩ := hbconst h t
+    exact ⟨(hk ht).trans h1, (hcon ht).trans h2⟩
+
+/-- Below the steady state a certified path stays strictly below it; above, strictly
+above. -/
+theorem CassCertificate.capital_bounds (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) :
+    (a.capital 0 < cassSteady P → ∀ t, 0 ≤ t → a.capital t < cassSteady P ∧
+      a.consumption t < f (cassSteady P) - m * cassSteady P) ∧
+    (cassSteady P < a.capital 0 → ∀ t, 0 ≤ t → cassSteady P < a.capital t ∧
+      f (cassSteady P) - m * cassSteady P < a.consumption t) := by
+  obtain ⟨hk, hcon, hbelow, habove, -⟩ := hc.dynamics P
+  have hev : ∀ t : ℝ, 0 ≤ t → ∀ᶠ s : ℝ in atTop, t + 1 ≤ s := fun t _ =>
+    eventually_ge_atTop (t + 1)
+  have hm1 : ∀ t, 0 ≤ t → t + 1 ∈ Ici (0 : ℝ) := fun t ht => by
+    simp only [mem_Ici]; linarith
+  have hms : ∀ t s : ℝ, 0 ≤ t → t + 1 ≤ s → s ∈ Ici (0 : ℝ) := fun t s ht hs => by
+    simp only [mem_Ici]; linarith
+  have hlt : ∀ t : ℝ, t < t + 1 := fun t => by linarith
+  refine ⟨fun h t ht => ⟨?_, ?_⟩, fun h t ht => ⟨?_, ?_⟩⟩
+  · have hmono := (hbelow h).1
+    exact (hmono (show t ∈ Ici 0 from ht) (hm1 t ht) (hlt t)).trans_le (ge_of_tendsto hk
+      ((hev t ht).mono fun s hs => hmono.monotoneOn (hm1 t ht) (hms t s ht hs) hs))
+  · have hmono := (hbelow h).2
+    exact (hmono (show t ∈ Ici 0 from ht) (hm1 t ht) (hlt t)).trans_le (ge_of_tendsto hcon
+      ((hev t ht).mono fun s hs => hmono.monotoneOn (hm1 t ht) (hms t s ht hs) hs))
+  · have hanti := (habove h).1
+    exact lt_of_le_of_lt (le_of_tendsto hk ((hev t ht).mono fun s hs =>
+      hanti.antitoneOn (hm1 t ht) (hms t s ht hs) hs))
+      (hanti (show t ∈ Ici 0 from ht) (hm1 t ht) (hlt t))
+  · have hanti := (habove h).2
+    exact lt_of_le_of_lt (le_of_tendsto hcon ((hev t ht).mono fun s hs =>
+      hanti.antitoneOn (hm1 t ht) (hms t s ht hs) hs))
+      (hanti (show t ∈ Ici 0 from ht) (hm1 t ht) (hlt t))
+
+end RamseyCassKoopmans
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# The Cass policy function, non-crossing paths, and absolute convergence
+
+The optimal consumption policy `policy P k` is initial consumption on the unique
+optimum from `k`. By time consistency (`consumption_eq_policy`) every optimal path
+satisfies `c(t) = policy P (k(t))`: the saddle path is the graph of the policy.
+
+Below the steady state every optimal path passes through every higher stock, so
+all optimal paths from stocks in `(0, k*)` are time translates of one another
+(`exists_shift_of_lt`); the same holds above `k*`. Consequences:
+
+* `policy_strictMono`: consumption is strictly increasing in capital;
+* `capital_lt_of_lt`, `consumption_lt_of_lt`: optimal paths of identical economies
+  never cross, and the poorer economy consumes strictly less at every date;
+* `absolute_convergence`: identical economies converge to each other in capital,
+  consumption, and the capital ratio.
+-/
+
+open Set Filter
+open scoped Topology
+
+namespace RamseyCassKoopmans
+
+variable {f U : ℝ → ℝ} {d m : ℝ}
+
+/-- The steady-state consumption `c* = f(k*) - m k*`. -/
+noncomputable def cassSteadyConsumption (P : CassPrimitives f U d m) : ℝ :=
+  f (cassSteady P) - m * cassSteady P
+
+/-- The certified optimum from a positive stock. -/
+noncomputable def optimalPath (P : CassPrimitives f U d m) {k : ℝ} (hk : 0 < k) :
+    FeasiblePath f m :=
+  Classical.choose (exists_certified P hk)
+
+theorem optimalPath_spec (P : CassPrimitives f U d m) {k : ℝ} (hk : 0 < k) :
+    ∃ q, (optimalPath P hk).capital 0 = k ∧ CassCertificate f U d m (optimalPath P hk) q :=
+  Classical.choose_spec (exists_certified P hk)
+
+/-- Optimal consumption as a function of current capital. -/
+noncomputable def policy (P : CassPrimitives f U d m) (k : ℝ) : ℝ :=
+  if hk : 0 < k then (optimalPath P hk).consumption 0 else 0
+
+/-- Time consistency: along any certified path, consumption is the policy
+evaluated at current capital. -/
+theorem consumption_eq_policy (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) {t : ℝ} (ht : 0 ≤ t) :
+    a.consumption t = policy P (a.capital t) := by
+  have hkt := hc.capital_pos t ht
+  obtain ⟨qo, ho0, hoc⟩ := optimalPath_spec P hkt
+  have hs := hc.shift P ht
+  have heq := (hoc.eq P hs (by simp only [FeasiblePath.shift_capital, add_zero]; exact ho0))
+    0 le_rfl
+  simp only [policy, hkt, ↓reduceDIte]
+  simpa only [FeasiblePath.shift_consumption, add_zero] using heq.2.1
+
+/-- Time consistency for the whole tail: from date `T` on, a certified path is the
+optimum from the stock reached. -/
+theorem tail_eq_optimalPath (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) {T : ℝ} (hT : 0 ≤ T) :
+    ∀ t, 0 ≤ t → a.capital (T + t) = (optimalPath P (hc.capital_pos T hT)).capital t ∧
+      a.consumption (T + t) = (optimalPath P (hc.capital_pos T hT)).consumption t := by
+  obtain ⟨qo, ho0, hoc⟩ := optimalPath_spec P (hc.capital_pos T hT)
+  intro t ht
+  have heq := hoc.eq P (hc.shift P hT)
+    (by simp only [FeasiblePath.shift_capital, add_zero]; exact ho0) t ht
+  exact ⟨heq.1, heq.2.1⟩
+
+theorem policy_steady (P : CassPrimitives f U d m) :
+    policy P (cassSteady P) = cassSteadyConsumption P := by
+  have hks := (cassSteady_spec P).1
+  obtain ⟨q, h0, hc⟩ := optimalPath_spec P hks
+  have := ((hc.dynamics P).2.2.2.2 h0 0 le_rfl).2
+  simp only [policy, hks, ↓reduceDIte]
+  exact this
+
+/-- Below the steady state, an optimal path reaches every higher stock below `k*`
+at a positive date. -/
+theorem exists_hit_of_lt (P : CassPrimitives f U d m) {a : FeasiblePath f m} {q : ℝ → ℝ}
+    (hc : CassCertificate f U d m a q) {k1 : ℝ} (h01 : a.capital 0 < k1)
+    (h1s : k1 < cassSteady P) : ∃ τ, 0 < τ ∧ a.capital τ = k1 := by
+  obtain ⟨hk, -, -, -, -⟩ := hc.dynamics P
+  obtain ⟨T, hT⟩ := eventually_atTop.mp ((hk.eventually (lt_mem_nhds h1s)).and
+    (eventually_ge_atTop (0 : ℝ)))
+  have hT0 := (hT T le_rfl).2
+  obtain ⟨τ, hτ, hτeq⟩ := intermediate_value_Icc hT0
+    (a.capital_continuous.mono (fun _ hx => hx.1)) ⟨h01.le, (hT T le_rfl).1.le⟩
+  refine ⟨τ, lt_of_le_of_ne hτ.1 ?_, hτeq⟩
+  rintro rfl
+  exact (ne_of_lt h01) hτeq
+
+/-- Above the steady state, an optimal path reaches every lower stock above `k*`. -/
+theorem exists_hit_of_gt (P : CassPrimitives f U d m) {a : FeasiblePath f m} {q : ℝ → ℝ}
+    (hc : CassCertificate f U d m a q) {k1 : ℝ} (h01 : k1 < a.capital 0)
+    (h1s : cassSteady P < k1) : ∃ τ, 0 < τ ∧ a.capital τ = k1 := by
+  obtain ⟨hk, -, -, -, -⟩ := hc.dynamics P
+  obtain ⟨T, hT⟩ := eventually_atTop.mp ((hk.eventually (gt_mem_nhds h1s)).and
+    (eventually_ge_atTop (0 : ℝ)))
+  have hT0 := (hT T le_rfl).2
+  obtain ⟨τ, hτ, hτeq⟩ := intermediate_value_Icc' hT0
+    (a.capital_continuous.mono (fun _ hx => hx.1)) ⟨(hT T le_rfl).1.le, h01.le⟩
+  refine ⟨τ, lt_of_le_of_ne hτ.1 ?_, hτeq⟩
+  rintro rfl
+  exact (ne_of_gt h01) hτeq
+
+/-- On either side of the steady state, optimal paths are time translates: the path
+from the stock nearer to `k*` is the tail of the path from the stock farther away. -/
+theorem exists_shift_of_between (P : CassPrimitives f U d m) {a b : FeasiblePath f m}
+    {qa qb : ℝ → ℝ} (ha : CassCertificate f U d m a qa) (hb : CassCertificate f U d m b qb)
+    (hbetween : (a.capital 0 < b.capital 0 ∧ b.capital 0 < cassSteady P) ∨
+      (cassSteady P < b.capital 0 ∧ b.capital 0 < a.capital 0)) :
+    ∃ τ, 0 < τ ∧ ∀ t, 0 ≤ t → b.capital t = a.capital (τ + t) ∧
+      b.consumption t = a.consumption (τ + t) := by
+  obtain ⟨τ, hτ, hτeq⟩ : ∃ τ, 0 < τ ∧ a.capital τ = b.capital 0 := by
+    rcases hbetween with ⟨h1, h2⟩ | ⟨h1, h2⟩
+    · exact exists_hit_of_lt P ha h1 h2
+    · exact exists_hit_of_gt P ha h2 h1
+  refine ⟨τ, hτ, fun t ht => ?_⟩
+  have heq := ha.shift P hτ.le |>.eq P hb
+    (by simp only [FeasiblePath.shift_capital, add_zero]; exact hτeq) t ht
+  exact ⟨heq.1, heq.2.1⟩
+
+/-- Optimal paths of identical economies never cross. -/
+theorem capital_lt_of_lt (P : CassPrimitives f U d m) {a b : FeasiblePath f m}
+    {qa qb : ℝ → ℝ} (ha : CassCertificate f U d m a qa) (hb : CassCertificate f U d m b qb)
+    (h0 : a.capital 0 < b.capital 0) {t : ℝ} (ht : 0 ≤ t) : a.capital t < b.capital t := by
+  set ks := cassSteady P
+  obtain ⟨-, -, habelow, -, haconst⟩ := ha.dynamics P
+  obtain ⟨-, -, -, hbabove, hbconst⟩ := hb.dynamics P
+  obtain ⟨hab1, -⟩ := ha.capital_bounds P
+  obtain ⟨-, hbb2⟩ := hb.capital_bounds P
+  rcases lt_trichotomy (b.capital 0) ks with h1 | h1 | h1
+  · -- both below: `b` is a tail of `a`
+    obtain ⟨τ, hτ, hshift⟩ := exists_shift_of_between P ha hb (Or.inl ⟨h0, h1⟩)
+    rw [(hshift t ht).1]
+    exact (habelow (h0.trans h1)).1 ht (by simp only [mem_Ici]; linarith) (by linarith)
+  · rw [(hbconst h1 t ht).1]
+    exact ((hab1 (lt_of_lt_of_eq h0 h1)) t ht).1
+  · rcases lt_trichotomy (a.capital 0) ks with h2 | h2 | h2
+    · exact ((hab1 h2) t ht).1.trans ((hbb2 h1) t ht).1
+    · rw [(haconst h2 t ht).1]
+      exact ((hbb2 h1) t ht).1
+    · -- both above: `a` is a tail of `b`
+      obtain ⟨τ, hτ, hshift⟩ := exists_shift_of_between P hb ha (Or.inr ⟨h2, h0⟩)
+      rw [(hshift t ht).1]
+      exact (hbabove h1).1 ht (by simp only [mem_Ici]; linarith) (by linarith)
+
+/-- The optimal consumption policy is strictly increasing in capital. -/
+theorem policy_strictMono (P : CassPrimitives f U d m) : StrictMonoOn (policy P) (Ioi 0) := by
+  intro k0 hk0 k1 hk1 h01
+  have hk0' : (0 : ℝ) < k0 := hk0
+  have hk1' : (0 : ℝ) < k1 := hk1
+  obtain ⟨qa, ha0, ha⟩ := optimalPath_spec P hk0'
+  obtain ⟨qb, hb0, hb⟩ := optimalPath_spec P hk1'
+  set a := optimalPath P hk0'
+  set b := optimalPath P hk1'
+  have hpa : policy P k0 = a.consumption 0 := by simp only [policy, hk0', ↓reduceDIte, a]
+  have hpb : policy P k1 = b.consumption 0 := by simp only [policy, hk1', ↓reduceDIte, b]
+  rw [hpa, hpb]
+  set ks := cassSteady P
+  obtain ⟨-, -, habelow, -, -⟩ := ha.dynamics P
+  obtain ⟨-, -, -, hbabove, hbconst⟩ := hb.dynamics P
+  obtain ⟨hab1, -⟩ := ha.capital_bounds P
+  obtain ⟨-, hbb2⟩ := hb.capital_bounds P
+  have hh0 : a.capital 0 < b.capital 0 := by rw [ha0, hb0]; exact h01
+  rcases lt_trichotomy (b.capital 0) ks with h1 | h1 | h1
+  · obtain ⟨τ, hτ, hshift⟩ := exists_shift_of_between P ha hb (Or.inl ⟨hh0, h1⟩)
+    rw [(hshift 0 le_rfl).2, add_zero]
+    exact (habelow (hh0.trans h1)).2 (mem_Ici.mpr le_rfl) hτ.le hτ
+  · rw [(hbconst h1 0 le_rfl).2]
+    exact ((hab1 (lt_of_lt_of_eq hh0 h1)) 0 le_rfl).2
+  · rcases lt_trichotomy (a.capital 0) ks with h2 | h2 | h2
+    · exact ((hab1 h2) 0 le_rfl).2.trans ((hbb2 h1) 0 le_rfl).2
+    · obtain ⟨-, -, -, -, haconst⟩ := ha.dynamics P
+      rw [(haconst h2 0 le_rfl).2]
+      exact ((hbb2 h1) 0 le_rfl).2
+    · obtain ⟨τ, hτ, hshift⟩ := exists_shift_of_between P hb ha (Or.inr ⟨h2, hh0⟩)
+      rw [(hshift 0 le_rfl).2, add_zero]
+      exact (hbabove h1).2 (mem_Ici.mpr le_rfl) hτ.le hτ
+
+/-- The poorer economy consumes strictly less at every date. -/
+theorem consumption_lt_of_lt (P : CassPrimitives f U d m) {a b : FeasiblePath f m}
+    {qa qb : ℝ → ℝ} (ha : CassCertificate f U d m a qa) (hb : CassCertificate f U d m b qb)
+    (h0 : a.capital 0 < b.capital 0) {t : ℝ} (ht : 0 ≤ t) :
+    a.consumption t < b.consumption t := by
+  rw [consumption_eq_policy P ha ht, consumption_eq_policy P hb ht]
+  exact policy_strictMono P (ha.capital_pos t ht) (hb.capital_pos t ht)
+    (capital_lt_of_lt P ha hb h0 ht)
+
+/-- Absolute convergence: two identical economies converge to each other in capital,
+in consumption, and in the capital ratio, whatever their initial stocks. -/
+theorem absolute_convergence (P : CassPrimitives f U d m) {a b : FeasiblePath f m}
+    {qa qb : ℝ → ℝ} (ha : CassCertificate f U d m a qa) (hb : CassCertificate f U d m b qb) :
+    Tendsto (fun t => b.capital t - a.capital t) atTop (𝓝 0) ∧
+      Tendsto (fun t => b.consumption t - a.consumption t) atTop (𝓝 0) ∧
+      Tendsto (fun t => b.capital t / a.capital t) atTop (𝓝 1) := by
+  obtain ⟨hak, hac, -⟩ := ha.dynamics P
+  obtain ⟨hbk, hbc, -⟩ := hb.dynamics P
+  have hks := (cassSteady_spec P).1
+  refine ⟨by simpa only [sub_self] using hbk.sub hak, by simpa only [sub_self] using hbc.sub hac,
+    ?_⟩
+  have := hbk.div hak (ne_of_gt hks)
+  rw [div_self (ne_of_gt hks)] at this
+  exact this
+
+end RamseyCassKoopmans
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# Analysis lemmas for the local convergence rate
+
+* `hasDerivAt_of_comp_eq`: if `μ ∘ g = q` near `t`, `μ'(g t) ≠ 0` and `g` is
+  continuous and locally injective at `t`, then `g' = q' / μ'`.
+* `tendsto_div_of_deriv_tendsto`: if `φ' → L` then `φ t / t → L`.
+* `riccati_tendsto`: a positive solution of `S' = S² - D S + B` with `D → d > 0` and
+  `B → -A < 0` converges to the positive root `(d + √(d² + 4A)) / 2`. Solutions
+  above that root blow up in finite time and solutions below it turn negative, so
+  a positive solution defined for all large times has no other option.
+-/
+
+open Set Filter
+open scoped Topology
+
+namespace RamseyCassKoopmans
+
+theorem hasDerivAt_of_comp_eq {g μ q : ℝ → ℝ} {t μ' q' : ℝ}
+    (hg : ContinuousAt g t) (hμ : HasDerivAt μ μ' (g t)) (hμ' : μ' ≠ 0)
+    (hq : HasDerivAt q q' t) (heq : ∀ᶠ s in 𝓝 t, μ (g s) = q s)
+    (hinj : ∀ᶠ s in 𝓝[≠] t, g s ≠ g t) : HasDerivAt g (q' / μ') t := by
+  rw [hasDerivAt_iff_tendsto_slope] at hq hμ ⊢
+  have hgt : Tendsto g (𝓝[≠] t) (𝓝[≠] (g t)) :=
+    tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
+      (hg.tendsto.mono_left nhdsWithin_le_nhds) hinj
+  have hslope := hμ.comp hgt
+  have hdiv := hq.div hslope hμ'
+  have heqt : μ (g t) = q t := heq.self_of_nhds
+  refine hdiv.congr' ?_
+  filter_upwards [hinj, nhdsWithin_le_nhds heq, self_mem_nhdsWithin,
+    hslope.eventually (eventually_ne_nhds hμ')] with s hs hμs hst hsl
+  change slope q t s / slope μ (g t) (g s) = slope g t s
+  change slope μ (g t) (g s) ≠ 0 at hsl
+  rw [slope_def_field] at hsl
+  rw [slope_def_field, slope_def_field, slope_def_field, ← hμs, ← heqt]
+  have hst' : s - t ≠ 0 := sub_ne_zero.mpr hst
+  have hgs : g s - g t ≠ 0 := sub_ne_zero.mpr hs
+  have hnum : μ (g s) - μ (g t) ≠ 0 := by
+    intro h0
+    apply hsl
+    rw [h0, zero_div]
+  field_simp
+
+/-- If the derivative of `φ` tends to `L`, then `φ t / t → L`. -/
+theorem tendsto_div_of_deriv_tendsto {φ φ' : ℝ → ℝ} {L T0 : ℝ}
+    (hφ : ∀ t, T0 ≤ t → HasDerivAt φ (φ' t) t) (hlim : Tendsto φ' atTop (𝓝 L)) :
+    Tendsto (fun t => φ t / t) atTop (𝓝 L) := by
+  rw [Metric.tendsto_atTop]
+  intro ε hε
+  obtain ⟨T1, hT1⟩ := Metric.tendsto_atTop.mp hlim (ε / 2) (half_pos hε)
+  set T := max (max T0 T1) 1
+  have hT0 : T0 ≤ T := (le_max_left _ _).trans (le_max_left _ _)
+  have hT1' : T1 ≤ T := (le_max_right _ _).trans (le_max_left _ _)
+  have hTpos : 0 < T := lt_of_lt_of_le one_pos (le_max_right _ _)
+  set ψ : ℝ → ℝ := fun t => φ t - L * t
+  have hmvt : ∀ t, T ≤ t → |ψ t - ψ T| ≤ ε / 2 * (t - T) := by
+    intro t ht
+    have h := norm_image_sub_le_of_norm_deriv_le_segment' (f := ψ) (f' := fun s => φ' s - L)
+      (fun s hs => (((hφ s (hT0.trans hs.1)).sub ((hasDerivAt_id s).const_mul L)).congr_deriv
+        (by simp)).hasDerivWithinAt)
+      (fun s hs => by
+        rw [Real.norm_eq_abs]
+        exact (hT1 s (hT1'.trans hs.1)).le) t ⟨ht, le_rfl⟩
+    simpa only [Real.norm_eq_abs] using h
+  obtain ⟨T2, hT2⟩ : ∃ T2, ∀ t, T2 ≤ t → |ψ T| / t < ε / 2 := by
+    obtain ⟨T2, hT2⟩ := Metric.tendsto_atTop.mp
+      (tendsto_const_nhds.div_atTop tendsto_id : Tendsto (fun t : ℝ => |ψ T| / t) atTop (𝓝 0))
+      (ε / 2) (half_pos hε)
+    refine ⟨T2, fun t ht => ?_⟩
+    have := hT2 t ht
+    rw [Real.dist_eq, sub_zero] at this
+    exact (le_abs_self _).trans_lt this
+  refine ⟨max T T2, fun t ht => ?_⟩
+  have htT : T ≤ t := (le_max_left _ _).trans ht
+  have htpos : 0 < t := hTpos.trans_le htT
+  have hb := hmvt t htT
+  have hc := hT2 t ((le_max_right _ _).trans ht)
+  rw [Real.dist_eq]
+  have hrewrite : φ t / t - L = (ψ T + (ψ t - ψ T)) / t := by
+    simp only [ψ]
+    field_simp
+    ring
+  rw [hrewrite, abs_div, abs_of_pos htpos, div_lt_iff₀ htpos]
+  have h1 : |ψ T + (ψ t - ψ T)| ≤ |ψ T| + |ψ t - ψ T| := abs_add_le _ _
+  have h2 : |ψ T| < ε / 2 * t := by rwa [div_lt_iff₀ htpos] at hc
+  nlinarith
+
+/-- The quotient rule for `S = v/u` with `u' = u D - v` and `v' = u B` gives the
+Riccati right-hand side. -/
+theorem riccati_algebra {u v D B u' v' : ℝ} (hu : u ≠ 0) (hu' : u' = u * D - v)
+    (hv' : v' = u * B) : (v' * u - v * u') / u ^ 2 = (v / u) ^ 2 - D * (v / u) + B := by
+  subst hu' hv'
+  field_simp
+  ring
+
+/-- A positive solution of the Riccati equation `S' = S² - D S + B`, with `D → d > 0`
+and `B → -A < 0`, converges to the positive root `(d + √(d² + 4A)) / 2`. -/
+theorem riccati_tendsto {S D B : ℝ → ℝ} {d A T0 : ℝ} (hd : 0 < d) (hA : 0 < A)
+    (hS : ∀ t, T0 ≤ t → HasDerivAt S (S t ^ 2 - D t * S t + B t) t)
+    (hpos : ∀ t, T0 ≤ t → 0 < S t)
+    (hD : Tendsto D atTop (𝓝 d)) (hB : Tendsto B atTop (𝓝 (-A))) :
+    Tendsto S atTop (𝓝 ((d + Real.sqrt (d ^ 2 + 4 * A)) / 2)) := by
+  set r := Real.sqrt (d ^ 2 + 4 * A) with hr_def
+  have hr2 : r ^ 2 = d ^ 2 + 4 * A := Real.sq_sqrt (by positivity)
+  have hr : d < r := by
+    rw [hr_def]
+    exact (Real.lt_sqrt hd.le).mpr (by linarith)
+  set x := (d + r) / 2 with hx_def
+  set y := (d - r) / 2 with hy_def
+  have hy : y < 0 := by rw [hy_def]; linarith
+  have hx : 0 < x := by rw [hx_def]; linarith
+  have hfac : ∀ s : ℝ, s ^ 2 - d * s - A = (s - x) * (s - y) := by
+    intro s
+    rw [hx_def, hy_def]
+    linear_combination (1 / 4 : ℝ) * hr2
+  have hcont : ∀ a b, T0 ≤ a → ContinuousOn S (Icc a b) := fun a b ha =>
+    HasDerivAt.continuousOn (fun t ht => hS t (ha.trans ht.1))
+  rw [Metric.tendsto_atTop]
+  intro ε hε
+  set e := min (ε / 2) (x / 2) with he_def
+  have he : 0 < e := lt_min (half_pos hε) (half_pos hx)
+  have heε : e < ε := (min_le_left _ _).trans_lt (half_lt_self hε)
+  have hex : e ≤ x / 2 := min_le_right _ _
+  set η := min 1 (min (e / 2) (min (e * x / 8) (-(e * y) / (4 * (x + 1))))) with hη_def
+  have hη1 : η ≤ 1 := min_le_left _ _
+  have hηe : η ≤ e / 2 := (min_le_right _ _).trans (min_le_left _ _)
+  have hηex : η ≤ e * x / 8 :=
+    (min_le_right _ _).trans ((min_le_right _ _).trans (min_le_left _ _))
+  have hηy : η ≤ -(e * y) / (4 * (x + 1)) :=
+    (min_le_right _ _).trans ((min_le_right _ _).trans (min_le_right _ _))
+  have hηpos : 0 < η := by
+    apply lt_min one_pos (lt_min (half_pos he) (lt_min (by positivity) ?_))
+    apply div_pos (by nlinarith) (by linarith)
+  have hηy' : η * (x + 1) ≤ -(e * y) / 4 := by
+    have := (le_div_iff₀ (by linarith : (0 : ℝ) < 4 * (x + 1))).mp hηy
+    nlinarith
+  obtain ⟨N1, hN1⟩ := Metric.tendsto_atTop.mp hD η hηpos
+  obtain ⟨N2, hN2⟩ := Metric.tendsto_atTop.mp hB η hηpos
+  set N := max T0 (max N1 N2)
+  have hNT0 : T0 ≤ N := le_max_left _ _
+  have hDN : ∀ t, N ≤ t → |D t - d| < η := fun t ht => by
+    have := hN1 t ((le_max_left _ _).trans ((le_max_right _ _).trans ht))
+    rwa [Real.dist_eq] at this
+  have hBN : ∀ t, N ≤ t → |B t + A| < η := fun t ht => by
+    have := hN2 t ((le_max_right _ _).trans ((le_max_right _ _).trans ht))
+    rwa [Real.dist_eq, sub_neg_eq_add] at this
+  -- the right-hand side, rewritten around the limiting quadratic
+  have hF : ∀ t, S t ^ 2 - D t * S t + B t =
+      (S t - x) * (S t - y) + (d - D t) * S t + (B t + A) := by
+    intro t
+    have := hfac (S t)
+    linarith
+  -- lower bound: once below `x - e`, a positive solution is driven to zero
+  have hlower : ∀ t, N ≤ t → x - e ≤ S t := by
+    intro t1 ht1
+    by_contra hlt
+    push Not at hlt
+    set c0 := -(e * y) / 4 with hc0
+    have hc0pos : 0 < c0 := by rw [hc0]; nlinarith
+    set b := t1 + S t1 / c0 + 1
+    have htb : t1 ≤ b := by
+      have := div_pos (hpos t1 (hNT0.trans ht1)) hc0pos
+      linarith
+    have hcmp := image_le_of_deriv_right_lt_deriv_boundary' (a := t1) (b := b)
+      (f := S) (f' := fun t => S t ^ 2 - D t * S t + B t)
+      (hcont t1 b (hNT0.trans ht1))
+      (fun t ht => (hS t (hNT0.trans (ht1.trans ht.1))).hasDerivWithinAt)
+      (B := fun t => S t1 - c0 * (t - t1)) (B' := fun _ => -c0)
+      (by simp) (by fun_prop)
+      (fun t _ => ((((hasDerivAt_id t).sub_const t1).const_mul c0).const_sub (S t1)).congr_deriv
+        (by simp) |>.hasDerivWithinAt)
+      (by
+        intro t ht hSB
+        have htN : N ≤ t := ht1.trans ht.1
+        have hSpos := hpos t (hNT0.trans htN)
+        have hSle : S t ≤ S t1 := by
+          rw [hSB]
+          have : 0 ≤ c0 * (t - t1) := mul_nonneg hc0pos.le (sub_nonneg.mpr ht.1)
+          linarith
+        have hSx : S t - x ≤ -e := by linarith
+        have hSy : 0 ≤ S t - y := by linarith
+        have hprod : (S t - x) * (S t - y) ≤ -e * (S t - y) :=
+          mul_le_mul_of_nonneg_right hSx hSy
+        have h1 : (d - D t) * S t ≤ η * S t :=
+          mul_le_mul_of_nonneg_right (by linarith [abs_lt.mp (hDN t htN)]) hSpos.le
+        have h2 : B t + A ≤ η := (le_abs_self _).trans (hBN t htN).le
+        have h5 : η * S t ≤ η * x := mul_le_mul_of_nonneg_left (by linarith) hηpos.le
+        have h6 : 0 ≤ e * S t := mul_nonneg he.le hSpos.le
+        change S t ^ 2 - D t * S t + B t < -c0
+        rw [hF t]
+        linarith)
+    have hb : S b ≤ S t1 - c0 * (b - t1) := hcmp ⟨htb, le_rfl⟩
+    have hbpos := hpos b (hNT0.trans (ht1.trans htb))
+    have : S t1 - c0 * (b - t1) = -c0 := by
+      simp only [b]
+      field_simp
+      ring
+    linarith
+  -- upper bound: once above `x + e`, a solution grows, then blows up in finite time
+  have hupper : ∀ t, N ≤ t → S t ≤ x + e := by
+    intro t1 ht1
+    by_contra hgt
+    push Not at hgt
+    have hT1 : T0 ≤ t1 := hNT0.trans ht1
+    set c1 := e * x / 4 with hc1
+    have hc1pos : 0 < c1 := by rw [hc1]; positivity
+    set M := 4 * (d + A + 2) with hM
+    have hMpos : 1 ≤ M := by rw [hM]; linarith
+    set b1 := t1 + M / c1
+    have htb1 : t1 ≤ b1 := by have := div_pos (by linarith : (0 : ℝ) < M) hc1pos; linarith
+    -- stage A: linear growth at rate `c1`
+    have hgrow := image_le_of_deriv_right_lt_deriv_boundary' (a := t1) (b := b1)
+      (f := fun t => S t1 + c1 * (t - t1)) (f' := fun _ => c1)
+      (by fun_prop)
+      (fun t _ => ((((hasDerivAt_id t).sub_const t1).const_mul c1).const_add (S t1)).congr_deriv
+        (by simp) |>.hasDerivWithinAt)
+      (B := S) (B' := fun t => S t ^ 2 - D t * S t + B t) (by simp) (hcont t1 b1 hT1)
+      (fun t ht => (hS t (hT1.trans ht.1)).hasDerivWithinAt)
+      (by
+        intro t ht hSB
+        have htN : N ≤ t := ht1.trans ht.1
+        have hge : S t1 ≤ S t := by
+          rw [← hSB]
+          have : 0 ≤ c1 * (t - t1) := mul_nonneg hc1pos.le (sub_nonneg.mpr ht.1)
+          linarith
+        have hSx : e ≤ S t - x := by linarith
+        have hSy : S t ≤ S t - y := by linarith
+        have hSpos : 0 < S t := by linarith
+        have hprod : e * S t ≤ (S t - x) * (S t - y) :=
+          mul_le_mul hSx hSy hSpos.le (by linarith)
+        have h1 : -η * S t ≤ (d - D t) * S t :=
+          mul_le_mul_of_nonneg_right (by linarith [abs_lt.mp (hDN t htN)]) hSpos.le
+        have h2 : -η ≤ B t + A := by linarith [abs_lt.mp (hBN t htN)]
+        have hxS : x ≤ S t := by linarith
+        have h3 : (e - η) * x ≤ (e - η) * S t := mul_le_mul_of_nonneg_left hxS (by linarith)
+        have h4 : η * x ≤ e / 2 * x := mul_le_mul_of_nonneg_right hηe hx.le
+        change c1 < S t ^ 2 - D t * S t + B t
+        rw [hF t, hc1]
+        linarith)
+    have hSb1 : M < S b1 := by
+      have h : S t1 + c1 * (b1 - t1) ≤ S b1 := hgrow ⟨htb1, le_rfl⟩
+      have : c1 * (b1 - t1) = M := by simp only [b1]; field_simp; ring
+      linarith
+    -- stage B: `1/S` falls at rate at least `1/2`, so it reaches zero in finite time
+    have hb1T : T0 ≤ b1 := hT1.trans htb1
+    have hSb1pos : 0 < S b1 := by linarith
+    set φ0 := (S b1)⁻¹
+    have hφ0 : 0 < φ0 := inv_pos.mpr hSb1pos
+    have hφ0M : φ0 < M⁻¹ := inv_strictAnti₀ (by linarith) hSb1
+    set b2 := b1 + 2 * φ0 + 1
+    have htb2 : b1 ≤ b2 := by linarith
+    have hinvd : ∀ t, T0 ≤ t → HasDerivAt (fun s => (S s)⁻¹)
+        (-(S t ^ 2 - D t * S t + B t) / S t ^ 2) t := fun t ht =>
+      (hS t ht).inv (ne_of_gt (hpos t ht))
+    have hdecay := image_le_of_deriv_right_lt_deriv_boundary' (a := b1) (b := b2)
+      (f := fun s => (S s)⁻¹) (f' := fun t => -(S t ^ 2 - D t * S t + B t) / S t ^ 2)
+      (HasDerivAt.continuousOn (fun t ht => hinvd t (hb1T.trans ht.1)))
+      (fun t ht => (hinvd t (hb1T.trans ht.1)).hasDerivWithinAt)
+      (B := fun t => φ0 - (t - b1) / 2) (B' := fun _ => -(1 / 2))
+      (by simp [φ0]) (by fun_prop)
+      (fun t _ => (((hasDerivAt_id t).sub_const b1).div_const 2).const_sub φ0 |>.congr_deriv
+        (by simp) |>.hasDerivWithinAt)
+      (by
+        intro t ht hφB
+        have htN : N ≤ t := ht1.trans (htb1.trans ht.1)
+        have hSpos := hpos t (hb1T.trans ht.1)
+        have hφB' : (S t)⁻¹ = φ0 - (t - b1) / 2 := hφB
+        have hφle : (S t)⁻¹ ≤ φ0 := by
+          rw [hφB']
+          have : 0 ≤ (t - b1) / 2 := div_nonneg (sub_nonneg.mpr ht.1) (by norm_num)
+          linarith
+        have hSM : M < S t := by
+          have h := hφle.trans_lt hφ0M
+          rwa [inv_lt_inv₀ hSpos (by linarith)] at h
+        have h1 : -η * S t ≤ (d - D t) * S t :=
+          mul_le_mul_of_nonneg_right (by linarith [abs_lt.mp (hDN t htN)]) hSpos.le
+        have h2 : -η ≤ B t + A := by linarith [abs_lt.mp (hBN t htN)]
+        have hS1 : 1 ≤ S t := hMpos.trans hSM.le
+        have hMS : M * S t ≤ S t * S t := mul_le_mul_of_nonneg_right hSM.le hSpos.le
+        have hAS : (A + 1) * 1 ≤ (A + 1) * S t := mul_le_mul_of_nonneg_left hS1 (by linarith)
+        have hηS : η * S t ≤ 1 * S t := mul_le_mul_of_nonneg_right hη1 hSpos.le
+        have hquad : 3 / 4 * S t ^ 2 ≤ S t ^ 2 - D t * S t + B t := by
+          rw [hF t, ← hfac (S t), hM] at *
+          nlinarith
+        have hsq : 0 < S t ^ 2 := by positivity
+        change -(S t ^ 2 - D t * S t + B t) / S t ^ 2 < -(1 / 2)
+        rw [div_lt_iff₀ hsq]
+        linarith)
+    have hb2 : (S b2)⁻¹ ≤ φ0 - (b2 - b1) / 2 := hdecay ⟨htb2, le_rfl⟩
+    have hb2pos := inv_pos.mpr (hpos b2 (hb1T.trans htb2))
+    have : φ0 - (b2 - b1) / 2 = -(1 / 2) := by simp only [b2]; ring
+    linarith
+  refine ⟨N, fun t ht => ?_⟩
+  rw [Real.dist_eq, abs_lt]
+  have h1 := hlower t ht
+  have h2 := hupper t ht
+  constructor <;> linarith
+
+end RamseyCassKoopmans
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# The exact local speed of convergence of the Cass optimum
+
+Let `A = f''(k*) U'(c*) / U''(c*) > 0` and `β* = (√(d² + 4A) - d) / 2`, the stable
+root of the linearized saddle. Assuming `f''(k*) < 0`:
+
+* `slope_tendsto`: along every nonstationary optimum,
+  `(c(t) - c*) / (k(t) - k*) → d + β*`. The slope obeys a Riccati equation whose
+  other solutions blow up or turn negative (`riccati_tendsto`), so the optimum is
+  forced onto the stable direction; no stable-manifold theorem is assumed.
+* `speed_tendsto`: the instantaneous proportional speed `k̇ / (k - k*) → -β*`;
+* `capital_rate`, `consumption_rate`: `log |k(t) - k*| / t → -β*` and
+  `log |c(t) - c*| / t → -β*`;
+* `policy_hasDerivAt`: the policy function is differentiable at `k*` with slope
+  `d + β*`, the slope of the stable eigenvector.
+-/
+
+open Set Filter
+open scoped Topology
+
+namespace RamseyCassKoopmans
+
+variable {f U : ℝ → ℝ} {d m : ℝ}
+
+/-- `A = f''(k*) U'(c*) / U''(c*)`. -/
+noncomputable def cassCurvature (P : CassPrimitives f U d m) : ℝ :=
+  deriv (deriv f) (cassSteady P) * deriv U (cassSteadyConsumption P) /
+    deriv (deriv U) (cassSteadyConsumption P)
+
+/-- The stable root `β* = (√(d² + 4A) - d) / 2` of the linearized Cass system. -/
+noncomputable def cassSpeed (P : CassPrimitives f U d m) : ℝ :=
+  (Real.sqrt (d ^ 2 + 4 * cassCurvature P) - d) / 2
+
+theorem cassSteadyConsumption_pos (P : CassPrimitives f U d m) :
+    0 < cassSteadyConsumption P :=
+  stationary_consumption_pos f (cassSteady P) d m P.f_conc P.f_zero (cassSteady_spec P).1
+    (P.f_diff _ (cassSteady_spec P).1) P.d_pos.le (cassSteady_spec P).2
+
+theorem cassCurvature_pos (P : CassPrimitives f U d m)
+    (hf2 : deriv (deriv f) (cassSteady P) < 0) : 0 < cassCurvature P := by
+  have hc := cassSteadyConsumption_pos P
+  exact div_pos_of_neg_of_neg (mul_neg_of_neg_of_pos hf2 (P.U_prime_pos _ hc))
+    (P.U_second_neg _ hc)
+
+theorem cassSpeed_pos (P : CassPrimitives f U d m)
+    (hf2 : deriv (deriv f) (cassSteady P) < 0) : 0 < cassSpeed P := by
+  have hA := cassCurvature_pos P hf2
+  have hd := P.d_pos
+  have : d < Real.sqrt (d ^ 2 + 4 * cassCurvature P) :=
+    (Real.lt_sqrt hd.le).mpr (by linarith)
+  unfold cassSpeed
+  linarith
+
+theorem stable_root_eq (P : CassPrimitives f U d m) :
+    (d + Real.sqrt (d ^ 2 + 4 * cassCurvature P)) / 2 = d + cassSpeed P := by
+  unfold cassSpeed
+  ring
+
+/-- Eventually the optimum invests strictly: transferred from the construction. -/
+theorem CassCertificate.eventually_positive_investment (P : CassPrimitives f U d m)
+    {a : FeasiblePath f m} {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) :
+    ∃ T, 0 ≤ T ∧ ∀ t, T ≤ t → 0 < a.investment t := by
+  obtain ⟨ks, hks, hstat, b, Jb, hb0, hbopt, -, -, -, -, -, -, -, -, ⟨T, hT, hTpos⟩, -, -⟩ :=
+    cass_general_dynamic f U d m (a.capital 0) P.d_pos P.m_pos (hc.capital_pos 0 le_rfl)
+      P.f_conc P.f_zero P.f_diff P.f_prime_cont P.f_prime_pos P.f_second P.f_second_cont
+      P.f_inada0 P.f_inadaTop P.U_conc P.U_diff P.U_prime_pos P.U_second P.U_second_cont
+      P.U_second_neg P.U_inada0
+  obtain ⟨Ja, hJa⟩ := hc.welfare
+  have heq := (hc.eq_of_isCassOptimal P hJa hbopt hb0.symm).2
+  exact ⟨T, hT, fun t ht => by
+    rw [← (heq t (hT.trans ht)).2.2]
+    exact hTpos t ht⟩
+
+/-- The capital equation `k̇ = f(k) - m k - c`. -/
+theorem FeasiblePath.hasDerivAt_capital' (a : FeasiblePath f m) {t : ℝ} (ht : 0 ≤ t) :
+    HasDerivAt a.capital (f (a.capital t) - m * a.capital t - a.consumption t) t := by
+  have h := a.dynamics t ht
+  have hr := a.resource t ht
+  convert h using 1
+  linarith
+
+/-- Along a nonstationary optimum the capital and consumption gaps share a sign. -/
+theorem CassCertificate.gap_sign (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) (hne : a.capital 0 ≠ cassSteady P)
+    {t : ℝ} (ht : 0 ≤ t) :
+    a.capital t - cassSteady P ≠ 0 ∧
+      0 < (a.consumption t - cassSteadyConsumption P) / (a.capital t - cassSteady P) := by
+  obtain ⟨hb1, hb2⟩ := hc.capital_bounds P
+  rcases lt_or_gt_of_ne hne with h | h
+  · obtain ⟨hk, hcn⟩ := hb1 h t ht
+    refine ⟨sub_ne_zero.mpr (ne_of_lt hk), div_pos_of_neg_of_neg ?_ (sub_neg.mpr hk)⟩
+    exact sub_neg.mpr hcn
+  · obtain ⟨hk, hcn⟩ := hb2 h t ht
+    exact ⟨sub_ne_zero.mpr (ne_of_gt hk), div_pos (sub_pos.mpr hcn) (sub_pos.mpr hk)⟩
+
+/-- In the interior phase consumption obeys `ċ = -(U'/U'')(c) (f'(k) - (d + m))`. -/
+theorem CassCertificate.hasDerivAt_consumption (P : CassPrimitives f U d m)
+    {a : FeasiblePath f m} {q : ℝ → ℝ} (hc : CassCertificate f U d m a q)
+    (hne : a.capital 0 ≠ cassSteady P) {T0 : ℝ} (hT0 : 0 ≤ T0)
+    (hint : ∀ t, T0 ≤ t → 0 < a.investment t) {t : ℝ} (ht : T0 < t) :
+    HasDerivAt a.consumption
+      (-(deriv U (a.consumption t)) / deriv (deriv U) (a.consumption t) *
+        (deriv f (a.capital t) - (d + m))) t := by
+  have ht0 : 0 ≤ t := hT0.trans ht.le
+  have hct := a.consumption_pos t ht0
+  have hqeq : ∀ s, T0 ≤ s → q s = deriv U (a.consumption s) := by
+    intro s hs
+    have h := hc.slack s (hT0.trans hs)
+    rcases mul_eq_zero.mp h with h | h
+    · linarith
+    · exact absurd h (ne_of_gt (hint s hs))
+  obtain ⟨-, -, hbelow, habove, -⟩ := hc.dynamics P
+  have hinjOn : InjOn a.consumption (Ici 0) := by
+    rcases lt_or_gt_of_ne hne with h | h
+    · exact (hbelow h).2.injOn
+    · exact (habove h).2.injOn
+  have hd := hasDerivAt_of_comp_eq (g := a.consumption) (μ := deriv U) (q := q)
+    ((a.consumption_continuous t ht0).continuousAt (Ici_mem_nhds (hT0.trans_lt ht)))
+    (P.U_second _ hct).hasDerivAt (ne_of_lt (P.U_second_neg _ hct)) (hc.costate t ht0)
+    (by
+      filter_upwards [Ioi_mem_nhds ht] with s hs
+      exact (hqeq s hs.le).symm)
+    (by
+      filter_upwards [nhdsWithin_le_nhds (Ioi_mem_nhds (hT0.trans_lt ht)),
+        self_mem_nhdsWithin] with s hs hst
+      exact fun h => hst (hinjOn (mem_Ici.mpr (le_of_lt hs)) (mem_Ici.mpr ht0) h))
+  refine hd.congr_deriv ?_
+  rw [hqeq t ht.le]
+  have hne' := ne_of_lt (P.U_second_neg _ hct)
+  field_simp
+  ring
+
+/-- Along every nonstationary optimum the slope `(c - c*)/(k - k*)` converges to the
+stable eigenvector slope `d + β*`. -/
+theorem slope_tendsto (P : CassPrimitives f U d m) (hf2 : deriv (deriv f) (cassSteady P) < 0)
+    {a : FeasiblePath f m} {q : ℝ → ℝ} (hc : CassCertificate f U d m a q)
+    (hne : a.capital 0 ≠ cassSteady P) :
+    Tendsto (fun t => (a.consumption t - cassSteadyConsumption P) / (a.capital t - cassSteady P))
+      atTop (𝓝 (d + cassSpeed P)) := by
+  set ks := cassSteady P with hks_def
+  set cs := cassSteadyConsumption P with hcs_def
+  have hks := (cassSteady_spec P).1
+  have hfks : deriv f ks = d + m := (cassSteady_spec P).2
+  have hcs : 0 < cs := cassSteadyConsumption_pos P
+  obtain ⟨T0, hT0, hint⟩ := hc.eventually_positive_investment P
+  obtain ⟨hk, hcon, -⟩ := hc.dynamics P
+  set u : ℝ → ℝ := fun t => a.capital t - ks
+  set v : ℝ → ℝ := fun t => a.consumption t - cs
+  set D : ℝ → ℝ := fun t => (f (a.capital t) - f ks) / (a.capital t - ks) - m
+  set σ : ℝ → ℝ := fun c => -(deriv U c) / deriv (deriv U) c
+  set B : ℝ → ℝ := fun t =>
+    σ (a.consumption t) * ((deriv f (a.capital t) - deriv f ks) / (a.capital t - ks))
+  have hS : ∀ t, T0 + 1 ≤ t → HasDerivAt (fun s => v s / u s)
+      ((v t / u t) ^ 2 - D t * (v t / u t) + B t) t := by
+    intro t ht
+    have htT : T0 < t := by linarith
+    have ht0 : 0 ≤ t := by linarith
+    obtain ⟨hu0, -⟩ := hc.gap_sign P hne ht0
+    have hkd := a.hasDerivAt_capital' ht0
+    have hcd := hc.hasDerivAt_consumption P hne hT0 hint htT
+    have hu : a.capital t - ks ≠ 0 := hu0
+    have hμ2 : deriv (deriv U) (a.consumption t) ≠ 0 :=
+      ne_of_lt (P.U_second_neg _ (a.consumption_pos t ht0))
+    have hdiv := (hcd.sub_const cs).div (hkd.sub_const ks) hu
+    refine hdiv.congr_deriv (riccati_algebra hu ?_ ?_)
+    · have hcsdef : cs = f ks - m * ks := rfl
+      simp only [D]
+      rw [hcsdef]
+      field_simp
+      ring
+    · simp only [B, σ]
+      rw [hfks]
+      field_simp
+  have hpos : ∀ t, T0 + 1 ≤ t → 0 < v t / u t := fun t ht =>
+    (hc.gap_sign P hne (by linarith)).2
+  -- the capital path approaches `k*` from one side
+  have hkne : Tendsto a.capital atTop (𝓝[≠] ks) :=
+    tendsto_nhdsWithin_iff.mpr ⟨hk, by
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with t ht
+      exact sub_ne_zero.mp (hc.gap_sign P hne ht).1⟩
+  have hD : Tendsto D atTop (𝓝 d) := by
+    have h := (hasDerivAt_iff_tendsto_slope.mp (P.f_diff ks hks).hasDerivAt).comp hkne
+    have h2 := h.sub_const m
+    rw [hfks, show d + m - m = d by ring] at h2
+    refine h2.congr (fun t => ?_)
+    simp only [Function.comp_apply, D, slope_def_field]
+  have hB : Tendsto B atTop (𝓝 (-cassCurvature P)) := by
+    have hslope := (hasDerivAt_iff_tendsto_slope.mp (P.f_second ks hks).hasDerivAt).comp hkne
+    have hμ : ContinuousAt (deriv U) cs := (P.U_second cs hcs).continuousAt
+    have hμ' : ContinuousAt (deriv (deriv U)) cs :=
+      P.U_second_cont.continuousAt (Ioi_mem_nhds hcs)
+    have hσ : Tendsto (fun t => σ (a.consumption t)) atTop (𝓝 (σ cs)) :=
+      (hμ.tendsto.comp hcon).neg.div (hμ'.tendsto.comp hcon) (ne_of_lt (P.U_second_neg cs hcs))
+    have h := hσ.mul hslope
+    have heq : σ cs * deriv (deriv f) ks = -cassCurvature P := by
+      simp only [σ, cassCurvature]
+      ring
+    rw [heq] at h
+    refine h.congr (fun t => ?_)
+    simp only [Function.comp_apply, B, slope_def_field]
+  have := riccati_tendsto P.d_pos (cassCurvature_pos P hf2) hS hpos hD hB
+  rwa [stable_root_eq] at this
+
+/-- The instantaneous proportional speed of convergence tends to `β*`:
+`k̇ / (k - k*) → -β*`. -/
+theorem speed_tendsto (P : CassPrimitives f U d m) (hf2 : deriv (deriv f) (cassSteady P) < 0)
+    {a : FeasiblePath f m} {q : ℝ → ℝ} (hc : CassCertificate f U d m a q)
+    (hne : a.capital 0 ≠ cassSteady P) :
+    Tendsto (fun t => (f (a.capital t) - m * a.capital t - a.consumption t) /
+      (a.capital t - cassSteady P)) atTop (𝓝 (-cassSpeed P)) := by
+  set ks := cassSteady P
+  have hks := (cassSteady_spec P).1
+  have hfks : deriv f ks = d + m := (cassSteady_spec P).2
+  obtain ⟨hk, -, -⟩ := hc.dynamics P
+  have hkne : Tendsto a.capital atTop (𝓝[≠] ks) :=
+    tendsto_nhdsWithin_iff.mpr ⟨hk, by
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with t ht
+      exact sub_ne_zero.mp (hc.gap_sign P hne ht).1⟩
+  have hD := ((hasDerivAt_iff_tendsto_slope.mp (P.f_diff ks hks).hasDerivAt).comp hkne).sub_const m
+  have h := hD.sub (slope_tendsto P hf2 hc hne)
+  rw [hfks, show d + m - m - (d + cassSpeed P) = -cassSpeed P by ring] at h
+  refine h.congr' ?_
+  filter_upwards [eventually_ge_atTop (0 : ℝ)] with t ht
+  have hu : a.capital t - ks ≠ 0 := (hc.gap_sign P hne ht).1
+  have hu2 : a.capital t - cassSteady P ≠ 0 := hu
+  have hcs : cassSteadyConsumption P = f ks - m * ks := rfl
+  simp only [Function.comp_apply, slope_def_field]
+  rw [hcs]
+  field_simp
+  ring
+
+/-- Capital converges at exactly the rate `β*`: `log |k(t) - k*| / t → -β*`. -/
+theorem capital_rate (P : CassPrimitives f U d m) (hf2 : deriv (deriv f) (cassSteady P) < 0)
+    {a : FeasiblePath f m} {q : ℝ → ℝ} (hc : CassCertificate f U d m a q)
+    (hne : a.capital 0 ≠ cassSteady P) :
+    Tendsto (fun t => Real.log |a.capital t - cassSteady P| / t) atTop
+      (𝓝 (-cassSpeed P)) := by
+  have hφ : ∀ t, 0 ≤ t → HasDerivAt (fun s => Real.log (a.capital s - cassSteady P))
+      ((f (a.capital t) - m * a.capital t - a.consumption t) / (a.capital t - cassSteady P)) t :=
+    fun t ht => ((a.hasDerivAt_capital' ht).sub_const _).log (hc.gap_sign P hne ht).1
+  simpa only [Real.log_abs] using tendsto_div_of_deriv_tendsto hφ (speed_tendsto P hf2 hc hne)
+
+/-- Consumption converges at the same rate: `log |c(t) - c*| / t → -β*`. -/
+theorem consumption_rate (P : CassPrimitives f U d m) (hf2 : deriv (deriv f) (cassSteady P) < 0)
+    {a : FeasiblePath f m} {q : ℝ → ℝ} (hc : CassCertificate f U d m a q)
+    (hne : a.capital 0 ≠ cassSteady P) :
+    Tendsto (fun t => Real.log |a.consumption t - cassSteadyConsumption P| / t) atTop
+      (𝓝 (-cassSpeed P)) := by
+  set S := fun t => (a.consumption t - cassSteadyConsumption P) / (a.capital t - cassSteady P)
+  have hSlim := slope_tendsto P hf2 hc hne
+  have hx : 0 < d + cassSpeed P := add_pos P.d_pos (cassSpeed_pos P hf2)
+  have hlogS : Tendsto (fun t => Real.log (S t) / t) atTop (𝓝 0) :=
+    ((Real.continuousAt_log (ne_of_gt hx)).tendsto.comp hSlim).div_atTop tendsto_id
+  have h := hlogS.add (capital_rate P hf2 hc hne)
+  rw [zero_add] at h
+  refine h.congr' ?_
+  filter_upwards [eventually_ge_atTop (0 : ℝ)] with t ht
+  obtain ⟨hu, hSpos⟩ := hc.gap_sign P hne ht
+  have hv : a.consumption t - cassSteadyConsumption P =
+      S t * (a.capital t - cassSteady P) := by
+    simp only [S]
+    field_simp
+  rw [hv, abs_mul, abs_of_pos hSpos, Real.log_mul (ne_of_gt hSpos) (abs_ne_zero.mpr hu),
+    add_div]
+
+/-- The policy function is differentiable at the steady state, with the slope of the
+stable eigenvector. -/
+theorem policy_hasDerivAt (P : CassPrimitives f U d m)
+    (hf2 : deriv (deriv f) (cassSteady P) < 0) :
+    HasDerivAt (policy P) (d + cassSpeed P) (cassSteady P) := by
+  set ks := cassSteady P
+  have hks := (cassSteady_spec P).1
+  rw [hasDerivAt_iff_tendsto_slope, ← nhdsLT_sup_nhdsGT, tendsto_sup]
+  -- the slope of the policy at a stock reached by a path equals the path slope there
+  have hslope : ∀ {a : FeasiblePath f m} {q : ℝ → ℝ}, CassCertificate f U d m a q →
+      ∀ t, 0 ≤ t → a.capital t ≠ ks →
+        slope (policy P) ks (a.capital t) =
+          (a.consumption t - cassSteadyConsumption P) / (a.capital t - ks) := by
+    intro a q hc t ht _
+    rw [slope_def_field, ← consumption_eq_policy P hc ht, policy_steady]
+  constructor
+  · -- from below, along the optimum from `k*/2`
+    have hk0 : 0 < ks / 2 := half_pos hks
+    obtain ⟨q, h0, hc⟩ := optimalPath_spec P hk0
+    set a := optimalPath P hk0
+    have hne : a.capital 0 ≠ ks := by rw [h0]; linarith
+    have hlt : a.capital 0 < ks := by rw [h0]; linarith
+    obtain ⟨hk, -, -⟩ := hc.dynamics P
+    have hS := slope_tendsto P hf2 hc hne
+    rw [Metric.tendsto_nhds] at hS ⊢
+    intro ε hε
+    obtain ⟨T, hT⟩ := eventually_atTop.mp ((hS ε hε).and (eventually_ge_atTop (0 : ℝ)))
+    have hTlt : a.capital T < ks := ((hc.capital_bounds P).1 hlt T (hT T le_rfl).2).1
+    filter_upwards [Ioo_mem_nhdsLT hTlt] with k hk'
+    obtain ⟨T', hT'⟩ := eventually_atTop.mp ((hk.eventually (lt_mem_nhds hk'.2)).and
+      (eventually_ge_atTop T))
+    obtain ⟨t, htmem, htk⟩ := intermediate_value_Icc (hT' T' le_rfl).2
+      (a.capital_continuous.mono (fun s hs => (hT T le_rfl).2.trans hs.1))
+      ⟨hk'.1.le, (hT' T' le_rfl).1.le⟩
+    have ht0 : 0 ≤ t := (hT T le_rfl).2.trans htmem.1
+    rw [← htk, hslope hc t ht0 (by rw [htk]; exact ne_of_lt hk'.2)]
+    exact (hT t htmem.1).1
+  · -- from above, along the optimum from `2 k*`
+    have hk0 : 0 < 2 * ks := by linarith
+    obtain ⟨q, h0, hc⟩ := optimalPath_spec P hk0
+    set a := optimalPath P hk0
+    have hne : a.capital 0 ≠ ks := by rw [h0]; linarith
+    have hgt : ks < a.capital 0 := by rw [h0]; linarith
+    obtain ⟨hk, -, -⟩ := hc.dynamics P
+    have hS := slope_tendsto P hf2 hc hne
+    rw [Metric.tendsto_nhds] at hS ⊢
+    intro ε hε
+    obtain ⟨T, hT⟩ := eventually_atTop.mp ((hS ε hε).and (eventually_ge_atTop (0 : ℝ)))
+    have hTgt : ks < a.capital T := ((hc.capital_bounds P).2 hgt T (hT T le_rfl).2).1
+    filter_upwards [Ioo_mem_nhdsGT hTgt] with k hk'
+    obtain ⟨T', hT'⟩ := eventually_atTop.mp ((hk.eventually (gt_mem_nhds hk'.1)).and
+      (eventually_ge_atTop T))
+    obtain ⟨t, htmem, htk⟩ := intermediate_value_Icc' (hT' T' le_rfl).2
+      (a.capital_continuous.mono (fun s hs => (hT T le_rfl).2.trans hs.1))
+      ⟨(hT' T' le_rfl).1.le, hk'.2.le⟩
+    have ht0 : 0 ≤ t := (hT T le_rfl).2.trans htmem.1
+    rw [← htk, hslope hc t ht0 (by rw [htk]; exact ne_of_gt hk'.1)]
+    exact (hT t htmem.1).1
+
+end RamseyCassKoopmans
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# Cass comparative statics and comparative dynamics
+
+**Statics.** The steady state solves `f'(k*) = d + m`, so `k* = g(d + m)` for the
+inverse marginal product `g = marginalInverse`. We prove `g` is strictly decreasing
+and, where `f''(k*) < 0`, differentiable with `g' = 1 / f''(k*)` (inverse function
+theorem). Hence `∂k*/∂d = ∂k*/∂m = 1/f''(k*) < 0`, `∂c*/∂d = d/f''(k*) < 0`,
+`∂c*/∂m = d/f''(k*) - k* < 0`; with productivity `A f`, `k*` rises with `A`.
+
+**Dynamics.** `patience_rise`: starting at the old steady state, a permanent fall
+in the discount rate makes capital rise strictly to the new, higher steady state;
+consumption falls strictly on impact below the old steady-state level, then rises
+strictly to a higher new level. `impatience_rise` is the mirror image.
+-/
+
+open Set Filter
+open scoped Topology
+
+namespace RamseyCassKoopmans
+
+variable {f U : ℝ → ℝ} {d m : ℝ}
+
+theorem CassPrimitives.existsUnique_marginal (P : CassPrimitives f U d m) {r : ℝ}
+    (hr : 0 < r) : ∃! k : ℝ, 0 < k ∧ deriv f k = r :=
+  existsUnique_positive_root_of_inada (deriv f) r hr P.f_prime_cont
+    (production_deriv_strictAnti f P.f_conc P.f_diff) P.f_inada0 P.f_inadaTop
+
+/-- The inverse marginal product: the unique positive capital with `f'(k) = r`. -/
+noncomputable def marginalInverse (P : CassPrimitives f U d m) (r : ℝ) : ℝ :=
+  if hr : 0 < r then Classical.choose (P.existsUnique_marginal hr).exists else 0
+
+theorem marginalInverse_spec (P : CassPrimitives f U d m) {r : ℝ} (hr : 0 < r) :
+    0 < marginalInverse P r ∧ deriv f (marginalInverse P r) = r := by
+  simp only [marginalInverse, hr, ↓reduceDIte]
+  exact Classical.choose_spec (P.existsUnique_marginal hr).exists
+
+theorem marginalInverse_eq (P : CassPrimitives f U d m) {r k : ℝ} (hk : 0 < k)
+    (he : deriv f k = r) : marginalInverse P r = k := by
+  have hr : 0 < r := he ▸ P.f_prime_pos k hk
+  exact (P.existsUnique_marginal hr).unique (marginalInverse_spec P hr) ⟨hk, he⟩
+
+theorem marginalInverse_deriv (P : CassPrimitives f U d m) {k : ℝ} (hk : 0 < k) :
+    marginalInverse P (deriv f k) = k := marginalInverse_eq P hk rfl
+
+/-- The steady state of any economy sharing the technology `f` is `g(δ + μ)`. -/
+theorem cassSteady_eq_marginalInverse (P : CassPrimitives f U d m) {V : ℝ → ℝ} {δ μ : ℝ}
+    (P' : CassPrimitives f V δ μ) : cassSteady P' = marginalInverse P (δ + μ) := by
+  have hr : 0 < δ + μ := add_pos P'.d_pos P'.m_pos
+  exact cassSteady_eq P' (marginalInverse_spec P hr).1 (marginalInverse_spec P hr).2
+
+theorem marginalInverse_strictAnti (P : CassPrimitives f U d m) :
+    StrictAntiOn (marginalInverse P) (Ioi 0) := by
+  intro r hr s hs hrs
+  have hr' : (0 : ℝ) < r := hr
+  have hs' : (0 : ℝ) < s := hs
+  by_contra hle
+  push Not at hle
+  have hanti := (production_deriv_strictAnti f P.f_conc P.f_diff).antitoneOn
+    (marginalInverse_spec P hr').1 (marginalInverse_spec P hs').1 hle
+  rw [(marginalInverse_spec P hr').2, (marginalInverse_spec P hs').2] at hanti
+  linarith
+
+/-- Inverse function theorem: `g' = 1 / f''(g(r))` where `f''(g(r)) ≠ 0`. -/
+theorem marginalInverse_hasDerivAt (P : CassPrimitives f U d m) {r : ℝ} (hr : 0 < r)
+    (hf2 : deriv (deriv f) (marginalInverse P r) ≠ 0) :
+    HasDerivAt (marginalInverse P) (deriv (deriv f) (marginalInverse P r))⁻¹ r := by
+  obtain ⟨hk, hkr⟩ := marginalInverse_spec P hr
+  set k := marginalInverse P r
+  have hstrict : HasStrictDerivAt (deriv f) (deriv (deriv f) k) k :=
+    hasStrictDerivAt_of_hasDerivAt_of_continuousAt
+      ((lt_mem_nhds hk).mono (fun y hy => (P.f_second y hy).hasDerivAt))
+      (P.f_second_cont.continuousAt (Ioi_mem_nhds hk))
+  have h := hstrict.to_local_left_inverse hf2
+    ((lt_mem_nhds hk).mono (fun y hy => marginalInverse_deriv P hy))
+  rw [hkr] at h
+  exact h.hasDerivAt
+
+/-- `∂k*/∂d = 1/f''(k*) < 0`. -/
+theorem steady_hasDerivAt_discount (P : CassPrimitives f U d m)
+    (hf2 : deriv (deriv f) (cassSteady P) < 0) :
+    HasDerivAt (fun δ => marginalInverse P (δ + m)) (deriv (deriv f) (cassSteady P))⁻¹ d ∧
+      (deriv (deriv f) (cassSteady P))⁻¹ < 0 := by
+  have hr : 0 < d + m := add_pos P.d_pos P.m_pos
+  have heq := cassSteady_eq_marginalInverse P P
+  rw [heq] at hf2 ⊢
+  exact ⟨(marginalInverse_hasDerivAt P hr (ne_of_lt hf2)).comp_add_const d m,
+    inv_lt_zero.mpr hf2⟩
+
+/-- `∂k*/∂m = 1/f''(k*) < 0`. -/
+theorem steady_hasDerivAt_dilution (P : CassPrimitives f U d m)
+    (hf2 : deriv (deriv f) (cassSteady P) < 0) :
+    HasDerivAt (fun μ => marginalInverse P (d + μ)) (deriv (deriv f) (cassSteady P))⁻¹ m := by
+  have hr : 0 < d + m := add_pos P.d_pos P.m_pos
+  have heq := cassSteady_eq_marginalInverse P P
+  rw [heq] at hf2 ⊢
+  exact (marginalInverse_hasDerivAt P hr (ne_of_lt hf2)).comp_const_add d m
+
+/-- `∂c*/∂d = d / f''(k*) < 0`. -/
+theorem steadyConsumption_hasDerivAt_discount (P : CassPrimitives f U d m)
+    (hf2 : deriv (deriv f) (cassSteady P) < 0) :
+    HasDerivAt (fun δ => f (marginalInverse P (δ + m)) - m * marginalInverse P (δ + m))
+      (d * (deriv (deriv f) (cassSteady P))⁻¹) d ∧
+      d * (deriv (deriv f) (cassSteady P))⁻¹ < 0 := by
+  obtain ⟨hg, hneg⟩ := steady_hasDerivAt_discount P hf2
+  have heq := cassSteady_eq_marginalInverse P P
+  have hks := (cassSteady_spec P)
+  have hfd : HasDerivAt f (deriv f (marginalInverse P (d + m))) (marginalInverse P (d + m)) :=
+    (P.f_diff _ (heq ▸ hks.1)).hasDerivAt
+  have h := (hfd.comp d hg).sub (hg.const_mul m)
+  refine ⟨h.congr_deriv ?_, mul_neg_of_pos_of_neg P.d_pos hneg⟩
+  rw [← heq, hks.2]
+  ring
+
+/-- `∂c*/∂m = d / f''(k*) - k* < 0`. -/
+theorem steadyConsumption_hasDerivAt_dilution (P : CassPrimitives f U d m)
+    (hf2 : deriv (deriv f) (cassSteady P) < 0) :
+    HasDerivAt (fun μ => f (marginalInverse P (d + μ)) - μ * marginalInverse P (d + μ))
+      (d * (deriv (deriv f) (cassSteady P))⁻¹ - cassSteady P) m ∧
+      d * (deriv (deriv f) (cassSteady P))⁻¹ - cassSteady P < 0 := by
+  have hg := steady_hasDerivAt_dilution P hf2
+  have hneg := (steady_hasDerivAt_discount P hf2).2
+  have heq := cassSteady_eq_marginalInverse P P
+  have hks := (cassSteady_spec P)
+  have hfd : HasDerivAt f (deriv f (marginalInverse P (d + m))) (marginalInverse P (d + m)) :=
+    (P.f_diff _ (heq ▸ hks.1)).hasDerivAt
+  have h := (hfd.comp m hg).sub ((hasDerivAt_id m).mul hg)
+  refine ⟨h.congr_deriv ?_, by nlinarith [P.d_pos, hks.1]⟩
+  simp only [id]
+  rw [← heq, hks.2]
+  ring
+
+/-- A more impatient economy has less steady-state capital and consumption. -/
+theorem steady_strictAnti_discount (P1 : CassPrimitives f U d m) {d' : ℝ}
+    (P2 : CassPrimitives f U d' m) (hdd : d < d') :
+    cassSteady P2 < cassSteady P1 ∧ cassSteadyConsumption P2 < cassSteadyConsumption P1 := by
+  rw [cassSteady_eq_marginalInverse P1 P2, cassSteady_eq_marginalInverse P1 P1]
+  have hlt : marginalInverse P1 (d' + m) < marginalInverse P1 (d + m) :=
+    marginalInverse_strictAnti P1 (add_pos P1.d_pos P1.m_pos)
+      (add_pos P2.d_pos P2.m_pos) (by linarith)
+  refine ⟨hlt, ?_⟩
+  simp only [cassSteadyConsumption]
+  rw [cassSteady_eq_marginalInverse P1 P2, cassSteady_eq_marginalInverse P1 P1]
+  set k1 := marginalInverse P1 (d + m)
+  set k2 := marginalInverse P1 (d' + m)
+  have hk1 := marginalInverse_spec P1 (add_pos P1.d_pos P1.m_pos)
+  have hk2 := marginalInverse_spec P1 (add_pos P2.d_pos P2.m_pos)
+  -- concavity: `f(k1) - f(k2) > f'(k1) (k1 - k2) = (d + m)(k1 - k2) > m (k1 - k2)`
+  have hs := strict_concave_support P1.f_conc (mem_Ici.mpr hk1.1.le) (mem_Ici.mpr hk2.1.le)
+    (P1.f_diff k1 hk1.1).hasDerivAt (ne_of_lt hlt)
+  rw [hk1.2] at hs
+  have := mul_pos P1.d_pos (sub_pos.mpr hlt)
+  nlinarith
+
+/-- A larger dilution rate lowers steady-state capital. -/
+theorem steady_strictAnti_dilution' (P1 : CassPrimitives f U d m) {m' : ℝ}
+    (P2 : CassPrimitives f U d m') (hmm : m < m') : cassSteady P2 < cassSteady P1 := by
+  rw [cassSteady_eq_marginalInverse P1 P2, cassSteady_eq_marginalInverse P1 P1]
+  exact marginalInverse_strictAnti P1 (add_pos P1.d_pos P1.m_pos)
+    (add_pos P2.d_pos P2.m_pos) (by linarith)
+
+/-- Higher productivity `A f` raises steady-state capital: its steady state is
+`g((d + m)/A)`. -/
+theorem steady_productivity (P : CassPrimitives f U d m) {A : ℝ} (hA : 0 < A)
+    (PA : CassPrimitives (fun k => A * f k) U d m) :
+    cassSteady PA = marginalInverse P ((d + m) / A) := by
+  have hr : 0 < (d + m) / A := div_pos (add_pos P.d_pos P.m_pos) hA
+  obtain ⟨hk, hkr⟩ := marginalInverse_spec P hr
+  apply cassSteady_eq PA hk
+  rw [deriv_const_mul A (P.f_diff _ hk), hkr]
+  field_simp
+
+theorem steady_strictMono_productivity (P : CassPrimitives f U d m) {A1 A2 : ℝ}
+    (hA1 : 0 < A1) (hA : A1 < A2) (P1 : CassPrimitives (fun k => A1 * f k) U d m)
+    (P2 : CassPrimitives (fun k => A2 * f k) U d m) : cassSteady P1 < cassSteady P2 := by
+  rw [steady_productivity P hA1 P1, steady_productivity P (hA1.trans hA) P2]
+  have hr := add_pos P.d_pos P.m_pos
+  exact marginalInverse_strictAnti P (div_pos hr (hA1.trans hA)) (div_pos hr hA1)
+    (div_lt_div_of_pos_left hr hA1 hA)
+
+/-- `z(t) = (k(t) - k₀) e^{-λt}` is monotone in the direction of the sign of
+`k̇ - λ (k - k₀)`: the Gronwall step behind the impact effects. -/
+theorem gap_exp_hasDerivAt (a : FeasiblePath f m) (k₀ lam : ℝ) {t : ℝ} (ht : 0 ≤ t) :
+    HasDerivAt (fun s => (a.capital s - k₀) * Real.exp (-lam * s))
+      ((f (a.capital t) - m * a.capital t - a.consumption t - lam * (a.capital t - k₀)) *
+        Real.exp (-lam * t)) t := by
+  have he : HasDerivAt (fun s => Real.exp (-lam * s)) (Real.exp (-lam * t) * (-lam)) t := by
+    have := ((hasDerivAt_id t).const_mul (-lam)).exp
+    simpa only [id, mul_one] using this
+  refine (((a.hasDerivAt_capital' ht).sub_const k₀).mul he).congr_deriv ?_
+  ring
+
+/-- A permanent rise in patience, starting from the old steady state: capital rises
+strictly to the new, higher steady state; consumption falls strictly on impact
+below the old steady-state level and then rises strictly to a higher new level. -/
+theorem patience_rise (P1 : CassPrimitives f U d m) {d' : ℝ} (P2 : CassPrimitives f U d' m)
+    (hdd : d' < d) {a : FeasiblePath f m} {q : ℝ → ℝ} (hc : CassCertificate f U d' m a q)
+    (h0 : a.capital 0 = cassSteady P1) :
+    cassSteady P1 < cassSteady P2 ∧ StrictMonoOn a.capital (Ici 0) ∧
+      StrictMonoOn a.consumption (Ici 0) ∧
+      a.consumption 0 < cassSteadyConsumption P1 ∧
+      cassSteadyConsumption P1 < cassSteadyConsumption P2 ∧
+      Tendsto a.capital atTop (𝓝 (cassSteady P2)) ∧
+      Tendsto a.consumption atTop (𝓝 (cassSteadyConsumption P2)) := by
+  obtain ⟨hlt, hclt⟩ := steady_strictAnti_discount P2 P1 hdd
+  obtain ⟨hk, hcon, hbelow, -, -⟩ := hc.dynamics P2
+  obtain ⟨hmono, hcmono⟩ := hbelow (h0 ▸ hlt)
+  refine ⟨hlt, hmono, hcmono, ?_, hclt, hk, hcon⟩
+  by_contra hge
+  push Not at hge
+  set k1 := cassSteady P1
+  have hk1 := cassSteady_spec P1
+  -- then `k̇ ≤ d (k - k1)`, so `(k - k1) e^{-dt}` is antitone and `k ≤ k1`
+  have hanti : AntitoneOn (fun s => (a.capital s - k1) * Real.exp (-d * s)) (Ici 0) := by
+    apply antitoneOn_of_deriv_nonpos (convex_Ici 0)
+      (HasDerivAt.continuousOn (fun s hs => gap_exp_hasDerivAt a k1 d hs))
+      (fun s hs => (gap_exp_hasDerivAt a k1 d (interior_subset hs)).differentiableAt
+        |>.differentiableWithinAt)
+    intro s hs
+    have hs0 : 0 ≤ s := interior_subset hs
+    rw [(gap_exp_hasDerivAt a k1 d hs0).deriv]
+    apply mul_nonpos_of_nonpos_of_nonneg _ (Real.exp_pos _).le
+    have hcs : a.consumption 0 ≤ a.consumption s := hcmono.monotoneOn (mem_Ici.mpr le_rfl) hs0 hs0
+    have hsup := concave_support P1.f_conc.concaveOn (mem_Ici.mpr hk1.1.le)
+      (a.capital_nonneg s hs0) (P1.f_diff k1 hk1.1).hasDerivAt
+    rw [hk1.2] at hsup
+    simp only [cassSteadyConsumption] at hge
+    nlinarith
+  have h1 := hanti (mem_Ici.mpr le_rfl) (mem_Ici.mpr zero_le_one) zero_le_one
+  simp only [mul_zero, Real.exp_zero, mul_one, h0, sub_self] at h1
+  have hk1pos : a.capital 0 < a.capital 1 := hmono (mem_Ici.mpr le_rfl) (mem_Ici.mpr zero_le_one)
+    zero_lt_one
+  have := mul_pos (sub_pos.mpr (h0 ▸ hk1pos)) (Real.exp_pos (-d))
+  linarith
+
+/-- A permanent rise in impatience, starting from the old steady state: capital falls
+strictly to the new, lower steady state; consumption jumps strictly above the old
+steady-state level and then falls strictly to a lower new level. -/
+theorem impatience_rise (P1 : CassPrimitives f U d m) {d' : ℝ} (P2 : CassPrimitives f U d' m)
+    (hdd : d < d') {a : FeasiblePath f m} {q : ℝ → ℝ} (hc : CassCertificate f U d' m a q)
+    (h0 : a.capital 0 = cassSteady P1) :
+    cassSteady P2 < cassSteady P1 ∧ StrictAntiOn a.capital (Ici 0) ∧
+      StrictAntiOn a.consumption (Ici 0) ∧
+      cassSteadyConsumption P1 < a.consumption 0 ∧
+      cassSteadyConsumption P2 < cassSteadyConsumption P1 ∧
+      Tendsto a.capital atTop (𝓝 (cassSteady P2)) ∧
+      Tendsto a.consumption atTop (𝓝 (cassSteadyConsumption P2)) := by
+  obtain ⟨hlt, hclt⟩ := steady_strictAnti_discount P1 P2 hdd
+  obtain ⟨hk, hcon, -, habove, -⟩ := hc.dynamics P2
+  obtain ⟨hanti, hcanti⟩ := habove (h0 ▸ hlt)
+  refine ⟨hlt, hanti, hcanti, ?_, hclt, hk, hcon⟩
+  by_contra hle
+  push Not at hle
+  set k1 := cassSteady P1
+  set k2 := cassSteady P2
+  have hk2 := cassSteady_spec P2
+  have hbnd := (hc.capital_bounds P2).2 (h0 ▸ hlt)
+  -- then `k̇ ≥ d' (k - k1)`, so `(k - k1) e^{-d't}` is monotone and `k ≥ k1`
+  have hmono : MonotoneOn (fun s => (a.capital s - k1) * Real.exp (-d' * s)) (Ici 0) := by
+    apply monotoneOn_of_deriv_nonneg (convex_Ici 0)
+      (HasDerivAt.continuousOn (fun s hs => gap_exp_hasDerivAt a k1 d' hs))
+      (fun s hs => (gap_exp_hasDerivAt a k1 d' (interior_subset hs)).differentiableAt
+        |>.differentiableWithinAt)
+    intro s hs
+    have hs0 : 0 ≤ s := interior_subset hs
+    rw [(gap_exp_hasDerivAt a k1 d' hs0).deriv]
+    apply mul_nonneg _ (Real.exp_pos _).le
+    have hcs : a.consumption s ≤ a.consumption 0 :=
+      hcanti.antitoneOn (mem_Ici.mpr le_rfl) hs0 hs0
+    have hks := (hbnd s hs0).1
+    have hkle : a.capital s ≤ k1 := by
+      rw [← h0]
+      exact hanti.antitoneOn (mem_Ici.mpr le_rfl) hs0 hs0
+    have hkpos : 0 < a.capital s := hk2.1.trans hks
+    have hsup := concave_support P2.f_conc.concaveOn (mem_Ici.mpr hkpos.le)
+      (mem_Ici.mpr (hkpos.le.trans hkle)) (P2.f_diff _ hkpos).hasDerivAt
+    have hfd : deriv f (a.capital s) ≤ d' + m := by
+      rw [← hk2.2]
+      exact (production_deriv_strictAnti f P2.f_conc P2.f_diff).antitoneOn hk2.1 hkpos hks.le
+    have hprod : deriv f (a.capital s) * (k1 - a.capital s) ≤ (d' + m) * (k1 - a.capital s) :=
+      mul_le_mul_of_nonneg_right hfd (sub_nonneg.mpr hkle)
+    simp only [cassSteadyConsumption] at hle
+    nlinarith
+  have h1 := hmono (mem_Ici.mpr le_rfl) (mem_Ici.mpr zero_le_one) zero_le_one
+  simp only [mul_zero, Real.exp_zero, mul_one, h0, sub_self] at h1
+  have hk1lt : a.capital 1 < a.capital 0 := hanti (mem_Ici.mpr le_rfl) (mem_Ici.mpr zero_le_one)
+    zero_lt_one
+  have := mul_pos (sub_pos.mpr (h0 ▸ hk1lt)) (Real.exp_pos (-d'))
+  linarith
+
+end RamseyCassKoopmans
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# The Cass value function: monotonicity, strict concavity, and a supergradient
+
+`value P k` is the optimal lifetime welfare from capital `k`. We prove:
+
+* `value_spec`, `value_ge`: it is attained by the certified optimum and bounds the
+  welfare of every Cass-feasible path from `k`;
+* `value_strictMono`: it is strictly increasing. From a higher stock, copying the
+  lower optimum's investment leaves strictly more output to consume;
+* `value_strictConcave`: it is strictly concave. A mixture of two optimal paths is
+  feasible, and strict concavity of `f` gives it strictly more consumption;
+* `value_le_supergradient`: the initial current-value costate is a supergradient,
+  `V(k₁) ≤ V(k₀) + q(0) (k₁ - k₀)`, from the verification comparison with unequal
+  initial stocks (`finite_horizon_comparison'`).
+
+The envelope theorem `V'(k₀) = q(0)` is in `CassEnvelope`.
+-/
+
+open Set Filter MeasureTheory
+open scoped Topology
+
+namespace RamseyCassKoopmans
+
+variable {f U : ℝ → ℝ} {d m : ℝ}
+
+/-- A continuous positive function on `[0, ∞)` with a positive limit lies in a
+compact subinterval of `(0, ∞)`. -/
+theorem exists_pos_bounds {c : ℝ → ℝ} (hc : ContinuousOn c (Ici 0))
+    (hpos : ∀ t, 0 ≤ t → 0 < c t) {L : ℝ} (hL : 0 < L) (hlim : Tendsto c atTop (𝓝 L)) :
+    ∃ lo hi, 0 < lo ∧ lo ≤ hi ∧ ∀ t, 0 ≤ t → lo ≤ c t ∧ c t ≤ hi := by
+  obtain ⟨T, hT⟩ := eventually_atTop.mp ((hlim.eventually (lt_mem_nhds (half_lt_self hL))).and
+    ((hlim.eventually (gt_mem_nhds (lt_add_one L)))))
+  set T' := max T 0
+  have hT' : 0 ≤ T' := le_max_right _ _
+  obtain ⟨x, hx, hxmin⟩ := isCompact_Icc.exists_isMinOn (nonempty_Icc.mpr hT')
+    (hc.mono (fun _ ht => ht.1))
+  obtain ⟨y, hy, hymax⟩ := isCompact_Icc.exists_isMaxOn (nonempty_Icc.mpr hT')
+    (hc.mono (fun _ ht => ht.1))
+  have hxpos := hpos x hx.1
+  refine ⟨min (L / 2) (c x), max (L + 1) (c y), lt_min (half_pos hL) hxpos,
+    (min_le_left _ _).trans (by linarith [le_max_left (L + 1) (c y)]), fun t ht => ?_⟩
+  rcases le_total t T' with htT | htT
+  · exact ⟨(min_le_right _ _).trans (hxmin ⟨ht, htT⟩),
+      (hymax ⟨ht, htT⟩).trans (le_max_right _ _)⟩
+  · have h := hT t ((le_max_left _ _).trans htT)
+    exact ⟨(min_le_left _ _).trans h.1.le, h.2.le.trans (le_max_left _ _)⟩
+
+theorem CassPrimitives.f_cont (P : CassPrimitives f U d m) : ContinuousOn f (Ioi 0) :=
+  fun k hk => (P.f_diff k hk).continuousAt.continuousWithinAt
+
+theorem CassPrimitives.f_strictMono (P : CassPrimitives f U d m) : StrictMonoOn f (Ioi 0) :=
+  strictMonoOn_of_deriv_pos (convex_Ioi 0) P.f_cont
+    (fun k hk => by rw [interior_Ioi] at hk; exact P.f_prime_pos k hk)
+
+theorem CassPrimitives.U_strictMono (P : CassPrimitives f U d m) : StrictMonoOn U (Ioi 0) :=
+  strictMonoOn_of_deriv_pos (convex_Ioi 0) P.U_cont
+    (fun c hc => by rw [interior_Ioi] at hc; exact P.U_prime_pos c hc)
+
+/-- Welfare exists for a path whose consumption stays in a compact positive interval. -/
+theorem CassPrimitives.exists_welfare (P : CassPrimitives f U d m) {c : ℝ → ℝ}
+    (hc : ContinuousOn c (Ici 0)) {lo hi : ℝ} (hlo : 0 < lo) (hlh : lo ≤ hi)
+    (hb : ∀ t, 0 ≤ t → lo ≤ c t ∧ c t ≤ hi) : ∃ J, HasWelfare U (discount d) c J :=
+  exists_hasWelfare_of_compact_consumption U c P.d_pos hlh
+    (P.U_cont.mono (fun _ hx => hlo.trans_le hx.1)) hc (fun t ht => ⟨(hb t ht).1, (hb t ht).2⟩)
+
+/-- The certified optimum's welfare exists. -/
+theorem optimalPath_welfare (P : CassPrimitives f U d m) {k : ℝ} (hk : 0 < k) :
+    ∃ J, HasWelfare U (discount d) (optimalPath P hk).consumption J := by
+  obtain ⟨q, -, hc⟩ := optimalPath_spec P hk
+  exact hc.welfare
+
+/-- Optimal lifetime welfare from capital `k`. -/
+noncomputable def value (P : CassPrimitives f U d m) (k : ℝ) : ℝ :=
+  if hk : 0 < k then Classical.choose (optimalPath_welfare P hk) else 0
+
+theorem value_spec (P : CassPrimitives f U d m) {k : ℝ} (hk : 0 < k) :
+    HasWelfare U (discount d) (optimalPath P hk).consumption (value P k) := by
+  simp only [value, hk, ↓reduceDIte]
+  exact Classical.choose_spec (optimalPath_welfare P hk)
+
+/-- The value bounds the welfare of every Cass-feasible path from `k`. -/
+theorem value_ge (P : CassPrimitives f U d m) {k : ℝ} (hk : 0 < k) {b : FeasiblePath f m}
+    (hb : b.NonnegativeInvestment) (hb0 : b.capital 0 = k) {J : ℝ}
+    (hJ : HasWelfare U (discount d) b.consumption J) : J ≤ value P k := by
+  obtain ⟨q, h0, hc⟩ := optimalPath_spec P hk
+  exact (hc.isCassOptimal P (value_spec P hk)).2.2 b hb (h0.trans hb0.symm) J hJ
+
+/-- A certified path from `k` attains the value. -/
+theorem value_eq (P : CassPrimitives f U d m) {a : FeasiblePath f m} {q : ℝ → ℝ}
+    (hc : CassCertificate f U d m a q) {J : ℝ} (hJ : HasWelfare U (discount d) a.consumption J) :
+    value P (a.capital 0) = J := by
+  have hk := hc.capital_pos 0 le_rfl
+  obtain ⟨qo, h0, hoc⟩ := optimalPath_spec P hk
+  exact ((hc.eq_of_isCassOptimal P hJ (hoc.isCassOptimal P (value_spec P hk)) h0.symm).1)
+
+/-- The finite-horizon comparison with unequal initial stocks: the boundary term at
+time zero is retained. -/
+theorem finite_horizon_comparison' {w : ℝ → ℝ} {a : FeasiblePath f m}
+    (v : SupportingPrices f U w m a) (b : FeasiblePath f m)
+    (halloc : AllocationComparison v b) {T : ℝ} (hT : 0 ≤ T) :
+    welfare U w b.consumption T - welfare U w a.consumption T ≤
+      boundary v.price a.capital b.capital T - boundary v.price a.capital b.capital 0 := by
+  have hsub : Icc (0 : ℝ) T ⊆ Ici 0 := fun _ ht => ht.1
+  have haint :=
+    ((welfare_integrand_continuous v a).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
+  have hbint :=
+    ((welfare_integrand_continuous v b).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
+  have hBint := ((boundaryRate_continuous v b).mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
+  have hFTC : (∫ t in (0 : ℝ)..T, boundaryRate v b t) =
+      boundary v.price a.capital b.capital T - boundary v.price a.capital b.capital 0 := by
+    apply intervalIntegral.integral_eq_sub_of_hasDerivAt _ hBint
+    intro t ht
+    rw [uIcc_of_le hT] at ht
+    exact hasDerivAt_boundary v b ht.1
+  have hnonneg : 0 ≤ ∫ t in (0 : ℝ)..T,
+      (w t * U (a.consumption t) - w t * U (b.consumption t)) + boundaryRate v b t := by
+    apply intervalIntegral.integral_nonneg hT
+    intro t ht
+    simpa only [mul_sub] using pointwise_comparison v b halloc ht.1
+  rw [intervalIntegral.integral_add (haint.sub hbint) hBint,
+    intervalIntegral.integral_sub haint hbint, hFTC] at hnonneg
+  change welfare U w a.consumption T - welfare U w b.consumption T +
+    (boundary v.price a.capital b.capital T - boundary v.price a.capital b.capital 0) ≥ 0
+    at hnonneg
+  linarith
+
+/-- The initial current-value costate is a supergradient of the value function. -/
+theorem value_le_supergradient (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) {k1 : ℝ} (hk1 : 0 < k1) :
+    value P k1 ≤ value P (a.capital 0) + q 0 * (k1 - a.capital 0) := by
+  obtain ⟨Ja, hJa⟩ := hc.welfare
+  rw [value_eq P hc hJa]
+  obtain ⟨qb, hb0, hbc⟩ := optimalPath_spec P hk1
+  set b := optimalPath P hk1
+  have hJb := value_spec P hk1
+  let v := cassSupportingPrices f U q d m a P.f_conc.concaveOn P.U_conc.concaveOn P.U_cont
+    P.f_diff P.U_diff P.f_prime_cont P.U_prime_cont hc.capital_pos
+    (fun t ht => (P.U_prime_pos _ (a.consumption_pos t ht)).le) hc.costate
+  have halloc : AllocationComparison v b := by
+    apply allocation_of_cass v
+    · intro t ht
+      exact mul_le_mul_of_nonneg_left (hc.wedge t ht) (discount_pos d t).le
+    · intro t ht
+      change (discount d t * q t - discount d t * deriv U (a.consumption t)) *
+        a.investment t = 0
+      calc
+        _ = discount d t * ((q t - deriv U (a.consumption t)) * a.investment t) := by ring
+        _ = 0 := by rw [hc.slack t ht, mul_zero]
+    · exact hbc.investment_nonneg
+  obtain ⟨K, hK, hcap⟩ := P.exists_capacity (max (a.capital 0) k1)
+  have hterm : Tendsto (boundary v.price a.capital b.capital) atTop (𝓝 0) :=
+    Terminal.terminal_tendsto_zero_of_bounded_capital hc.transversality
+      (fun t ht => ⟨a.capital_nonneg t ht,
+        a.capital_le_capacity hcap ((le_max_left _ _).trans hK) t ht⟩)
+      (fun t ht => ⟨b.capital_nonneg t ht,
+        b.capital_le_capacity hcap (hb0 ▸ (le_max_right _ _).trans hK) t ht⟩)
+  have hle : value P k1 - Ja ≤ 0 - boundary v.price a.capital b.capital 0 :=
+    le_of_tendsto_of_tendsto (hJb.sub hJa) (hterm.sub_const _)
+      (by
+        filter_upwards [eventually_ge_atTop (0 : ℝ)] with T hT
+        exact finite_horizon_comparison' v b halloc hT)
+  have hB0 : boundary v.price a.capital b.capital 0 = q 0 * (a.capital 0 - k1) := by
+    simp only [boundary, v, cassSupportingPrices, discount, mul_zero, Real.exp_zero, one_mul, hb0]
+  rw [hB0] at hle
+  linarith
+
+/-- The path that copies `a`'s investment from a different initial stock. -/
+noncomputable def FeasiblePath.mimic (P : CassPrimitives f U d m) (a : FeasiblePath f m)
+    (Δ : ℝ) (hk : ∀ t, 0 ≤ t → 0 < a.capital t + Δ * Real.exp (-m * t))
+    (hc : ∀ t, 0 ≤ t → 0 < f (a.capital t + Δ * Real.exp (-m * t)) - a.investment t) :
+    FeasiblePath f m where
+  capital := fun t => a.capital t + Δ * Real.exp (-m * t)
+  consumption := fun t => f (a.capital t + Δ * Real.exp (-m * t)) - a.investment t
+  investment := a.investment
+  capital_nonneg := fun t ht => (hk t ht).le
+  consumption_pos := hc
+  consumption_continuous := by
+    apply ContinuousOn.sub _ a.investment_continuous
+    exact P.f_cont.comp (a.capital_continuous.add (continuousOn_const.mul
+      (Real.continuous_exp.comp (continuous_const.mul continuous_id)).continuousOn))
+      (fun t ht => hk t ht)
+  investment_continuous := a.investment_continuous
+  resource := fun t _ => by ring
+  dynamics := fun t ht => by
+    have he : HasDerivAt (fun s => Δ * Real.exp (-m * s)) (Δ * (Real.exp (-m * t) * (-m))) t := by
+      have := ((hasDerivAt_id t).const_mul (-m)).exp.const_mul Δ
+      simpa only [id, mul_one] using this
+    refine ((a.dynamics t ht).add he).congr_deriv ?_
+    ring
+
+/-- The value function is strictly increasing. -/
+theorem value_strictMono (P : CassPrimitives f U d m) : StrictMonoOn (value P) (Ioi 0) := by
+  intro k0 hk0 k1 hk1 h01
+  have hk0' : (0 : ℝ) < k0 := hk0
+  obtain ⟨q, ha0, hc⟩ := optimalPath_spec P hk0'
+  set a := optimalPath P hk0'
+  set Δ := k1 - k0
+  have hΔ : 0 < Δ := sub_pos.mpr h01
+  have hkb : ∀ t, 0 ≤ t → a.capital t < a.capital t + Δ * Real.exp (-m * t) := fun t _ => by
+    have := mul_pos hΔ (Real.exp_pos (-m * t))
+    linarith
+  have hcb : ∀ t, 0 ≤ t → a.consumption t <
+      f (a.capital t + Δ * Real.exp (-m * t)) - a.investment t := fun t ht => by
+    have hf := P.f_strictMono (hc.capital_pos t ht) ((hc.capital_pos t ht).trans (hkb t ht))
+      (hkb t ht)
+    have hr := a.resource t ht
+    linarith
+  let b := a.mimic P Δ (fun t ht => (hc.capital_pos t ht).trans (hkb t ht))
+    (fun t ht => (a.consumption_pos t ht).trans (hcb t ht))
+  have hb0 : b.capital 0 = k1 := by
+    change a.capital 0 + Δ * Real.exp (-m * 0) = k1
+    rw [ha0, mul_zero, Real.exp_zero, mul_one]
+    ring
+  -- `b`'s consumption is bounded between `a`'s lower bound and output at a capacity
+  obtain ⟨hk, hcon, -⟩ := hc.dynamics P
+  obtain ⟨lo, hi, hlo, hlh, hbd⟩ := exists_pos_bounds a.consumption_continuous
+    a.consumption_pos (cassSteadyConsumption_pos P) hcon
+  obtain ⟨K, hK, hcap⟩ := P.exists_capacity (a.capital 0)
+  have hkK : ∀ t, 0 ≤ t → a.capital t ≤ K := a.capital_le_capacity hcap hK
+  have hbub : ∀ t, 0 ≤ t → b.consumption t ≤ f (K + Δ) := fun t ht => by
+    change f (a.capital t + Δ * Real.exp (-m * t)) - a.investment t ≤ f (K + Δ)
+    have hz := hc.investment_nonneg t ht
+    have hle : a.capital t + Δ * Real.exp (-m * t) ≤ K + Δ := by
+      have := mul_le_of_le_one_right hΔ.le (Real.exp_le_one_iff.mpr
+        (by nlinarith [P.m_pos, ht] : -m * t ≤ 0))
+      linarith [hkK t ht]
+    have hmono := P.f_strictMono.monotoneOn ((hc.capital_pos t ht).trans (hkb t ht))
+      (show (0 : ℝ) < K + Δ by linarith [hc.capital_pos t ht, hkK t ht]) hle
+    linarith
+  obtain ⟨Jb, hJb⟩ := P.exists_welfare b.consumption_continuous hlo
+    (show lo ≤ f (K + Δ) from ((hbd 0 le_rfl).1.trans (hcb 0 le_rfl).le).trans (hbub 0 le_rfl))
+    (fun t ht => ⟨((hbd t ht).1.trans (hcb t ht).le), hbub t ht⟩)
+  have hvb := value_ge P hk1 (b := b) hc.investment_nonneg hb0 hJb
+  have hva := value_spec P hk0'
+  -- strictly positive welfare gain
+  have hgain : 0 < Jb - value P k0 := by
+    apply positive_limit_of_integral_nonneg_of_pos (F := fun t =>
+      discount d t * U (b.consumption t) - discount d t * U (a.consumption t)) (t₀ := 0)
+    · exact ((discount_continuous d).continuousOn.mul (P.U_cont.comp b.consumption_continuous
+        b.consumption_pos)).sub ((discount_continuous d).continuousOn.mul
+        (P.U_cont.comp a.consumption_continuous a.consumption_pos))
+    · intro t ht
+      have := P.U_strictMono (a.consumption_pos t ht) (b.consumption_pos t ht) (hcb t ht)
+      nlinarith [discount_pos d t]
+    · exact le_rfl
+    · have := P.U_strictMono (a.consumption_pos 0 le_rfl) (b.consumption_pos 0 le_rfl)
+        (hcb 0 le_rfl)
+      nlinarith [discount_pos d 0]
+    · refine (hJb.sub hva).congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with T hT
+      have hsub : Icc (0 : ℝ) T ⊆ Ici 0 := fun _ ht => ht.1
+      have h1 : IntervalIntegrable (fun t => discount d t * U (b.consumption t)) volume 0 T :=
+        (((discount_continuous d).continuousOn.mul (P.U_cont.comp
+        b.consumption_continuous b.consumption_pos)).mono hsub).intervalIntegrable_of_Icc hT
+      have h2 : IntervalIntegrable (fun t => discount d t * U (a.consumption t)) volume 0 T :=
+        (((discount_continuous d).continuousOn.mul (P.U_cont.comp
+        a.consumption_continuous a.consumption_pos)).mono hsub).intervalIntegrable_of_Icc hT
+      simp only [welfare]
+      exact (intervalIntegral.integral_sub h1 h2).symm
+  linarith
+
+/-- The mixture of two paths: capital and investment are averaged, and consumption
+takes the output at averaged capital net of averaged investment. -/
+noncomputable def FeasiblePath.mix (P : CassPrimitives f U d m) (a b : FeasiblePath f m)
+    (θ : ℝ)
+    (hk : ∀ t, 0 ≤ t → 0 < θ * a.capital t + (1 - θ) * b.capital t)
+    (hc : ∀ t, 0 ≤ t → 0 < f (θ * a.capital t + (1 - θ) * b.capital t) -
+      (θ * a.investment t + (1 - θ) * b.investment t)) : FeasiblePath f m where
+  capital := fun t => θ * a.capital t + (1 - θ) * b.capital t
+  consumption := fun t => f (θ * a.capital t + (1 - θ) * b.capital t) -
+    (θ * a.investment t + (1 - θ) * b.investment t)
+  investment := fun t => θ * a.investment t + (1 - θ) * b.investment t
+  capital_nonneg := fun t ht => (hk t ht).le
+  consumption_pos := hc
+  consumption_continuous := by
+    apply ContinuousOn.sub _ ((continuousOn_const.mul a.investment_continuous).add
+      (continuousOn_const.mul b.investment_continuous))
+    exact P.f_cont.comp ((continuousOn_const.mul a.capital_continuous).add
+      (continuousOn_const.mul b.capital_continuous)) (fun t ht => hk t ht)
+  investment_continuous := (continuousOn_const.mul a.investment_continuous).add
+      (continuousOn_const.mul b.investment_continuous)
+  resource := fun t _ => by ring
+  dynamics := fun t ht => by
+    refine (((a.dynamics t ht).const_mul θ).add
+      ((b.dynamics t ht).const_mul (1 - θ))).congr_deriv ?_
+    ring
+
+/-- The value function is strictly concave. -/
+theorem value_strictConcave (P : CassPrimitives f U d m) :
+    StrictConcaveOn ℝ (Ioi 0) (value P) := by
+  refine ⟨convex_Ioi 0, fun k0 hk0 k1 hk1 hne θ θ' hθ hθ' hsum => ?_⟩
+  have hk0' : (0 : ℝ) < k0 := hk0
+  have hk1' : (0 : ℝ) < k1 := hk1
+  obtain ⟨qa, ha0, hca⟩ := optimalPath_spec P hk0'
+  obtain ⟨qb, hb0, hcb⟩ := optimalPath_spec P hk1'
+  set a := optimalPath P hk0'
+  set b := optimalPath P hk1'
+  have hθ'' : θ' = 1 - θ := by linarith
+  subst hθ''
+  have hkm : ∀ t, 0 ≤ t → 0 < θ * a.capital t + (1 - θ) * b.capital t := fun t ht => by
+    have := mul_pos hθ (hca.capital_pos t ht)
+    have := mul_pos hθ' (hcb.capital_pos t ht)
+    linarith
+  -- concavity of `f`: mixed output is at least the mixture of outputs
+  have hfmix : ∀ t, 0 ≤ t → θ * f (a.capital t) + (1 - θ) * f (b.capital t) ≤
+      f (θ * a.capital t + (1 - θ) * b.capital t) := fun t ht =>
+    P.f_conc.concaveOn.2 (a.capital_nonneg t ht) (b.capital_nonneg t ht) hθ.le hθ'.le
+      (by ring)
+  have hcm : ∀ t, 0 ≤ t → θ * a.consumption t + (1 - θ) * b.consumption t ≤
+      f (θ * a.capital t + (1 - θ) * b.capital t) -
+        (θ * a.investment t + (1 - θ) * b.investment t) := fun t ht => by
+    have := hfmix t ht
+    have ha := a.resource t ht
+    have hb := b.resource t ht
+    nlinarith
+  have hcpos : ∀ t, 0 ≤ t → 0 < θ * a.consumption t + (1 - θ) * b.consumption t :=
+    fun t ht => by
+      have := mul_pos hθ (a.consumption_pos t ht)
+      have := mul_pos hθ' (b.consumption_pos t ht)
+      linarith
+  let c := a.mix P b θ hkm (fun t ht => (hcpos t ht).trans_le (hcm t ht))
+  have hc0 : c.capital 0 = θ • k0 + (1 - θ) • k1 := by
+    change θ * a.capital 0 + (1 - θ) * b.capital 0 = _
+    rw [ha0, hb0, smul_eq_mul, smul_eq_mul]
+  -- bounds for the welfare of the mixture
+  obtain ⟨-, hacon, -⟩ := hca.dynamics P
+  obtain ⟨-, hbcon, -⟩ := hcb.dynamics P
+  obtain ⟨loa, hia, hloa, -, hbda⟩ := exists_pos_bounds a.consumption_continuous
+    a.consumption_pos (cassSteadyConsumption_pos P) hacon
+  obtain ⟨lob, hib, hlob, -, hbdb⟩ := exists_pos_bounds b.consumption_continuous
+    b.consumption_pos (cassSteadyConsumption_pos P) hbcon
+  obtain ⟨K, hK, hcap⟩ := P.exists_capacity (max k0 k1)
+  have hkKa := a.capital_le_capacity hcap (ha0 ▸ (le_max_left _ _).trans hK)
+  have hkKb := b.capital_le_capacity hcap (hb0 ▸ (le_max_right _ _).trans hK)
+  set lo := min loa lob
+  have hlo : 0 < lo := lt_min hloa hlob
+  have hclo : ∀ t, 0 ≤ t → lo ≤ c.consumption t := fun t ht => by
+    have h1 := (hbda t ht).1
+    have h2 := (hbdb t ht).1
+    have h3 : lo ≤ θ * a.consumption t + (1 - θ) * b.consumption t := by
+      have := mul_le_mul_of_nonneg_left ((min_le_left loa lob).trans h1) hθ.le
+      have := mul_le_mul_of_nonneg_left ((min_le_right loa lob).trans h2) hθ'.le
+      nlinarith
+    exact h3.trans (hcm t ht)
+  have hchi : ∀ t, 0 ≤ t → c.consumption t ≤ f K := fun t ht => by
+    change f (θ * a.capital t + (1 - θ) * b.capital t) -
+      (θ * a.investment t + (1 - θ) * b.investment t) ≤ f K
+    have hz : 0 ≤ θ * a.investment t + (1 - θ) * b.investment t := by
+      have := mul_nonneg hθ.le (hca.investment_nonneg t ht)
+      have := mul_nonneg hθ'.le (hcb.investment_nonneg t ht)
+      linarith
+    have hkle : θ * a.capital t + (1 - θ) * b.capital t ≤ K := by
+      have := mul_le_mul_of_nonneg_left (hkKa t ht) hθ.le
+      have := mul_le_mul_of_nonneg_left (hkKb t ht) hθ'.le
+      nlinarith
+    have := P.f_strictMono.monotoneOn (hkm t ht) ((hkm t ht).trans_le hkle) hkle
+    linarith
+  obtain ⟨Jc, hJc⟩ := P.exists_welfare c.consumption_continuous hlo
+    ((hclo 0 le_rfl).trans (hchi 0 le_rfl)) (fun t ht => ⟨hclo t ht, hchi t ht⟩)
+  have hcinv : c.NonnegativeInvestment := fun t ht => by
+    have := mul_nonneg hθ.le (hca.investment_nonneg t ht)
+    have := mul_nonneg hθ'.le (hcb.investment_nonneg t ht)
+    change 0 ≤ θ * a.investment t + (1 - θ) * b.investment t
+    linarith
+  have hvc := value_ge P (show 0 < θ • k0 + (1 - θ) • k1 from hc0 ▸ hkm 0 le_rfl) hcinv hc0 hJc
+  have hva := value_spec P hk0'
+  have hvb := value_spec P hk1'
+  -- the strict gain at time zero from strict concavity of `f`
+  have hstrict0 : θ * a.consumption 0 + (1 - θ) * b.consumption 0 < c.consumption 0 := by
+    have hne' : a.capital 0 ≠ b.capital 0 := by rw [ha0, hb0]; exact hne
+    have hf := P.f_conc.2 (a.capital_nonneg 0 le_rfl) (b.capital_nonneg 0 le_rfl) hne' hθ hθ'
+      (by ring)
+    simp only [smul_eq_mul] at hf
+    have ha := a.resource 0 le_rfl
+    have hb := b.resource 0 le_rfl
+    change _ < f (θ * a.capital 0 + (1 - θ) * b.capital 0) -
+      (θ * a.investment 0 + (1 - θ) * b.investment 0)
+    nlinarith
+  have hUmix : ∀ t, 0 ≤ t → θ * U (a.consumption t) + (1 - θ) * U (b.consumption t) ≤
+      U (c.consumption t) := fun t ht => by
+    have h1 := P.U_conc.concaveOn.2 (a.consumption_pos t ht) (b.consumption_pos t ht) hθ.le
+      hθ'.le (by ring)
+    simp only [smul_eq_mul] at h1
+    have h2 := P.U_strictMono.monotoneOn (hcpos t ht) (c.consumption_pos t ht) (hcm t ht)
+    linarith
+  have hgain : 0 < Jc - (θ * value P k0 + (1 - θ) * value P k1) := by
+    apply positive_limit_of_integral_nonneg_of_pos (F := fun t =>
+      discount d t * U (c.consumption t) - (θ * (discount d t * U (a.consumption t)) +
+        (1 - θ) * (discount d t * U (b.consumption t)))) (t₀ := 0)
+    · have hU : ∀ e : FeasiblePath f m,
+          ContinuousOn (fun t => discount d t * U (e.consumption t)) (Ici 0) := fun e =>
+        (discount_continuous d).continuousOn.mul (P.U_cont.comp e.consumption_continuous
+          e.consumption_pos)
+      exact (hU c).sub (((hU a).const_smul θ).add ((hU b).const_smul (1 - θ)))
+    · intro t ht
+      have := hUmix t ht
+      nlinarith [discount_pos d t]
+    · exact le_rfl
+    · have h1 := P.U_conc.concaveOn.2 (a.consumption_pos 0 le_rfl) (b.consumption_pos 0 le_rfl)
+        hθ.le hθ'.le (by ring)
+      simp only [smul_eq_mul] at h1
+      have h2 := P.U_strictMono (hcpos 0 le_rfl) (c.consumption_pos 0 le_rfl) hstrict0
+      nlinarith [discount_pos d 0]
+    · refine (hJc.sub ((hva.const_mul θ).add (hvb.const_mul (1 - θ)))).congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with T hT
+      have hsub : Icc (0 : ℝ) T ⊆ Ici 0 := fun _ ht => ht.1
+      have hI : ∀ e : FeasiblePath f m, IntervalIntegrable
+          (fun t => discount d t * U (e.consumption t)) volume 0 T := fun e =>
+        (((discount_continuous d).continuousOn.mul (P.U_cont.comp e.consumption_continuous
+          e.consumption_pos)).mono hsub).intervalIntegrable_of_Icc hT
+      simp only [welfare]
+      rw [intervalIntegral.integral_sub (hI c) (((hI a).const_mul θ).add
+        ((hI b).const_mul (1 - θ))), intervalIntegral.integral_add ((hI a).const_mul θ)
+        ((hI b).const_mul (1 - θ)), intervalIntegral.integral_const_mul,
+        intervalIntegral.integral_const_mul]
+  simp only [smul_eq_mul] at hvc ⊢
+  linarith
+
+end RamseyCassKoopmans
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# The envelope theorem for the Cass value function
+
+`value_hasDerivAt`: for a certified optimum `(a, q)` from `k₀`,
+`V'(k₀) = q(0)`, the initial current-value costate; when the optimum invests at
+time zero this is `U'(c(0))` (`value_deriv_eq_marginal_utility`).
+
+The proof follows Clausen and Strub (2020), *Reverse calculus and nested
+optimization*, J. Econ. Theory 187: a function squeezed between a lower and an
+upper support function that touch it at `k₀` and share a derivative there is
+differentiable with that derivative (`clausen_strub_sandwich`). The upper support
+is the affine supergradient bound `V(k₀) + q(0)(k - k₀)`. The lower support is the
+welfare `L(k)` of the path that copies the optimum's investment from `k`; its
+derivative at `k₀` is identified from the costate identity
+`q(0) = ∫₀^∞ e^{-(d+m)t} U'(c) f'(k) dt` and uniform continuity of `U'` and `f'`.
+-/
+
+open Set Filter MeasureTheory
+open scoped Topology
+
+namespace RamseyCassKoopmans
+
+variable {f U : ℝ → ℝ} {d m : ℝ}
+
+/-- Clausen–Strub sandwich: a function lying between two functions that touch it at
+`x₀` and are differentiable there with a common derivative `D` has derivative `D`. -/
+theorem clausen_strub_sandwich {V L H : ℝ → ℝ} {x₀ D : ℝ}
+    (hL : HasDerivAt L D x₀) (hH : HasDerivAt H D x₀)
+    (hLV : ∀ᶠ x in 𝓝 x₀, L x ≤ V x) (hVH : ∀ᶠ x in 𝓝 x₀, V x ≤ H x)
+    (hLx : L x₀ = V x₀) (hHx : H x₀ = V x₀) : HasDerivAt V D x₀ := by
+  rw [hasDerivAt_iff_tendsto_slope] at hL hH ⊢
+  rw [← nhdsLT_sup_nhdsGT, tendsto_sup] at hL hH ⊢
+  constructor
+  · refine tendsto_of_tendsto_of_tendsto_of_le_of_le' hH.1 hL.1 ?_ ?_
+    · filter_upwards [nhdsWithin_le_nhds hVH, self_mem_nhdsWithin] with x hx hlt
+      rw [slope_def_field, slope_def_field, ← hHx]
+      exact div_le_div_of_nonpos_of_le (sub_nonpos.mpr (le_of_lt hlt)) (by linarith)
+    · filter_upwards [nhdsWithin_le_nhds hLV, self_mem_nhdsWithin] with x hx hlt
+      rw [slope_def_field, slope_def_field, ← hLx]
+      exact div_le_div_of_nonpos_of_le (sub_nonpos.mpr (le_of_lt hlt)) (by linarith)
+  · refine tendsto_of_tendsto_of_tendsto_of_le_of_le' hL.2 hH.2 ?_ ?_
+    · filter_upwards [nhdsWithin_le_nhds hLV, self_mem_nhdsWithin] with x hx hgt
+      rw [slope_def_field, slope_def_field, ← hLx]
+      exact div_le_div_of_nonneg_right (by linarith) (sub_nonneg.mpr (le_of_lt hgt))
+    · filter_upwards [nhdsWithin_le_nhds hVH, self_mem_nhdsWithin] with x hx hgt
+      rw [slope_def_field, slope_def_field, ← hHx]
+      exact div_le_div_of_nonneg_right (by linarith) (sub_nonneg.mpr (le_of_lt hgt))
+
+/-- Consumption of the path copying `a`'s investment from stock `a.capital 0 + Δ`. -/
+noncomputable def mimicConsumption (a : FeasiblePath f m) (Δ t : ℝ) : ℝ :=
+  f (a.capital t + Δ * Real.exp (-m * t)) - a.investment t
+
+theorem integral_exp_neg_le {r : ℝ} (hr : 0 < r) (T : ℝ) :
+    ∫ t in (0 : ℝ)..T, Real.exp (-r * t) ≤ 1 / r := by
+  have hd : ∀ t, HasDerivAt (fun s => -Real.exp (-r * s) / r) (Real.exp (-r * t)) t := by
+    intro t
+    have := (((hasDerivAt_id t).const_mul (-r)).exp.neg).div_const r
+    refine this.congr_deriv ?_
+    simp only [id]
+    field_simp
+  rw [intervalIntegral.integral_eq_sub_of_hasDerivAt (fun t _ => hd t)
+    (Continuous.intervalIntegrable (by fun_prop) 0 T)]
+  have := Real.exp_pos (-r * T)
+  simp only [mul_zero, Real.exp_zero]
+  rw [div_sub_div_same, show -Real.exp (-r * T) - -1 = 1 - Real.exp (-r * T) by ring]
+  exact div_le_div_of_nonneg_right (by linarith) hr.le
+
+set_option maxHeartbeats 1000000 in
+-- The envelope proof assembles many local estimates in one context; the fresh-source
+-- audit, which elaborates every module in a single file, needs the larger budget.
+/-- The envelope theorem: `V'(k₀) = q(0)`. -/
+theorem value_hasDerivAt (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) :
+    HasDerivAt (value P) (q 0) (a.capital 0) := by
+  classical
+  set k0 := a.capital 0 with hk0_def
+  have hk0 : 0 < k0 := hc.capital_pos 0 le_rfl
+  obtain ⟨Ja, hJa⟩ := hc.welfare
+  have hVa : value P k0 = Ja := value_eq P hc hJa
+  have hm := P.m_pos
+  have hdm : 0 < d + m := add_pos P.d_pos hm
+  -- compact bounds for the optimum
+  obtain ⟨hk, hcon, -⟩ := hc.dynamics P
+  obtain ⟨kmin, kmax, hkmin, -, hkbd⟩ := exists_pos_bounds a.capital_continuous
+    hc.capital_pos (cassSteady_spec P).1 hk
+  obtain ⟨cmin, cmax, hcmin, -, hcbd⟩ := exists_pos_bounds a.consumption_continuous
+    a.consumption_pos (cassSteadyConsumption_pos P) hcon
+  set k1 := kmin / 2 with hk1_def
+  have hk1 : 0 < k1 := half_pos hkmin
+  set Mf := deriv f k1
+  have hMf : 0 < Mf := P.f_prime_pos k1 hk1
+  have hfanti := production_deriv_strictAnti f P.f_conc P.f_diff
+  -- output is Lipschitz with constant `Mf` above `k1`
+  have hlip : ∀ x y, k1 ≤ x → k1 ≤ y → |f y - f x| ≤ Mf * |y - x| := by
+    intro x y hx hy
+    have hx0 : 0 < x := hk1.trans_le hx
+    have hy0 : 0 < y := hk1.trans_le hy
+    have h1 := concave_support P.f_conc.concaveOn (mem_Ici.mpr hx0.le) (mem_Ici.mpr hy0.le)
+      (P.f_diff x hx0).hasDerivAt
+    have h2 := concave_support P.f_conc.concaveOn (mem_Ici.mpr hy0.le) (mem_Ici.mpr hx0.le)
+      (P.f_diff y hy0).hasDerivAt
+    have hfx : 0 < deriv f x ∧ deriv f x ≤ Mf :=
+      ⟨P.f_prime_pos x hx0, hfanti.antitoneOn hk1 hx0 hx⟩
+    have hfy : 0 < deriv f y ∧ deriv f y ≤ Mf :=
+      ⟨P.f_prime_pos y hy0, hfanti.antitoneOn hk1 hy0 hy⟩
+    rw [abs_le]
+    rcases le_total x y with hxy | hxy
+    · rw [abs_of_nonneg (sub_nonneg.mpr hxy)]
+      constructor <;> nlinarith
+    · rw [abs_of_nonpos (sub_nonpos.mpr hxy)]
+      constructor <;> nlinarith
+  set δ0 := min (kmin / 2) (min 1 (cmin / (2 * Mf)))
+  have hδ0 : 0 < δ0 := lt_min hk1 (lt_min one_pos (div_pos hcmin (by linarith)))
+  set cmax' := f (kmax + 1)
+  -- the mimic path is admissible for `|Δ| < δ0`
+  have hexp : ∀ t, 0 ≤ t → 0 < Real.exp (-m * t) ∧ Real.exp (-m * t) ≤ 1 := fun t ht =>
+    ⟨Real.exp_pos _, Real.exp_le_one_iff.mpr (by nlinarith)⟩
+  have hkb : ∀ Δ, |Δ| < δ0 → ∀ t, 0 ≤ t →
+      k1 ≤ a.capital t + Δ * Real.exp (-m * t) ∧ a.capital t + Δ * Real.exp (-m * t) ≤ kmax + 1 ∧
+        |a.capital t + Δ * Real.exp (-m * t) - a.capital t| ≤ |Δ| := by
+    intro Δ hΔ t ht
+    obtain ⟨he0, he1⟩ := hexp t ht
+    have habs : |Δ * Real.exp (-m * t)| ≤ |Δ| := by
+      rw [abs_mul, abs_of_pos he0]
+      exact mul_le_of_le_one_right (abs_nonneg _) he1
+    have hΔk : |Δ| < kmin / 2 := hΔ.trans_le (min_le_left _ _)
+    have hΔ1 : |Δ| < 1 := hΔ.trans_le ((min_le_right _ _).trans (min_le_left _ _))
+    obtain ⟨hlo, hhi⟩ := hkbd t ht
+    have := neg_abs_le (Δ * Real.exp (-m * t))
+    have := le_abs_self (Δ * Real.exp (-m * t))
+    refine ⟨by linarith, by linarith, ?_⟩
+    rw [show a.capital t + Δ * Real.exp (-m * t) - a.capital t = Δ * Real.exp (-m * t) by ring]
+    exact habs
+  have hcb : ∀ Δ, |Δ| < δ0 → ∀ t, 0 ≤ t →
+      cmin / 2 ≤ mimicConsumption a Δ t ∧ mimicConsumption a Δ t ≤ cmax' ∧
+        |mimicConsumption a Δ t - a.consumption t| ≤ Mf * |Δ| := by
+    intro Δ hΔ t ht
+    obtain ⟨hb1, hb2, hb3⟩ := hkb Δ hΔ t ht
+    have hdiff : |mimicConsumption a Δ t - a.consumption t| ≤ Mf * |Δ| := by
+      have hr := a.resource t ht
+      have heq : mimicConsumption a Δ t - a.consumption t =
+          f (a.capital t + Δ * Real.exp (-m * t)) - f (a.capital t) := by
+        simp only [mimicConsumption]
+        linarith
+      rw [heq]
+      exact (hlip _ _ (by linarith [(hkbd t ht).1]) hb1).trans
+        (mul_le_mul_of_nonneg_left hb3 hMf.le)
+    have hΔc : Mf * |Δ| ≤ cmin / 2 := by
+      have h := hΔ.le.trans ((min_le_right _ _).trans (min_le_right _ _))
+      rw [le_div_iff₀ (by linarith)] at h
+      linarith
+    refine ⟨?_, ?_, hdiff⟩
+    · have := (abs_le.mp hdiff).1
+      linarith [(hcbd t ht).1]
+    · have hz := hc.investment_nonneg t ht
+      have hmono := P.f_strictMono.monotoneOn (hk1.trans_le hb1)
+        (show (0 : ℝ) < kmax + 1 by linarith [(hkbd t ht).1, (hkbd t ht).2]) hb2
+      simp only [mimicConsumption]
+      linarith
+  have hcbpos : ∀ Δ, |Δ| < δ0 → ∀ t, 0 ≤ t → 0 < mimicConsumption a Δ t := fun Δ hΔ t ht =>
+    (half_pos hcmin).trans_le (hcb Δ hΔ t ht).1
+  let b : ∀ Δ, |Δ| < δ0 → FeasiblePath f m := fun Δ hΔ => a.mimic P Δ
+    (fun t ht => hk1.trans_le (hkb Δ hΔ t ht).1) (hcbpos Δ hΔ)
+  have hbcons : ∀ Δ hΔ, (b Δ hΔ).consumption = mimicConsumption a Δ := fun _ _ => rfl
+  have hb0 : ∀ Δ hΔ, (b Δ hΔ).capital 0 = k0 + Δ := fun Δ hΔ => by
+    change a.capital 0 + Δ * Real.exp (-m * 0) = k0 + Δ
+    rw [mul_zero, Real.exp_zero, mul_one]
+  have hbwel : ∀ Δ, |Δ| < δ0 → ∃ J, HasWelfare U (discount d) (mimicConsumption a Δ) J :=
+    fun Δ hΔ => P.exists_welfare (b Δ hΔ).consumption_continuous (half_pos hcmin)
+      ((hcb Δ hΔ 0 le_rfl).1.trans (hcb Δ hΔ 0 le_rfl).2.1)
+      (fun t ht => ⟨(hcb Δ hΔ t ht).1, (hcb Δ hΔ t ht).2.1⟩)
+  -- the lower support function
+  let L : ℝ → ℝ := fun k => if h : ∃ J, HasWelfare U (discount d) (mimicConsumption a (k - k0)) J
+    then Classical.choose h else value P k
+  have hLspec : ∀ k, |k - k0| < δ0 →
+      HasWelfare U (discount d) (mimicConsumption a (k - k0)) (L k) := fun k hk => by
+    simp only [L, hbwel (k - k0) hk, ↓reduceDIte]
+    exact Classical.choose_spec (hbwel (k - k0) hk)
+  have hmim0 : ∀ t, 0 ≤ t → mimicConsumption a 0 t = a.consumption t := fun t ht => by
+    simp only [mimicConsumption, zero_mul, add_zero]
+    linarith [a.resource t ht]
+  have hwcongr : ∀ {c1 c2 : ℝ → ℝ}, (∀ t, 0 ≤ t → c1 t = c2 t) → ∀ T, 0 ≤ T →
+      welfare U (discount d) c1 T = welfare U (discount d) c2 T := by
+    intro c1 c2 h T hT
+    apply intervalIntegral.integral_congr
+    intro t ht
+    rw [uIcc_of_le hT] at ht
+    simp only [h t ht.1]
+  have hL0 : L k0 = value P k0 := by
+    have h1 := hLspec k0 (by rw [sub_self, abs_zero]; exact hδ0)
+    rw [sub_self] at h1
+    have h2 : HasWelfare U (discount d) (mimicConsumption a 0) Ja :=
+      hJa.congr' (by
+        filter_upwards [eventually_ge_atTop (0 : ℝ)] with T hT
+        exact (hwcongr hmim0 T hT).symm)
+    rw [hVa]
+    exact tendsto_nhds_unique h1 h2
+  -- the integrand of the derivative estimate
+  set g : ℝ → ℝ → ℝ := fun Δ t => Real.exp (-(d + m) * t) *
+    (deriv U (mimicConsumption a Δ t) * deriv f (a.capital t + Δ * Real.exp (-m * t)))
+  have hgcont : ∀ Δ, |Δ| < δ0 → ContinuousOn (g Δ) (Ici 0) := fun Δ hΔ => by
+    have hkc : ContinuousOn (fun t => a.capital t + Δ * Real.exp (-m * t)) (Ici 0) :=
+      a.capital_continuous.add (continuousOn_const.mul
+        (Real.continuous_exp.comp (continuous_const.mul continuous_id)).continuousOn)
+    exact (Real.continuous_exp.comp (continuous_const.mul continuous_id)).continuousOn.mul
+      ((P.U_prime_cont.comp (b Δ hΔ).consumption_continuous (hcbpos Δ hΔ)).mul
+        (P.f_prime_cont.comp hkc (fun t ht => hk1.trans_le (hkb Δ hΔ t ht).1)))
+  -- the costate identity: `∫₀^T g 0 → q(0)`
+  have hq0 : Tendsto (fun T => ∫ t in (0 : ℝ)..T, g 0 t) atTop (𝓝 (q 0)) := by
+    have hQ : ∀ t, 0 ≤ t → HasDerivAt (fun s => Real.exp (-(d + m) * s) * q s) (-(g 0 t)) t := by
+      intro t ht
+      have he := ((hasDerivAt_id t).const_mul (-(d + m))).exp
+      refine (he.mul (hc.costate t ht)).congr_deriv ?_
+      simp only [g, id, zero_mul, add_zero, hmim0 t ht]
+      ring
+    have hFTC : ∀ T, 0 ≤ T → ∫ t in (0 : ℝ)..T, g 0 t =
+        q 0 - Real.exp (-(d + m) * T) * q T := by
+      intro T hT
+      have hint : IntervalIntegrable (fun t => -(g 0 t)) volume 0 T :=
+        ((hgcont 0 (by rw [abs_zero]; exact hδ0)).neg.mono
+          (fun _ ht => ht.1)).intervalIntegrable_of_Icc hT
+      have h := intervalIntegral.integral_eq_sub_of_hasDerivAt (fun t ht => by
+        rw [uIcc_of_le hT] at ht; exact hQ t ht.1) hint
+      rw [intervalIntegral.integral_neg] at h
+      simp only [mul_zero, Real.exp_zero, one_mul] at h
+      linarith
+    have hdecay : Tendsto (fun T => Real.exp (-(d + m) * T) * q T) atTop (𝓝 0) := by
+      have h := hc.transversality.mul (Real.tendsto_exp_neg_atTop_nhds_zero.comp
+        (tendsto_id.const_mul_atTop hm))
+      rw [zero_mul] at h
+      refine h.congr (fun T => ?_)
+      simp only [Function.comp_apply, discount, id]
+      rw [mul_comm, ← mul_assoc, ← Real.exp_add]
+      ring_nf
+    have := (hdecay.const_sub (q 0))
+    rw [sub_zero] at this
+    exact this.congr' (by
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with T hT
+      exact (hFTC T hT).symm)
+  -- pointwise welfare gain bound
+  have hpoint : ∀ Δ, |Δ| < δ0 → ∀ t, 0 ≤ t →
+      Δ * g Δ t ≤ discount d t * U (mimicConsumption a Δ t) -
+        discount d t * U (mimicConsumption a 0 t) := by
+    intro Δ hΔ t ht
+    have hca := a.consumption_pos t ht
+    have hcΔ := hcbpos Δ hΔ t ht
+    obtain ⟨hkΔ, -, -⟩ := hkb Δ hΔ t ht
+    have hkΔpos : 0 < a.capital t + Δ * Real.exp (-m * t) := hk1.trans_le hkΔ
+    have hU := concave_support P.U_conc.concaveOn hcΔ hca (P.U_diff _ hcΔ).hasDerivAt
+    have hf := concave_support P.f_conc.concaveOn (mem_Ici.mpr hkΔpos.le)
+      (mem_Ici.mpr (hc.capital_pos t ht).le) (P.f_diff _ hkΔpos).hasDerivAt
+    have hr := a.resource t ht
+    have hUp := (P.U_prime_pos _ hcΔ).le
+    rw [hmim0 t ht]
+    have hcdiff : mimicConsumption a Δ t - a.consumption t =
+        f (a.capital t + Δ * Real.exp (-m * t)) - f (a.capital t) := by
+      simp only [mimicConsumption]; linarith
+    have hstep : deriv U (mimicConsumption a Δ t) *
+        (deriv f (a.capital t + Δ * Real.exp (-m * t)) * (Δ * Real.exp (-m * t))) ≤
+        U (mimicConsumption a Δ t) - U (a.consumption t) := by
+      have h1 : deriv f (a.capital t + Δ * Real.exp (-m * t)) * (Δ * Real.exp (-m * t)) ≤
+          mimicConsumption a Δ t - a.consumption t := by
+        rw [hcdiff]
+        have : a.capital t - (a.capital t + Δ * Real.exp (-m * t)) = -(Δ * Real.exp (-m * t)) :=
+          by ring
+        rw [this] at hf
+        linarith
+      have h2 := mul_le_mul_of_nonneg_left h1 hUp
+      linarith
+    have hdisc : discount d t * Real.exp (-m * t) = Real.exp (-(d + m) * t) := by
+      simp only [discount, ← Real.exp_add]
+      ring_nf
+    have := mul_le_mul_of_nonneg_left hstep (discount_pos d t).le
+    calc Δ * g Δ t = discount d t * (deriv U (mimicConsumption a Δ t) *
+          (deriv f (a.capital t + Δ * Real.exp (-m * t)) * (Δ * Real.exp (-m * t)))) := by
+          simp only [g]
+          rw [← hdisc]
+          ring
+      _ ≤ discount d t * (U (mimicConsumption a Δ t) - U (a.consumption t)) := this
+      _ = _ := by ring
+  -- uniform continuity of the integrand in `Δ`
+  set MU := deriv U (cmin / 2)
+  have hMU : 0 < MU := P.U_prime_pos _ (half_pos hcmin)
+  have hUanti := P.U_conc.strictAntiOn_deriv P.U_diff
+  have hucf := isCompact_Icc.uniformContinuousOn_of_continuous
+    (P.f_prime_cont.mono (fun x hx => hk1.trans_le hx.1) :
+      ContinuousOn (deriv f) (Icc k1 (kmax + 1)))
+  have hucU := isCompact_Icc.uniformContinuousOn_of_continuous
+    (P.U_prime_cont.mono (fun x hx => (half_pos hcmin).trans_le hx.1) :
+      ContinuousOn (deriv U) (Icc (cmin / 2) cmax'))
+  rw [Metric.uniformContinuousOn_iff] at hucf hucU
+  have hcamem : ∀ t, 0 ≤ t → a.consumption t ∈ Icc (cmin / 2) cmax' := fun t ht => by
+    have := hcb 0 (by rw [abs_zero]; exact hδ0) t ht
+    rw [hmim0 t ht] at this
+    exact ⟨this.1, this.2.1⟩
+  have huniform : ∀ ε, 0 < ε → ∃ δ, 0 < δ ∧ δ ≤ δ0 ∧ ∀ Δ, |Δ| < δ → ∀ t, 0 ≤ t →
+      |g Δ t - g 0 t| ≤ ε * Real.exp (-(d + m) * t) := by
+    intro ε hε
+    obtain ⟨δf, hδf, hf⟩ := hucf (ε / (2 * (MU + 1))) (by positivity)
+    obtain ⟨δU, hδU, hU⟩ := hucU (ε / (2 * (Mf + 1))) (by positivity)
+    refine ⟨min δ0 (min δf (δU / (Mf + 1))), lt_min hδ0 (lt_min hδf (by positivity)),
+      min_le_left _ _, fun Δ hΔ t ht => ?_⟩
+    have hΔ0 : |Δ| < δ0 := hΔ.trans_le (min_le_left _ _)
+    have hΔf : |Δ| < δf := hΔ.trans_le ((min_le_right _ _).trans (min_le_left _ _))
+    have hΔU : |Δ| < δU / (Mf + 1) := hΔ.trans_le ((min_le_right _ _).trans (min_le_right _ _))
+    obtain ⟨hkΔ1, hkΔ2, hkΔ3⟩ := hkb Δ hΔ0 t ht
+    obtain ⟨hcΔ1, hcΔ2, hcΔ3⟩ := hcb Δ hΔ0 t ht
+    have hkamem : a.capital t ∈ Icc k1 (kmax + 1) :=
+      ⟨by linarith [(hkbd t ht).1], by linarith [(hkbd t ht).2]⟩
+    have hdf : |deriv f (a.capital t + Δ * Real.exp (-m * t)) - deriv f (a.capital t)| <
+        ε / (2 * (MU + 1)) := by
+      have := hf _ ⟨hkΔ1, hkΔ2⟩ _ hkamem (by rw [Real.dist_eq]; exact hkΔ3.trans_lt hΔf)
+      rwa [Real.dist_eq] at this
+    have hdU : |deriv U (mimicConsumption a Δ t) - deriv U (a.consumption t)| <
+        ε / (2 * (Mf + 1)) := by
+      have hlt : Mf * |Δ| < δU := by
+        have := (lt_div_iff₀ (by linarith : (0 : ℝ) < Mf + 1)).mp hΔU
+        nlinarith [abs_nonneg Δ]
+      have := hU _ ⟨hcΔ1, hcΔ2⟩ _ (hcamem t ht) (by rw [Real.dist_eq]; exact hcΔ3.trans_lt hlt)
+      rwa [Real.dist_eq] at this
+    have hUb : 0 < deriv U (mimicConsumption a Δ t) ∧ deriv U (mimicConsumption a Δ t) ≤ MU :=
+      ⟨P.U_prime_pos _ (hcbpos Δ hΔ0 t ht),
+        hUanti.antitoneOn (half_pos hcmin) (hcbpos Δ hΔ0 t ht) hcΔ1⟩
+    have hfb : 0 < deriv f (a.capital t) ∧ deriv f (a.capital t) ≤ Mf :=
+      ⟨P.f_prime_pos _ (hc.capital_pos t ht), hfanti.antitoneOn hk1 (hc.capital_pos t ht)
+        hkamem.1⟩
+    have hdiff : g Δ t - g 0 t = Real.exp (-(d + m) * t) *
+        (deriv U (mimicConsumption a Δ t) *
+          (deriv f (a.capital t + Δ * Real.exp (-m * t)) - deriv f (a.capital t)) +
+        deriv f (a.capital t) *
+          (deriv U (mimicConsumption a Δ t) - deriv U (a.consumption t))) := by
+      simp only [g, zero_mul, add_zero, hmim0 t ht]
+      ring
+    rw [hdiff, abs_mul, abs_of_pos (Real.exp_pos _), mul_comm ε]
+    apply mul_le_mul_of_nonneg_left _ (Real.exp_pos _).le
+    have h1 : |deriv U (mimicConsumption a Δ t) *
+        (deriv f (a.capital t + Δ * Real.exp (-m * t)) - deriv f (a.capital t))| ≤ ε / 2 := by
+      rw [abs_mul, abs_of_pos hUb.1]
+      have := mul_le_mul hUb.2 hdf.le (abs_nonneg _) hMU.le
+      have h2 : MU * (ε / (2 * (MU + 1))) ≤ ε / 2 := by
+        rw [mul_div_assoc', div_le_div_iff₀ (by positivity) (by norm_num)]
+        nlinarith
+      linarith
+    have h2 : |deriv f (a.capital t) *
+        (deriv U (mimicConsumption a Δ t) - deriv U (a.consumption t))| ≤ ε / 2 := by
+      rw [abs_mul, abs_of_pos hfb.1]
+      have := mul_le_mul hfb.2 hdU.le (abs_nonneg _) hMf.le
+      have h3 : Mf * (ε / (2 * (Mf + 1))) ≤ ε / 2 := by
+        rw [mul_div_assoc', div_le_div_iff₀ (by positivity) (by norm_num)]
+        nlinarith
+      linarith
+    calc _ ≤ _ := abs_add_le _ _
+      _ ≤ ε / 2 + ε / 2 := add_le_add h1 h2
+      _ = ε := by ring
+  -- the lower support has derivative `q(0)` at `k0`
+  have hLV : ∀ k, |k - k0| < δ0 → L k ≤ value P k := fun k hk => by
+    have hkpos : 0 < k := by
+      have := (abs_lt.mp hk).1
+      have : δ0 ≤ kmin / 2 := min_le_left _ _
+      linarith [(hkbd 0 le_rfl).1]
+    exact value_ge P hkpos (b := b (k - k0) hk) hc.investment_nonneg
+      ((hb0 (k - k0) hk).trans (by ring)) (hLspec k hk)
+  have hnearδ0 : ∀ᶠ k in 𝓝 k0, |k - k0| < δ0 := by
+    have := Metric.ball_mem_nhds k0 hδ0
+    filter_upwards [this] with k hk
+    rwa [Metric.mem_ball, Real.dist_eq] at hk
+  have hLder : HasDerivAt L (q 0) k0 := by
+    rw [hasDerivAt_iff_isLittleO]
+    refine Asymptotics.IsLittleO.of_bound (fun ε hε => ?_)
+    obtain ⟨δ, hδ, hδδ0, hunif⟩ := huniform (ε * (d + m)) (by positivity)
+    have hnear : ∀ᶠ k in 𝓝 k0, |k - k0| < δ := by
+      filter_upwards [Metric.ball_mem_nhds k0 hδ] with k hk
+      rwa [Metric.mem_ball, Real.dist_eq] at hk
+    filter_upwards [hnear] with k hk
+    set Δ := k - k0
+    have hΔ0 : |Δ| < δ0 := hk.trans_le hδδ0
+    -- upper bound from `L ≤ V ≤ V(k0) + q(0)(k - k0)`
+    have hup : L k - L k0 ≤ q 0 * Δ := by
+      have h1 := hLV k hΔ0
+      have hkpos : 0 < k := by
+        have := (abs_lt.mp hΔ0).1
+        have : δ0 ≤ kmin / 2 := min_le_left _ _
+        linarith [(hkbd 0 le_rfl).1]
+      have h2 := value_le_supergradient P hc hkpos
+      rw [hL0]
+      linarith
+    -- lower bound from the pointwise gain and the costate identity
+    have hlow : q 0 * Δ - ε * |Δ| ≤ L k - L k0 := by
+      have hWk := hLspec k hΔ0
+      have hW0 := hLspec k0 (by rw [sub_self, abs_zero]; exact hδ0)
+      rw [sub_self] at hW0
+      have hlimit : Tendsto (fun T => Δ * ∫ t in (0 : ℝ)..T, g 0 t) atTop (𝓝 (Δ * q 0)) :=
+        hq0.const_mul Δ
+      have hle : Δ * q 0 - ε * |Δ| ≤ L k - L k0 := by
+        apply le_of_tendsto_of_tendsto (hlimit.sub_const (ε * |Δ|)) (hWk.sub hW0)
+        filter_upwards [eventually_ge_atTop (0 : ℝ)] with T hT
+        have hsub : Icc (0 : ℝ) T ⊆ Ici 0 := fun _ ht => ht.1
+        have hIΔ : IntervalIntegrable (g Δ) volume 0 T :=
+          ((hgcont Δ hΔ0).mono hsub).intervalIntegrable_of_Icc hT
+        have hI0 : IntervalIntegrable (g 0) volume 0 T :=
+          ((hgcont 0 (by rw [abs_zero]; exact hδ0)).mono hsub).intervalIntegrable_of_Icc hT
+        have hUc : ∀ e : ℝ, |e| < δ0 → IntervalIntegrable
+            (fun t => discount d t * U (mimicConsumption a e t)) volume 0 T := fun e he =>
+          (((discount_continuous d).continuousOn.mul (P.U_cont.comp
+            (b e he).consumption_continuous (hcbpos e he))).mono hsub).intervalIntegrable_of_Icc hT
+        -- `Δ ∫ g Δ ≤ W_Δ(T) - W_0(T)`
+        have hgain : Δ * ∫ t in (0 : ℝ)..T, g Δ t ≤
+            welfare U (discount d) (mimicConsumption a Δ) T -
+              welfare U (discount d) (mimicConsumption a 0) T := by
+          simp only [welfare]
+          rw [← intervalIntegral.integral_sub (hUc Δ hΔ0) (hUc 0 (by rw [abs_zero]; exact hδ0)),
+            ← intervalIntegral.integral_const_mul]
+          exact intervalIntegral.integral_mono_on hT (hIΔ.const_mul Δ)
+            ((hUc Δ hΔ0).sub (hUc 0 (by rw [abs_zero]; exact hδ0)))
+            (fun t ht => hpoint Δ hΔ0 t ht.1)
+        -- `|∫ g Δ - ∫ g 0| ≤ ε`
+        have hclose : |(∫ t in (0 : ℝ)..T, g Δ t) - ∫ t in (0 : ℝ)..T, g 0 t| ≤ ε := by
+          rw [← intervalIntegral.integral_sub hIΔ hI0]
+          have hexpI : IntervalIntegrable (fun t => ε * (d + m) * Real.exp (-(d + m) * t))
+              volume 0 T := Continuous.intervalIntegrable (by fun_prop) 0 T
+          calc |∫ t in (0 : ℝ)..T, g Δ t - g 0 t|
+              ≤ ∫ t in (0 : ℝ)..T, ε * (d + m) * Real.exp (-(d + m) * t) := by
+                rw [abs_le]
+                constructor
+                · have hexpN : IntervalIntegrable
+                      (fun t => -(ε * (d + m) * Real.exp (-(d + m) * t))) volume 0 T := hexpI.neg
+                  have h := intervalIntegral.integral_mono_on hT hexpN (hIΔ.sub hI0)
+                    (fun t ht => show -(ε * (d + m) * Real.exp (-(d + m) * t)) ≤ g Δ t - g 0 t
+                      from (abs_le.mp (hunif Δ hk t ht.1)).1)
+                  rw [intervalIntegral.integral_neg] at h
+                  exact h
+                · exact intervalIntegral.integral_mono_on hT (hIΔ.sub hI0) hexpI
+                    (fun t ht => (abs_le.mp (hunif Δ hk t ht.1)).2)
+            _ = ε * (d + m) * ∫ t in (0 : ℝ)..T, Real.exp (-(d + m) * t) :=
+                intervalIntegral.integral_const_mul _ _
+            _ ≤ ε * (d + m) * (1 / (d + m)) :=
+                mul_le_mul_of_nonneg_left (integral_exp_neg_le hdm T) (by positivity)
+            _ = ε := by field_simp
+        have hmul : |Δ * (∫ t in (0 : ℝ)..T, g Δ t) - Δ * ∫ t in (0 : ℝ)..T, g 0 t| ≤
+            ε * |Δ| := by
+          rw [← mul_sub, abs_mul, mul_comm]
+          exact mul_le_mul_of_nonneg_right hclose (abs_nonneg _)
+        have := (abs_le.mp hmul).1
+        linarith
+      linarith
+    rw [Real.norm_eq_abs, Real.norm_eq_abs, smul_eq_mul, abs_le]
+    constructor <;> nlinarith [abs_nonneg Δ]
+  -- the sandwich
+  have hH : HasDerivAt (fun k => value P k0 + q 0 * (k - k0)) (q 0) k0 := by
+    have := ((hasDerivAt_id k0).sub_const k0).const_mul (q 0) |>.const_add (value P k0)
+    simpa only [id, mul_one] using this
+  refine clausen_strub_sandwich hLder hH ?_ ?_ hL0 (by ring)
+  · filter_upwards [hnearδ0] with k hk
+    exact hLV k hk
+  · filter_upwards [hnearδ0] with k hk
+    have hkpos : 0 < k := by
+      have := (abs_lt.mp hk).1
+      have : δ0 ≤ kmin / 2 := min_le_left _ _
+      linarith [(hkbd 0 le_rfl).1]
+    exact value_le_supergradient P hc hkpos
+
+/-- When the optimum invests at time zero, `V'(k₀) = U'(c(0))`. -/
+theorem value_deriv_eq_marginal_utility (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) (hz : 0 < a.investment 0) :
+    HasDerivAt (value P) (deriv U (a.consumption 0)) (a.capital 0) := by
+  have h := hc.slack 0 le_rfl
+  have hq : q 0 = deriv U (a.consumption 0) := by
+    rcases mul_eq_zero.mp h with h | h
+    · linarith
+    · exact absurd h (ne_of_gt hz)
+  rw [← hq]
+  exact value_hasDerivAt P hc
+
+end RamseyCassKoopmans
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# Competitive decentralization of the Cass optimum
+
+Households own the capital stock (per effective worker), rent it to firms at the
+rental rate `R(t)`, supply labour for the wage `w(t)`, and choose consumption and
+gross investment subject to the budget `c + z = R k + w`, accumulation
+`k̇ = z - m k`, nonnegative assets, and irreversible investment `z ≥ 0`, the
+household counterpart of Cass's constraint. Competitive firms rent capital until
+`R = f'(k)`, and pay `w = f(k) - k f'(k)` (`firm_optimal`: this maximizes profit,
+which is zero).
+
+* `second_welfare_theorem`: the certified Cass optimum, with these prices, is a
+  competitive equilibrium: no household plan asymptotically improves on it.
+  Household assets may grow without bound; the comparison still closes because
+  the boundary term is at most the discounted value of the planner's capital.
+* `first_welfare_theorem`: every competitive-equilibrium allocation is Cass
+  optimal, hence equals the unique optimum (`equilibrium_eq_optimum`).
+-/
+
+open Set Filter MeasureTheory
+open scoped Topology
+
+namespace RamseyCassKoopmans
+
+variable {f U : ℝ → ℝ} {d m : ℝ}
+
+/-- A household plan given rental and wage paths. -/
+structure HouseholdPlan (R w : ℝ → ℝ) (m : ℝ) where
+  capital : ℝ → ℝ
+  consumption : ℝ → ℝ
+  investment : ℝ → ℝ
+  capital_nonneg : ∀ t, 0 ≤ t → 0 ≤ capital t
+  consumption_pos : ∀ t, 0 ≤ t → 0 < consumption t
+  consumption_continuous : ContinuousOn consumption (Ici 0)
+  investment_continuous : ContinuousOn investment (Ici 0)
+  investment_nonneg : ∀ t, 0 ≤ t → 0 ≤ investment t
+  budget : ∀ t, 0 ≤ t → consumption t + investment t = R t * capital t + w t
+  dynamics : ∀ t, 0 ≤ t → HasDerivAt capital (investment t - m * capital t) t
+
+/-- A competitive equilibrium: firm optimality, feasibility, and household
+optimality against every household plan from the same initial assets. -/
+structure CompetitiveEquilibrium (f U R w : ℝ → ℝ) (d m : ℝ) (a : FeasiblePath f m) : Prop where
+  capital_pos : ∀ t, 0 ≤ t → 0 < a.capital t
+  rental : ∀ t, 0 ≤ t → R t = deriv f (a.capital t)
+  wage : ∀ t, 0 ≤ t → w t = f (a.capital t) - a.capital t * deriv f (a.capital t)
+  investment_nonneg : a.NonnegativeInvestment
+  welfare : ∃ J, HasWelfare U (discount d) a.consumption J
+  household_optimal : ∀ b : HouseholdPlan R w m, b.capital 0 = a.capital 0 →
+    AsymptoticallyDominates U (discount d) a.consumption b.consumption
+
+/-- Competitive firms: at `R = f'(k)` and `w = f(k) - k f'(k)` the capital stock
+`k` maximizes profit `f(x) - R x - w`, and maximal profit is zero. -/
+theorem firm_optimal (P : CassPrimitives f U d m) {k x : ℝ} (hk : 0 < k) (hx : 0 ≤ x) :
+    f x - deriv f k * x - (f k - k * deriv f k) ≤ 0 ∧
+      f k - deriv f k * k - (f k - k * deriv f k) = 0 := by
+  have h := concave_support P.f_conc.concaveOn (mem_Ici.mpr hk.le) (mem_Ici.mpr hx)
+    (P.f_diff k hk).hasDerivAt
+  constructor <;> nlinarith
+
+/-- Second welfare theorem: the certified Cass optimum with competitive prices is a
+competitive equilibrium. -/
+theorem second_welfare_theorem (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {q : ℝ → ℝ} (hc : CassCertificate f U d m a q) :
+    CompetitiveEquilibrium f U (fun t => deriv f (a.capital t))
+      (fun t => f (a.capital t) - a.capital t * deriv f (a.capital t)) d m a := by
+  refine ⟨hc.capital_pos, fun _ _ => rfl, fun _ _ => rfl, hc.investment_nonneg, hc.welfare, ?_⟩
+  intro b hb0 ε hε
+  set p : ℝ → ℝ := fun t => discount d t * q t
+  -- the boundary term `B = p (k_a - k_b)` and its derivative
+  set B : ℝ → ℝ := fun t => p t * (a.capital t - b.capital t)
+  have hp : ∀ t, 0 ≤ t → HasDerivAt p
+      (m * p t - discount d t * deriv U (a.consumption t) * deriv f (a.capital t)) t :=
+    fun t ht => hasDerivAt_discounted_costate (hc.costate t ht)
+  set B' : ℝ → ℝ := fun t =>
+    (m * p t - discount d t * deriv U (a.consumption t) * deriv f (a.capital t)) *
+      (a.capital t - b.capital t) +
+    p t * ((a.investment t - m * a.capital t) - (b.investment t - m * b.capital t))
+  have hB : ∀ t, 0 ≤ t → HasDerivAt B (B' t) t := fun t ht =>
+    (hp t ht).mul ((a.dynamics t ht).sub (b.dynamics t ht))
+  have hpc : ContinuousOn p (Ici 0) := fun t ht => (hp t ht).continuousAt.continuousWithinAt
+  have hkac := a.capital_continuous
+  have hkbc : ContinuousOn b.capital (Ici 0) := fun t ht =>
+    (b.dynamics t ht).continuousAt.continuousWithinAt
+  have hRc : ContinuousOn (fun t => deriv f (a.capital t)) (Ici 0) :=
+    P.f_prime_cont.comp hkac hc.capital_pos
+  have hmuc : ContinuousOn (fun t => deriv U (a.consumption t)) (Ici 0) :=
+    P.U_prime_cont.comp a.consumption_continuous a.consumption_pos
+  have hB'c : ContinuousOn B' (Ici 0) :=
+    (((continuousOn_const.mul hpc).sub (((discount_continuous d).continuousOn.mul hmuc).mul
+      hRc)).mul (hkac.sub hkbc)).add (hpc.mul ((a.investment_continuous.sub
+      (continuousOn_const.mul hkac)).sub (b.investment_continuous.sub
+      (continuousOn_const.mul hkbc))))
+  have hUa : ContinuousOn (fun t => discount d t * U (a.consumption t)) (Ici 0) :=
+    (discount_continuous d).continuousOn.mul (P.U_cont.comp a.consumption_continuous
+      a.consumption_pos)
+  have hUb : ContinuousOn (fun t => discount d t * U (b.consumption t)) (Ici 0) :=
+    (discount_continuous d).continuousOn.mul (P.U_cont.comp b.consumption_continuous
+      b.consumption_pos)
+  -- pointwise comparison
+  have hpoint : ∀ t, 0 ≤ t →
+      0 ≤ discount d t * U (a.consumption t) - discount d t * U (b.consumption t) + B' t := by
+    intro t ht
+    have hca := a.consumption_pos t ht
+    have hcb := b.consumption_pos t ht
+    have hU := concave_support P.U_conc.concaveOn hca hcb (P.U_diff _ hca).hasDerivAt
+    have hra := a.resource t ht
+    have hbb := b.budget t ht
+    have hw := hc.wedge t ht
+    have hs := hc.slack t ht
+    have hzb := b.investment_nonneg t ht
+    have hdisc := discount_pos d t
+    -- `c_a - c_b = R (k_a - k_b) - (z_a - z_b)` by the Euler identity
+    have hcdiff : a.consumption t - b.consumption t =
+        deriv f (a.capital t) * (a.capital t - b.capital t) -
+          (a.investment t - b.investment t) := by
+      linarith
+    have hkey : B' t = discount d t * (-(deriv U (a.consumption t) * deriv f (a.capital t) *
+        (a.capital t - b.capital t)) + q t * (a.investment t - b.investment t)) := by
+      simp only [B', p]
+      ring
+    rw [hkey]
+    have hslack' :
+        0 ≤ (q t - deriv U (a.consumption t)) * (a.investment t - b.investment t) := by
+      have : (q t - deriv U (a.consumption t)) * (a.investment t - b.investment t) =
+          -((q t - deriv U (a.consumption t)) * b.investment t) := by linarith
+      rw [this]
+      exact neg_nonneg.mpr (mul_nonpos_of_nonpos_of_nonneg (by linarith) hzb)
+    have h1 : deriv U (a.consumption t) * (b.consumption t - a.consumption t) =
+        -(deriv U (a.consumption t) * (deriv f (a.capital t) * (a.capital t - b.capital t) -
+          (a.investment t - b.investment t))) := by
+      rw [show b.consumption t - a.consumption t = -(a.consumption t - b.consumption t) by ring,
+        hcdiff]
+      ring
+    have hmain : 0 ≤ U (a.consumption t) - U (b.consumption t) +
+        (-(deriv U (a.consumption t) * deriv f (a.capital t) * (a.capital t - b.capital t)) +
+          q t * (a.investment t - b.investment t)) := by
+      linarith
+    have := mul_nonneg hdisc.le hmain
+    linarith
+  -- the finite-horizon comparison
+  have hfinite : ∀ T, 0 ≤ T → welfare U (discount d) b.consumption T -
+      welfare U (discount d) a.consumption T ≤ p T * a.capital T := by
+    intro T hT
+    have hsub : Icc (0 : ℝ) T ⊆ Ici 0 := fun _ ht => ht.1
+    have hai := (hUa.mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
+    have hbi := (hUb.mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
+    have hBi := (hB'c.mono hsub).intervalIntegrable_of_Icc (μ := volume) hT
+    have hFTC : (∫ t in (0 : ℝ)..T, B' t) = B T - B 0 :=
+      intervalIntegral.integral_eq_sub_of_hasDerivAt (fun t ht => by
+        rw [uIcc_of_le hT] at ht; exact hB t ht.1) hBi
+    have hnonneg : 0 ≤ ∫ t in (0 : ℝ)..T,
+        (discount d t * U (a.consumption t) - discount d t * U (b.consumption t)) + B' t :=
+      intervalIntegral.integral_nonneg hT (fun t ht => hpoint t ht.1)
+    rw [intervalIntegral.integral_add (hai.sub hbi) hBi, intervalIntegral.integral_sub hai hbi,
+      hFTC] at hnonneg
+    have hB0 : B 0 = 0 := by simp only [B, hb0, sub_self, mul_zero]
+    have hBT : B T ≤ p T * a.capital T := by
+      have := mul_nonneg (mul_nonneg (discount_pos d T).le (hc.price_nonneg T hT))
+        (b.capital_nonneg T hT)
+      simp only [B, p] at this ⊢
+      nlinarith
+    change welfare U (discount d) a.consumption T - welfare U (discount d) b.consumption T +
+      (B T - B 0) ≥ 0 at hnonneg
+    linarith
+  -- the discounted value of the planner's capital vanishes
+  obtain ⟨K, hK, hcap⟩ := P.exists_capacity (a.capital 0)
+  have hvanish : Tendsto (fun T => p T * a.capital T) atTop (𝓝 0) :=
+    Terminal.terminal_tendsto_zero_of_bounded_capital (k₁ := fun _ => 0) hc.transversality
+      (fun t ht => ⟨a.capital_nonneg t ht, a.capital_le_capacity hcap hK t ht⟩)
+      (fun _ _ => ⟨le_rfl, le_trans (a.capital_nonneg 0 le_rfl) hK⟩) |>.congr
+      (fun T => by simp only [sub_zero]; rfl)
+  filter_upwards [eventually_ge_atTop (0 : ℝ), hvanish.eventually (gt_mem_nhds hε)] with T hT hv
+  exact (hfinite T hT).trans_lt hv
+
+/-- First welfare theorem: a competitive-equilibrium allocation is Cass optimal. -/
+theorem first_welfare_theorem (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {R w : ℝ → ℝ} (he : CompetitiveEquilibrium f U R w d m a) {J : ℝ}
+    (hJ : HasWelfare U (discount d) a.consumption J) : IsCassOptimal U d a J := by
+  refine ⟨he.investment_nonneg, hJ, fun b hb hinit Jb hJb => ?_⟩
+  -- the planner's competitor is affordable to the household, with more consumption
+  have hRc : ContinuousOn R (Ici 0) := (P.f_prime_cont.comp a.capital_continuous
+    he.capital_pos).congr (fun t ht => he.rental t ht)
+  have hwc : ContinuousOn w (Ici 0) := ((P.f_cont.comp a.capital_continuous he.capital_pos).sub
+    (a.capital_continuous.mul (P.f_prime_cont.comp a.capital_continuous he.capital_pos))).congr
+    (fun t ht => he.wage t ht)
+  have hkbc : ContinuousOn b.capital (Ici 0) := b.capital_continuous
+  have hafford : ∀ t, 0 ≤ t → b.consumption t ≤ R t * b.capital t + w t - b.investment t := by
+    intro t ht
+    have hs := concave_support P.f_conc.concaveOn (mem_Ici.mpr (he.capital_pos t ht).le)
+      (b.capital_nonneg t ht) (P.f_diff _ (he.capital_pos t ht)).hasDerivAt
+    have hr := b.resource t ht
+    rw [he.rental t ht, he.wage t ht]
+    nlinarith
+  let b' : HouseholdPlan R w m := {
+    capital := b.capital
+    consumption := fun t => R t * b.capital t + w t - b.investment t
+    investment := b.investment
+    capital_nonneg := b.capital_nonneg
+    consumption_pos := fun t ht => (b.consumption_pos t ht).trans_le (hafford t ht)
+    consumption_continuous := ((hRc.mul hkbc).add hwc).sub b.investment_continuous
+    investment_continuous := b.investment_continuous
+    investment_nonneg := hb
+    budget := fun t _ => by ring
+    dynamics := b.dynamics }
+  have hdom := he.household_optimal b' hinit.symm
+  -- the household's welfare dominates the planner competitor's at every horizon
+  have hle : ∀ T, 0 ≤ T → welfare U (discount d) b.consumption T ≤
+      welfare U (discount d) b'.consumption T := by
+    intro T hT
+    have hsub : Icc (0 : ℝ) T ⊆ Ici 0 := fun _ ht => ht.1
+    apply intervalIntegral.integral_mono_on hT
+    · exact (((discount_continuous d).continuousOn.mul (P.U_cont.comp b.consumption_continuous
+        b.consumption_pos)).mono hsub).intervalIntegrable_of_Icc hT
+    · exact (((discount_continuous d).continuousOn.mul (P.U_cont.comp
+        b'.consumption_continuous b'.consumption_pos)).mono hsub).intervalIntegrable_of_Icc hT
+    · intro t ht
+      exact mul_le_mul_of_nonneg_left (P.U_strictMono.monotoneOn (b.consumption_pos t ht.1)
+        (b'.consumption_pos t ht.1) (hafford t ht.1)) (discount_pos d t).le
+  have hdomb : AsymptoticallyDominates U (discount d) a.consumption b.consumption := by
+    intro ε hε
+    filter_upwards [hdom ε hε, eventually_ge_atTop (0 : ℝ)] with T hT hT0
+    linarith [hle T hT0]
+  exact hdomb.finite_welfare_le hJ hJb
+
+/-- Every competitive-equilibrium allocation is the unique Cass optimum. -/
+theorem equilibrium_eq_optimum (P : CassPrimitives f U d m) {a : FeasiblePath f m}
+    {R w : ℝ → ℝ} (he : CompetitiveEquilibrium f U R w d m a) :
+    ∀ t, 0 ≤ t → a.capital t = (optimalPath P (he.capital_pos 0 le_rfl)).capital t ∧
+      a.consumption t = (optimalPath P (he.capital_pos 0 le_rfl)).consumption t := by
+  obtain ⟨J, hJ⟩ := he.welfare
+  obtain ⟨qo, ho0, hoc⟩ := optimalPath_spec P (he.capital_pos 0 le_rfl)
+  obtain ⟨Jo, hJo⟩ := hoc.welfare
+  intro t ht
+  have h := (hoc.eq_of_isCassOptimal P hJo (first_welfare_theorem P he hJ) ho0).2 t ht
+  exact ⟨h.1, h.2.1⟩
+
+end RamseyCassKoopmans
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# The discrete-time Ramsey–Cass–Koopmans model: feasibility and existence
+
+Capital per worker obeys `k(t+1) = F(k(t)) - c(t)` with gross resources
+`F(k) = f(k) + (1 - δ) k`, and a path is feasible when `0 ≤ k(t+1) ≤ F(k(t))`.
+Welfare is `∑ βᵗ u(c(t))` with `0 < β < 1`.
+
+Utility is continuous at zero consumption (`u` is continuous on `[0, ∞)`), so
+welfare is a convergent series on the compact set of feasible paths; logarithmic
+utility is not covered. Feasible paths are bounded (`Feasible.le_bound`), the
+feasible set is compact in the product topology, and welfare is continuous on it,
+so an optimal path exists (`exists_optimal`).
+-/
+
+open Set Filter
+open scoped Topology
+
+namespace RamseyCassKoopmans.DiscreteTime
+
+/-- Primitive assumptions of the discrete-time model. -/
+structure Primitives (f u : ℝ → ℝ) (β δ : ℝ) : Prop where
+  β_pos : 0 < β
+  β_lt_one : β < 1
+  δ_pos : 0 < δ
+  δ_le_one : δ ≤ 1
+  f_cont : ContinuousOn f (Ici 0)
+  f_zero : f 0 = 0
+  f_conc : StrictConcaveOn ℝ (Ici 0) f
+  f_diff : ∀ k, 0 < k → DifferentiableAt ℝ f k
+  f_prime_pos : ∀ k, 0 < k → 0 < deriv f k
+  f_prime_cont : ContinuousOn (deriv f) (Ioi 0)
+  f_inada0 : Tendsto (deriv f) (𝓝[>] (0 : ℝ)) atTop
+  f_inadaTop : Tendsto (deriv f) atTop (𝓝 (0 : ℝ))
+  u_cont : ContinuousOn u (Ici 0)
+  u_conc : StrictConcaveOn ℝ (Ici 0) u
+  u_diff : ∀ c, 0 < c → DifferentiableAt ℝ u c
+  u_prime_pos : ∀ c, 0 < c → 0 < deriv u c
+  u_prime_cont : ContinuousOn (deriv u) (Ioi 0)
+  u_inada0 : Tendsto (deriv u) (𝓝[>] (0 : ℝ)) atTop
+
+variable {f u : ℝ → ℝ} {β δ : ℝ}
+
+/-- Gross resources: output plus undepreciated capital. -/
+def resources (f : ℝ → ℝ) (δ k : ℝ) : ℝ := f k + (1 - δ) * k
+
+/-- A feasible capital path from `k₀`. -/
+def Feasible (f : ℝ → ℝ) (δ k₀ : ℝ) (k : ℕ → ℝ) : Prop :=
+  k 0 = k₀ ∧ ∀ t, 0 ≤ k (t + 1) ∧ k (t + 1) ≤ resources f δ (k t)
+
+/-- Consumption along a capital path. -/
+def consumption (f : ℝ → ℝ) (δ : ℝ) (k : ℕ → ℝ) (t : ℕ) : ℝ :=
+  resources f δ (k t) - k (t + 1)
+
+/-- Discounted lifetime welfare. -/
+noncomputable def welfare (f u : ℝ → ℝ) (β δ : ℝ) (k : ℕ → ℝ) : ℝ :=
+  ∑' t, β ^ t * u (consumption f δ k t)
+
+theorem Primitives.f_strictMono (P : Primitives f u β δ) : StrictMonoOn f (Ici 0) :=
+  strictMonoOn_of_deriv_pos (convex_Ici 0) P.f_cont
+    (fun k hk => by rw [interior_Ici] at hk; exact P.f_prime_pos k hk)
+
+theorem Primitives.u_strictMono (P : Primitives f u β δ) : StrictMonoOn u (Ici 0) :=
+  strictMonoOn_of_deriv_pos (convex_Ici 0) P.u_cont
+    (fun c hc => by rw [interior_Ici] at hc; exact P.u_prime_pos c hc)
+
+theorem Primitives.resources_strictMono (P : Primitives f u β δ) :
+    StrictMonoOn (resources f δ) (Ici 0) := by
+  intro a ha b hb hab
+  have h1 := P.f_strictMono ha hb hab
+  have h2 := mul_le_mul_of_nonneg_left hab.le (sub_nonneg.mpr P.δ_le_one)
+  simp only [resources]
+  linarith
+
+theorem Primitives.resources_cont (P : Primitives f u β δ) :
+    ContinuousOn (resources f δ) (Ici 0) :=
+  P.f_cont.add (continuousOn_const.mul continuousOn_id)
+
+theorem resources_zero (P : Primitives f u β δ) : resources f δ 0 = 0 := by
+  simp [resources, P.f_zero]
+
+theorem Primitives.resources_nonneg (P : Primitives f u β δ) {k : ℝ} (hk : 0 ≤ k) :
+    0 ≤ resources f δ k := by
+  rw [← resources_zero P]
+  exact P.resources_strictMono.monotoneOn (mem_Ici.mpr le_rfl) hk hk
+
+/-- A capacity beyond which resources do not exceed capital. -/
+theorem Primitives.exists_capacity (P : Primitives f u β δ) :
+    ∃ K, 0 < K ∧ ∀ k, K ≤ k → resources f δ k ≤ k := by
+  obtain ⟨K, hK1, hK⟩ := exists_capacity_of_marginal_tendsto_zero f (k0 := 1) P.δ_pos
+    P.f_conc.concaveOn P.f_diff (fun k hk => (P.f_prime_pos k hk).le) P.f_inadaTop
+  refine ⟨K, lt_of_lt_of_le one_pos hK1, fun k hk => ?_⟩
+  have := hK k hk
+  simp only [resources]
+  linarith
+
+/-- The capital bound used for paths from `k₀`. -/
+noncomputable def bound (P : Primitives f u β δ) (k₀ : ℝ) : ℝ :=
+  max k₀ (Classical.choose P.exists_capacity)
+
+theorem bound_spec (P : Primitives f u β δ) (k₀ : ℝ) :
+    k₀ ≤ bound P k₀ ∧ 0 < bound P k₀ ∧ resources f δ (bound P k₀) ≤ bound P k₀ := by
+  obtain ⟨hK, hcap⟩ := Classical.choose_spec P.exists_capacity
+  exact ⟨le_max_left _ _, lt_of_lt_of_le hK (le_max_right _ _),
+    hcap _ (le_max_right _ _)⟩
+
+theorem Feasible.nonneg {k₀ : ℝ} {k : ℕ → ℝ} (hk : Feasible f δ k₀ k) (hk₀ : 0 ≤ k₀) (t : ℕ) :
+    0 ≤ k t := by
+  cases t with
+  | zero => rw [hk.1]; exact hk₀
+  | succ t => exact (hk.2 t).1
+
+/-- Every feasible path stays below the bound. -/
+theorem Feasible.le_bound (P : Primitives f u β δ) {k₀ : ℝ} {k : ℕ → ℝ}
+    (hk : Feasible f δ k₀ k) (hk₀ : 0 ≤ k₀) (t : ℕ) : k t ≤ bound P k₀ := by
+  obtain ⟨h1, h2, h3⟩ := bound_spec P k₀
+  induction t with
+  | zero => rw [hk.1]; exact h1
+  | succ t ih =>
+    exact (hk.2 t).2.trans ((P.resources_strictMono.monotoneOn (hk.nonneg hk₀ t)
+      h2.le ih).trans h3)
+
+theorem Feasible.consumption_mem (P : Primitives f u β δ) {k₀ : ℝ} {k : ℕ → ℝ}
+    (hk : Feasible f δ k₀ k) (hk₀ : 0 ≤ k₀) (t : ℕ) :
+    consumption f δ k t ∈ Icc 0 (bound P k₀) := by
+  obtain ⟨-, h2, h3⟩ := bound_spec P k₀
+  refine ⟨sub_nonneg.mpr (hk.2 t).2, ?_⟩
+  have := (P.resources_strictMono.monotoneOn (hk.nonneg hk₀ t) h2.le
+    (hk.le_bound P hk₀ t)).trans h3
+  have := (hk.2 t).1
+  simp only [consumption]
+  linarith
+
+/-- A uniform bound on utility over the consumption range of paths from `k₀`. -/
+theorem exists_utility_bound (P : Primitives f u β δ) (k₀ : ℝ) :
+    ∃ M, ∀ c ∈ Icc 0 (bound P k₀), |u c| ≤ M := by
+  obtain ⟨x, _, hx⟩ := isCompact_Icc.exists_isMaxOn
+    (nonempty_Icc.mpr (bound_spec P k₀).2.1.le) ((P.u_cont.mono Icc_subset_Ici_self).norm)
+  exact ⟨‖u x‖, fun c hc => hx hc⟩
+
+theorem Feasible.summable (P : Primitives f u β δ) {k₀ : ℝ} {k : ℕ → ℝ}
+    (hk : Feasible f δ k₀ k) (hk₀ : 0 ≤ k₀) :
+    Summable (fun t => β ^ t * u (consumption f δ k t)) := by
+  obtain ⟨M, hM⟩ := exists_utility_bound P k₀
+  refine Summable.of_norm_bounded
+    ((summable_geometric_of_lt_one P.β_pos.le P.β_lt_one).mul_right M) (fun t => ?_)
+  rw [Real.norm_eq_abs, abs_mul, abs_of_pos (pow_pos P.β_pos t)]
+  exact mul_le_mul_of_nonneg_left (hM _ (hk.consumption_mem P hk₀ t)) (pow_pos P.β_pos t).le
+
+/-- The path that consumes everything after the first period is feasible. -/
+theorem feasible_consume_all (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) :
+    Feasible f δ k₀ (fun t => if t = 0 then k₀ else 0) := by
+  refine ⟨rfl, fun t => ⟨le_rfl, ?_⟩⟩
+  cases t with
+  | zero => exact P.resources_nonneg hk₀
+  | succ t => simp [resources_zero P]
+
+/-- The feasible set from `k₀` as a subset of the sequence space. -/
+def feasibleSet (f : ℝ → ℝ) (δ k₀ : ℝ) : Set (ℕ → ℝ) := {k | Feasible f δ k₀ k}
+
+theorem isCompact_feasibleSet (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) :
+    IsCompact (feasibleSet f δ k₀) := by
+  -- the continuous extension of `f` to the whole line
+  set fe : ℝ → ℝ := fun x => f (max x 0)
+  have hfe : Continuous fe := P.f_cont.comp_continuous (continuous_id.max continuous_const)
+    (fun x => le_max_right x 0)
+  have heq : feasibleSet f δ k₀ = {k | k 0 = k₀} ∩ ⋂ t, ({k : ℕ → ℝ | 0 ≤ k (t + 1)} ∩
+      {k | k (t + 1) ≤ fe (k t) + (1 - δ) * k t}) := by
+    ext k
+    simp only [feasibleSet, Feasible, mem_ofPred_eq, mem_inter_iff, mem_iInter]
+    constructor
+    · rintro ⟨h0, h⟩
+      refine ⟨h0, fun t => ⟨(h t).1, ?_⟩⟩
+      have hnn : 0 ≤ k t := Feasible.nonneg ⟨h0, h⟩ hk₀ t
+      simp only [fe, max_eq_left hnn]
+      exact (h t).2
+    · rintro ⟨h0, h⟩
+      have hnn : ∀ t, 0 ≤ k t := by
+        intro t
+        cases t with
+        | zero => rw [h0]; exact hk₀
+        | succ t => exact (h t).1
+      refine ⟨h0, fun t => ⟨(h t).1, ?_⟩⟩
+      have := (h t).2
+      simp only [fe, max_eq_left (hnn t)] at this
+      exact this
+  have hclosed : IsClosed (feasibleSet f δ k₀) := by
+    rw [heq]
+    refine (isClosed_eq (continuous_apply 0) continuous_const).inter (isClosed_iInter fun t => ?_)
+    exact (isClosed_le continuous_const (continuous_apply (t + 1))).inter
+      (isClosed_le (continuous_apply (t + 1)) ((hfe.comp (continuous_apply t)).add
+        (continuous_const.mul (continuous_apply t))))
+  have hbox : feasibleSet f δ k₀ ⊆ Set.pi univ (fun _ => Icc 0 (bound P k₀)) := by
+    intro k hk _ _
+    exact ⟨Feasible.nonneg hk hk₀ _, Feasible.le_bound P hk hk₀ _⟩
+  exact (isCompact_univ_pi (fun _ => isCompact_Icc)).of_isClosed_subset hclosed hbox
+
+theorem continuousOn_welfare (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) :
+    ContinuousOn (welfare f u β δ) (feasibleSet f δ k₀) := by
+  obtain ⟨M, hM⟩ := exists_utility_bound P k₀
+  apply continuousOn_tsum (u := fun t => β ^ t * M)
+  · intro t
+    apply continuousOn_const.mul
+    apply P.u_cont.comp
+    · apply ContinuousOn.sub _ (continuous_apply (t + 1)).continuousOn
+      exact (P.resources_cont.comp (continuous_apply t).continuousOn
+        (fun k hk => Feasible.nonneg hk hk₀ t))
+    · exact fun k hk => (Feasible.consumption_mem P hk hk₀ t).1
+  · exact (summable_geometric_of_lt_one P.β_pos.le P.β_lt_one).mul_right M
+  · intro t k hk
+    rw [Real.norm_eq_abs, abs_mul, abs_of_pos (pow_pos P.β_pos t)]
+    exact mul_le_mul_of_nonneg_left (hM _ (Feasible.consumption_mem P hk hk₀ t))
+      (pow_pos P.β_pos t).le
+
+/-- An optimal path exists from every nonnegative stock. -/
+theorem exists_optimal (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) :
+    ∃ k, Feasible f δ k₀ k ∧
+      ∀ k', Feasible f δ k₀ k' → welfare f u β δ k' ≤ welfare f u β δ k := by
+  obtain ⟨k, hk, hmax⟩ := (isCompact_feasibleSet P hk₀).exists_isMaxOn
+    ⟨fun t => if t = 0 then k₀ else 0, (feasible_consume_all P hk₀ : _)⟩
+    (continuousOn_welfare P hk₀)
+  exact ⟨k, hk, fun k' hk' => hmax hk'⟩
+
+/-- The optimal path from `k₀ ≥ 0` (chosen). -/
+noncomputable def optimalPath (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) : ℕ → ℝ :=
+  Classical.choose (exists_optimal P hk₀)
+
+theorem optimalPath_spec (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) :
+    Feasible f δ k₀ (optimalPath P hk₀) ∧ ∀ k', Feasible f δ k₀ k' →
+      welfare f u β δ k' ≤ welfare f u β δ (optimalPath P hk₀) :=
+  Classical.choose_spec (exists_optimal P hk₀)
+
+/-- The value function. -/
+noncomputable def value (P : Primitives f u β δ) (k₀ : ℝ) : ℝ :=
+  if hk₀ : 0 ≤ k₀ then welfare f u β δ (optimalPath P hk₀) else 0
+
+theorem value_eq (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) :
+    value P k₀ = welfare f u β δ (optimalPath P hk₀) := by
+  simp only [value, hk₀, ↓reduceDIte]
+
+theorem welfare_le_value (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) {k : ℕ → ℝ}
+    (hk : Feasible f δ k₀ k) : welfare f u β δ k ≤ value P k₀ := by
+  rw [value_eq P hk₀]
+  exact (optimalPath_spec P hk₀).2 k hk
+
+end RamseyCassKoopmans.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# The principle of optimality, uniqueness, and the shape of the value function
+
+* `welfare_eq_head_add`: `W(k) = u(c₀) + β W(tail k)`.
+* `tail_optimal`, `bellman`: the tail of an optimal path is optimal from the stock
+  it reaches, and `V(k₀) = max_{0 ≤ y ≤ F(k₀)} u(F(k₀) - y) + β V(y)`.
+* `optimal_unique`: the optimal path is unique (strict concavity of `u`).
+* `value_strictMono`, `value_strictConcave`: `V` is strictly increasing and strictly
+  concave.
+-/
+
+open Set Filter
+open scoped Topology
+
+namespace RamseyCassKoopmans.DiscreteTime
+
+variable {f u : ℝ → ℝ} {β δ : ℝ}
+
+/-- The path from date one on. -/
+def tail (k : ℕ → ℝ) : ℕ → ℝ := fun t => k (t + 1)
+
+/-- Prepend a stock to a path. -/
+def prepend (k₀ : ℝ) (k : ℕ → ℝ) : ℕ → ℝ := fun t => if t = 0 then k₀ else k (t - 1)
+
+theorem Feasible.tail {k₀ : ℝ} {k : ℕ → ℝ} (hk : Feasible f δ k₀ k) :
+    Feasible f δ (k 1) (DiscreteTime.tail k) :=
+  ⟨rfl, fun t => hk.2 (t + 1)⟩
+
+theorem Feasible.prepend {k₀ y : ℝ} {k : ℕ → ℝ} (hk : Feasible f δ y k) (hy0 : 0 ≤ y)
+    (hy : y ≤ resources f δ k₀) : Feasible f δ k₀ (DiscreteTime.prepend k₀ k) := by
+  refine ⟨rfl, fun t => ?_⟩
+  rcases t with _ | t
+  · have h1 : DiscreteTime.prepend k₀ k (0 + 1) = y := by simp [DiscreteTime.prepend, hk.1]
+    have h0 : DiscreteTime.prepend k₀ k 0 = k₀ := by simp [DiscreteTime.prepend]
+    rw [h1, h0]
+    exact ⟨hy0, hy⟩
+  · have h1 : DiscreteTime.prepend k₀ k (t + 1 + 1) = k (t + 1) := by
+      simp [DiscreteTime.prepend]
+    have h0 : DiscreteTime.prepend k₀ k (t + 1) = k t := by simp [DiscreteTime.prepend]
+    rw [h1, h0]
+    exact hk.2 t
+
+theorem consumption_tail (k : ℕ → ℝ) (t : ℕ) :
+    consumption f δ (tail k) t = consumption f δ k (t + 1) := rfl
+
+theorem welfare_eq_head_add (P : Primitives f u β δ) {k₀ : ℝ} {k : ℕ → ℝ}
+    (hk : Feasible f δ k₀ k) (hk₀ : 0 ≤ k₀) :
+    welfare f u β δ k = u (consumption f δ k 0) + β * welfare f u β δ (tail k) := by
+  unfold welfare
+  rw [(hk.summable P hk₀).tsum_eq_zero_add, ← tsum_mul_left]
+  simp only [pow_zero, one_mul, pow_succ, consumption_tail]
+  congr 1
+  congr 1
+  funext t
+  ring
+
+theorem consumption_prepend_zero (k₀ : ℝ) (k : ℕ → ℝ) :
+    consumption f δ (prepend k₀ k) 0 = resources f δ k₀ - k 0 := by
+  simp [consumption, prepend]
+
+theorem tail_prepend (k₀ : ℝ) (k : ℕ → ℝ) : tail (prepend k₀ k) = k := by
+  funext t
+  simp [tail, prepend]
+
+theorem welfare_prepend (P : Primitives f u β δ) {k₀ y : ℝ} {k : ℕ → ℝ}
+    (hk : Feasible f δ y k) (hy0 : 0 ≤ y) (hy : y ≤ resources f δ k₀) (hk₀ : 0 ≤ k₀) :
+    welfare f u β δ (prepend k₀ k) = u (resources f δ k₀ - y) + β * welfare f u β δ k := by
+  rw [welfare_eq_head_add P (hk.prepend hy0 hy) hk₀, consumption_prepend_zero, tail_prepend, hk.1]
+
+/-- The tail of an optimal path is optimal. -/
+theorem tail_optimal (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) {k : ℕ → ℝ}
+    (hk : Feasible f δ k₀ k)
+    (hopt : ∀ k', Feasible f δ k₀ k' → welfare f u β δ k' ≤ welfare f u β δ k) :
+    welfare f u β δ (tail k) = value P (k 1) := by
+  have hk1 : 0 ≤ k 1 := (hk.2 0).1
+  apply le_antisymm (welfare_le_value P hk1 hk.tail)
+  by_contra hlt
+  push Not at hlt
+  obtain ⟨hopt1, _⟩ := optimalPath_spec P hk1
+  have hbetter := hopt _ (hopt1.prepend hk1 (by rw [← hk.1]; exact (hk.2 0).2))
+  rw [welfare_prepend P hopt1 hk1 (by rw [← hk.1]; exact (hk.2 0).2) hk₀,
+    welfare_eq_head_add P hk hk₀, ← value_eq P hk1] at hbetter
+  have hc0 : consumption f δ k 0 = resources f δ k₀ - k 1 := by
+    simp [consumption, hk.1]
+  rw [hc0] at hbetter
+  have := mul_lt_mul_of_pos_left hlt P.β_pos
+  linarith
+
+/-- The Bellman equation along the optimal path, and the Bellman inequality for
+every feasible choice of next period's capital. -/
+theorem bellman (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) :
+    value P k₀ = u (resources f δ k₀ - optimalPath P hk₀ 1) +
+        β * value P (optimalPath P hk₀ 1) ∧
+      ∀ y, 0 ≤ y → y ≤ resources f δ k₀ →
+        u (resources f δ k₀ - y) + β * value P y ≤ value P k₀ := by
+  obtain ⟨hk, hopt⟩ := optimalPath_spec P hk₀
+  refine ⟨?_, fun y hy0 hy => ?_⟩
+  · rw [value_eq P hk₀, welfare_eq_head_add P hk hk₀, tail_optimal P hk₀ hk hopt]
+    simp [consumption, hk.1]
+  · obtain ⟨hy', _⟩ := optimalPath_spec P hy0
+    have := welfare_le_value P hk₀ (hy'.prepend hy0 hy)
+    rwa [welfare_prepend P hy' hy0 hy hk₀, ← value_eq P hy0] at this
+
+/-- Concavity of resources: mixed resources dominate the mixture, strictly at
+distinct stocks. -/
+theorem resources_mix (P : Primitives f u β δ) {a b θ : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
+    (hθ : 0 < θ) (hθ1 : θ < 1) :
+    θ * resources f δ a + (1 - θ) * resources f δ b ≤ resources f δ (θ * a + (1 - θ) * b) ∧
+      (a ≠ b → θ * resources f δ a + (1 - θ) * resources f δ b <
+        resources f δ (θ * a + (1 - θ) * b)) := by
+  have hc := P.f_conc.concaveOn.2 ha hb hθ.le (by linarith : (0 : ℝ) ≤ 1 - θ) (by ring)
+  simp only [smul_eq_mul] at hc
+  refine ⟨by simp only [resources]; nlinarith, fun hne => ?_⟩
+  have hs := P.f_conc.2 ha hb hne hθ (by linarith : (0 : ℝ) < 1 - θ) (by ring)
+  simp only [smul_eq_mul] at hs
+  simp only [resources]
+  nlinarith
+
+/-- The mixture of two feasible paths is feasible, with consumption at least the
+mixture of consumptions. -/
+theorem Feasible.mix (P : Primitives f u β δ) {k₀ k₀' θ : ℝ} {k k' : ℕ → ℝ}
+    (hk : Feasible f δ k₀ k) (hk' : Feasible f δ k₀' k') (hk₀ : 0 ≤ k₀) (hk₀' : 0 ≤ k₀')
+    (hθ : 0 < θ) (hθ1 : θ < 1) :
+    Feasible f δ (θ * k₀ + (1 - θ) * k₀') (fun t => θ * k t + (1 - θ) * k' t) ∧
+      ∀ t, θ * consumption f δ k t + (1 - θ) * consumption f δ k' t ≤
+        consumption f δ (fun t => θ * k t + (1 - θ) * k' t) t := by
+  have hmix := fun t => (resources_mix P (hk.nonneg hk₀ t) (hk'.nonneg hk₀' t) hθ hθ1).1
+  refine ⟨⟨by simp only [hk.1, hk'.1], fun t => ⟨?_, ?_⟩⟩, fun t => ?_⟩
+  · have := mul_nonneg hθ.le (hk.2 t).1
+    have := mul_nonneg (by linarith : (0 : ℝ) ≤ 1 - θ) (hk'.2 t).1
+    linarith
+  · have h1 := mul_le_mul_of_nonneg_left (hk.2 t).2 hθ.le
+    have h2 := mul_le_mul_of_nonneg_left (hk'.2 t).2 (by linarith : (0 : ℝ) ≤ 1 - θ)
+    linarith [hmix t]
+  · simp only [consumption]
+    linarith [hmix t]
+
+/-- Termwise comparison of discounted utility for a mixture. -/
+theorem utility_mix (P : Primitives f u β δ) {c c' c'' θ : ℝ} (hc : 0 ≤ c) (hc' : 0 ≤ c')
+    (hθ : 0 < θ) (hθ1 : θ < 1) (hle : θ * c + (1 - θ) * c' ≤ c'') :
+    θ * u c + (1 - θ) * u c' ≤ u c'' ∧
+      (c ≠ c' → θ * u c + (1 - θ) * u c' < u c'') := by
+  have hmixnn : 0 ≤ θ * c + (1 - θ) * c' := by nlinarith
+  have hmono := P.u_strictMono.monotoneOn hmixnn (hmixnn.trans hle) hle
+  have hconc := P.u_conc.concaveOn.2 hc hc' hθ.le (by linarith : (0 : ℝ) ≤ 1 - θ) (by ring)
+  simp only [smul_eq_mul] at hconc
+  refine ⟨hconc.trans hmono, fun hne => ?_⟩
+  have hs := P.u_conc.2 hc hc' hne hθ (by linarith : (0 : ℝ) < 1 - θ) (by ring)
+  simp only [smul_eq_mul] at hs
+  exact hs.trans_le hmono
+
+/-- The mixture's welfare dominates the mixture of welfares. -/
+theorem welfare_mix (P : Primitives f u β δ) {k₀ k₀' θ : ℝ} {k k' : ℕ → ℝ}
+    (hk : Feasible f δ k₀ k) (hk' : Feasible f δ k₀' k') (hk₀ : 0 ≤ k₀) (hk₀' : 0 ≤ k₀')
+    (hθ : 0 < θ) (hθ1 : θ < 1) :
+    θ * welfare f u β δ k + (1 - θ) * welfare f u β δ k' ≤
+        welfare f u β δ (fun t => θ * k t + (1 - θ) * k' t) ∧
+      ((∃ t, consumption f δ k t ≠ consumption f δ k' t ∨
+          θ * consumption f δ k t + (1 - θ) * consumption f δ k' t <
+            consumption f δ (fun t => θ * k t + (1 - θ) * k' t) t) →
+        θ * welfare f u β δ k + (1 - θ) * welfare f u β δ k' <
+          welfare f u β δ (fun t => θ * k t + (1 - θ) * k' t)) := by
+  obtain ⟨hmixf, hcons⟩ := hk.mix P hk' hk₀ hk₀' hθ hθ1
+  have hmix0 : 0 ≤ θ * k₀ + (1 - θ) * k₀' := by nlinarith
+  have hs := hk.summable P hk₀
+  have hs' := hk'.summable P hk₀'
+  have hsm := hmixf.summable P hmix0
+  have hlhs : θ * welfare f u β δ k + (1 - θ) * welfare f u β δ k' =
+      ∑' t, (θ * (β ^ t * u (consumption f δ k t)) +
+        (1 - θ) * (β ^ t * u (consumption f δ k' t))) := by
+    unfold welfare
+    rw [(hs.mul_left θ).tsum_add (hs'.mul_left (1 - θ)), tsum_mul_left, tsum_mul_left]
+  have hterm : ∀ t, θ * (β ^ t * u (consumption f δ k t)) +
+      (1 - θ) * (β ^ t * u (consumption f δ k' t)) ≤
+        β ^ t * u (consumption f δ (fun t => θ * k t + (1 - θ) * k' t) t) := by
+    intro t
+    have h := (utility_mix P (hk.consumption_mem P hk₀ t).1 (hk'.consumption_mem P hk₀' t).1 hθ
+      hθ1 (hcons t)).1
+    have := mul_le_mul_of_nonneg_left h (pow_pos P.β_pos t).le
+    linarith
+  have hsum := (hs.mul_left θ).add (hs'.mul_left (1 - θ))
+  refine ⟨?_, fun ⟨t, ht⟩ => ?_⟩
+  · rw [hlhs]
+    exact hsum.tsum_le_tsum hterm hsm
+  · rw [hlhs]
+    refine hsum.tsum_lt_tsum (i := t) hterm ?_ hsm
+    have hct := (hk.consumption_mem P hk₀ t).1
+    have hct' := (hk'.consumption_mem P hk₀' t).1
+    have hstrict : θ * u (consumption f δ k t) + (1 - θ) * u (consumption f δ k' t) <
+        u (consumption f δ (fun t => θ * k t + (1 - θ) * k' t) t) := by
+      rcases ht with hne | hlt
+      · exact (utility_mix P hct hct' hθ hθ1 (hcons t)).2 hne
+      · have hmixc : 0 ≤ θ * consumption f δ k t + (1 - θ) * consumption f δ k' t := by
+          nlinarith
+        have h1 := (utility_mix P hct hct' hθ hθ1 le_rfl).1
+        exact h1.trans_lt (P.u_strictMono hmixc (hmixc.trans hlt.le) hlt)
+    have := mul_lt_mul_of_pos_left hstrict (pow_pos P.β_pos t)
+    linarith
+
+/-- The optimal path is unique. -/
+theorem optimal_unique (P : Primitives f u β δ) {k₀ : ℝ} (hk₀ : 0 ≤ k₀) {k : ℕ → ℝ}
+    (hk : Feasible f δ k₀ k)
+    (hopt : ∀ k', Feasible f δ k₀ k' → welfare f u β δ k' ≤ welfare f u β δ k) :
+    k = optimalPath P hk₀ := by
+  obtain ⟨ho, hoopt⟩ := optimalPath_spec P hk₀
+  set o := optimalPath P hk₀
+  by_contra hne
+  -- two distinct feasible paths from the same stock differ in some consumption
+  have hcne : ∃ t, consumption f δ k t ≠ consumption f δ o t := by
+    by_contra hall
+    push Not at hall
+    apply hne
+    funext t
+    induction t with
+    | zero => rw [hk.1, ho.1]
+    | succ t ih =>
+      have := hall t
+      simp only [consumption, ih] at this
+      linarith
+  have hθ : (0 : ℝ) < 1 / 2 := by norm_num
+  have hθ1 : (1 : ℝ) / 2 < 1 := by norm_num
+  obtain ⟨hmixf, -⟩ := hk.mix P ho hk₀ hk₀ hθ hθ1
+  have hstrict := (welfare_mix P hk ho hk₀ hk₀ hθ hθ1).2
+    (by obtain ⟨t, ht⟩ := hcne; exact ⟨t, Or.inl ht⟩)
+  have hmix0 : 1 / 2 * k₀ + (1 - 1 / 2) * k₀ = k₀ := by ring
+  rw [hmix0] at hmixf
+  have h1 := hopt _ hmixf
+  have h2 := hoopt k hk
+  have h3 := hopt o ho
+  linarith
+
+/-- The value function is strictly increasing. -/
+theorem value_strictMono (P : Primitives f u β δ) : StrictMonoOn (value P) (Ici 0) := by
+  intro a ha b hb hab
+  have ha' : (0 : ℝ) ≤ a := ha
+  have hb' : (0 : ℝ) ≤ b := hb
+  obtain ⟨hk, hopt⟩ := optimalPath_spec P ha'
+  have hk1 : 0 ≤ optimalPath P ha' 1 := (hk.2 0).1
+  have hFa : optimalPath P ha' 1 ≤ resources f δ a :=
+    (hk.2 0).2.trans_eq (congrArg (resources f δ) hk.1)
+  have hFab := P.resources_strictMono ha hb hab
+  obtain ⟨hb1, _⟩ := bellman P hb'
+  have hbell := (bellman P hb').2 (optimalPath P ha' 1) hk1 (hFa.trans hFab.le)
+  rw [(bellman P ha').1]
+  have hc : 0 ≤ resources f δ a - optimalPath P ha' 1 := sub_nonneg.mpr hFa
+  have hu := P.u_strictMono hc (by linarith : (0 : ℝ) ≤ resources f δ b - optimalPath P ha' 1)
+    (by linarith)
+  linarith
+
+/-- The value function is strictly concave. -/
+theorem value_strictConcave (P : Primitives f u β δ) : StrictConcaveOn ℝ (Ici 0) (value P) := by
+  refine ⟨convex_Ici 0, fun a ha b hb hne θ θ' hθ hθ' hsum => ?_⟩
+  have ha' : (0 : ℝ) ≤ a := ha
+  have hb' : (0 : ℝ) ≤ b := hb
+  have hθ'' : θ' = 1 - θ := by linarith
+  subst hθ''
+  have hθ1 : θ < 1 := by linarith
+  obtain ⟨hka, _⟩ := optimalPath_spec P ha'
+  obtain ⟨hkb, _⟩ := optimalPath_spec P hb'
+  obtain ⟨hmixf, -⟩ := hka.mix P hkb ha' hb' hθ hθ1
+  have hstrict := (welfare_mix P hka hkb ha' hb' hθ hθ1).2 ⟨0, Or.inr (by
+    have hne' : optimalPath P ha' 0 ≠ optimalPath P hb' 0 := by rw [hka.1, hkb.1]; exact hne
+    have h := (resources_mix P (hka.nonneg ha' 0) (hkb.nonneg hb' 0) hθ hθ1).2 hne'
+    simp only [consumption]
+    linarith)⟩
+  have hmix0 : 0 ≤ θ * a + (1 - θ) * b := by nlinarith
+  have hle := welfare_le_value P hmix0 hmixf
+  simp only [smul_eq_mul]
+  rw [value_eq P ha', value_eq P hb']
+  linarith
+
+end RamseyCassKoopmans.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# Interiority and the Euler equation
+
+* `IsOptimal.shift`: every tail of an optimal path is optimal from the stock reached,
+  and `IsOptimal.bellman_eq` gives the Bellman equation along the path.
+* `interior_choice`: by the Inada conditions a maximizer of `u(F(x) - y) + β V(y)` over
+  `0 ≤ y ≤ F(x)` is interior: saving and consumption are both strictly positive.
+* `IsOptimal.capital_pos`, `IsOptimal.consumption_pos`: an optimal path from positive
+  capital keeps capital and consumption strictly positive.
+* `IsOptimal.euler`: `u'(c t) = β u'(c (t+1)) F'(k (t+1))`, `F' = f' + 1 - δ`.
+-/
+
+open Set Filter
+open scoped Topology
+
+namespace RamseyCassKoopmans.DiscreteTime
+
+variable {f u : ℝ → ℝ} {β δ : ℝ}
+
+/-- A feasible path attaining the maximal welfare from `x`. -/
+def IsOptimal (f u : ℝ → ℝ) (β δ x : ℝ) (k : ℕ → ℝ) : Prop :=
+  Feasible f δ x k ∧ ∀ k', Feasible f δ x k' → welfare f u β δ k' ≤ welfare f u β δ k
+
+theorem isOptimal_optimalPath (P : Primitives f u β δ) {x : ℝ} (hx : 0 ≤ x) :
+    IsOptimal f u β δ x (optimalPath P hx) := optimalPath_spec P hx
+
+theorem IsOptimal.welfare_eq (P : Primitives f u β δ) {x : ℝ} (hx : 0 ≤ x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) : welfare f u β δ k = value P x := by
+  apply le_antisymm (welfare_le_value P hx hk.1)
+  rw [value_eq P hx]
+  exact hk.2 _ (optimalPath_spec P hx).1
+
+theorem IsOptimal.tail (P : Primitives f u β δ) {x : ℝ} (hx : 0 ≤ x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) : IsOptimal f u β δ (k 1) (DiscreteTime.tail k) := by
+  refine ⟨hk.1.tail, fun k' hk' => ?_⟩
+  rw [tail_optimal P hx hk.1 hk.2]
+  exact welfare_le_value P (hk.1.2 0).1 hk'
+
+theorem IsOptimal.shift (P : Primitives f u β δ) {x : ℝ} (hx : 0 ≤ x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) (t : ℕ) :
+    IsOptimal f u β δ (k t) (fun s => k (t + s)) := by
+  induction t with
+  | zero => simpa only [zero_add, hk.1.1] using hk
+  | succ t ih =>
+    have h := ih.tail P (hk.1.nonneg hx t)
+    have heq : DiscreteTime.tail (fun s => k (t + s)) = fun s => k (t + 1 + s) := by
+      funext s
+      simp only [DiscreteTime.tail]
+      congr 1
+      ring
+    rw [heq] at h
+    simpa only [add_zero] using h
+
+/-- The Bellman equation along an optimal path. -/
+theorem IsOptimal.bellman_eq (P : Primitives f u β δ) {x : ℝ} (hx : 0 ≤ x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) (t : ℕ) :
+    value P (k t) = u (resources f δ (k t) - k (t + 1)) + β * value P (k (t + 1)) := by
+  have hs := hk.shift P hx t
+  have hkt := hk.1.nonneg hx t
+  rw [← hs.welfare_eq P hkt, welfare_eq_head_add P hs.1 hkt, tail_optimal P hkt hs.1 hs.2]
+  simp only [consumption, add_zero]
+
+theorem value_zero (P : Primitives f u β δ) : value P 0 = u 0 + β * value P 0 := by
+  obtain ⟨hk, -⟩ := optimalPath_spec P (le_refl (0 : ℝ))
+  have h1 : optimalPath P (le_refl (0 : ℝ)) 1 = 0 := by
+    have := hk.2 0
+    rw [hk.1, resources_zero P] at this
+    linarith [this.1, this.2]
+  have := (bellman P (le_refl (0 : ℝ))).1
+  rwa [h1, resources_zero P, sub_zero] at this
+
+theorem Primitives.u_prime_anti (P : Primitives f u β δ) : StrictAntiOn (deriv u) (Ioi 0) :=
+  (P.u_conc.subset Ioi_subset_Ici_self (convex_Ioi 0)).strictAntiOn_deriv P.u_diff
+
+/-- A maximizer of `u(F(x) - y) + β V(y)` is interior. -/
+theorem interior_choice (P : Primitives f u β δ) {x y : ℝ} (hx : 0 < x) (hy0 : 0 ≤ y)
+    (hyF : y ≤ resources f δ x)
+    (hmax : ∀ z, 0 ≤ z → z ≤ resources f δ x →
+      u (resources f δ x - z) + β * value P z ≤ u (resources f δ x - y) + β * value P y) :
+    0 < y ∧ y < resources f δ x := by
+  have hFx : 0 < resources f δ x := by
+    have h := P.resources_strictMono (mem_Ici.mpr le_rfl) (mem_Ici.mpr hx.le) hx
+    rwa [resources_zero P] at h
+  have hVmono := value_strictMono P
+  have hVconc := value_strictConcave P
+  constructor
+  · -- saving is positive
+    by_contra hle
+    push Not at hle
+    have hy : y = 0 := le_antisymm hle hy0
+    subst hy
+    set a := resources f δ x / 2 with ha
+    have hapos : 0 < a := half_pos hFx
+    have hua : 0 < deriv u a := P.u_prime_pos a hapos
+    -- small `ε` with `F(ε) ≤ a` and `β f'(ε) > 1`
+    have hFcont : Tendsto (resources f δ) (𝓝[>] (0 : ℝ)) (𝓝 0) := by
+      have := (P.resources_cont (0 : ℝ) (mem_Ici.mpr le_rfl)).tendsto
+      rw [resources_zero P] at this
+      exact this.mono_left (nhdsWithin_mono _ Ioi_subset_Ici_self)
+    obtain ⟨ε, hε⟩ := ((eventually_mem_nhdsWithin : ∀ᶠ x in 𝓝[>] (0 : ℝ), x ∈ Ioi 0).and
+      ((hFcont.eventually (gt_mem_nhds hapos)).and
+      ((P.f_inada0.eventually (eventually_gt_atTop (1 / β))).and
+      (Ioo_mem_nhdsGT hapos : ∀ᶠ x in 𝓝[>] (0 : ℝ), x ∈ Ioo 0 a)))).exists
+    obtain ⟨hεpos, hFε, hfε, hεa⟩ := hε
+    have hεpos' : (0 : ℝ) < ε := hεpos
+    have hεF : ε ≤ resources f δ x := by linarith [hεa.2]
+    have hcmp := hmax ε hεpos'.le hεF
+    -- `u(F x) - u(F x - ε) ≤ u'(a) ε`
+    have hu1 : u (resources f δ x) - u (resources f δ x - ε) ≤ deriv u a * ε := by
+      have hpos : 0 < resources f δ x - ε := by linarith [hεa.2]
+      have hs := concave_support P.u_conc.concaveOn (mem_Ici.mpr hpos.le) (mem_Ici.mpr hFx.le)
+        (P.u_diff _ hpos).hasDerivAt
+      have hmono : deriv u (resources f δ x - ε) ≤ deriv u a :=
+        P.u_prime_anti.antitoneOn hapos hpos (by linarith [hεa.2])
+      have : u (resources f δ x) - u (resources f δ x - ε) ≤
+          deriv u (resources f δ x - ε) * ε := by
+        have := hs
+        rw [show resources f δ x - (resources f δ x - ε) = ε by ring] at this
+        exact this
+      exact this.trans (mul_le_mul_of_nonneg_right hmono hεpos'.le)
+    -- `V(ε) - V(0) ≥ u(F ε) - u(0) ≥ u'(a) f'(ε) ε`
+    have hFεpos : 0 < resources f δ ε := by
+      have h := P.resources_strictMono (mem_Ici.mpr le_rfl) (mem_Ici.mpr hεpos'.le) hεpos'
+      rwa [resources_zero P] at h
+    have hV1 : u (resources f δ ε) - u 0 ≤ value P ε - value P 0 := by
+      have hb := (bellman P hεpos'.le).2 0 le_rfl hFεpos.le
+      rw [sub_zero] at hb
+      have hz := value_zero P
+      have : value P 0 * (1 - β) = u 0 := by linarith
+      have hV0 : value P 0 = u 0 + β * value P 0 := hz
+      nlinarith [P.β_pos, P.β_lt_one]
+    have hu2 : deriv u a * (deriv f ε * ε) ≤ u (resources f δ ε) - u 0 := by
+      have hs := concave_support P.u_conc.concaveOn (mem_Ici.mpr hFεpos.le) (mem_Ici.mpr le_rfl)
+        (P.u_diff _ hFεpos).hasDerivAt
+      have hmono : deriv u a ≤ deriv u (resources f δ ε) :=
+        P.u_prime_anti.antitoneOn hFεpos hapos hFε.le
+      have hfε' : deriv f ε * ε ≤ resources f δ ε := by
+        have hs' := concave_support P.f_conc.concaveOn (mem_Ici.mpr hεpos'.le) (mem_Ici.mpr le_rfl)
+          (P.f_diff _ hεpos').hasDerivAt
+        rw [P.f_zero] at hs'
+        have := mul_nonneg (sub_nonneg.mpr P.δ_le_one) hεpos'.le
+        simp only [resources]
+        linarith
+      have hfpos : 0 ≤ deriv f ε * ε := mul_nonneg (P.f_prime_pos ε hεpos').le hεpos'.le
+      have h1 : deriv u a * (deriv f ε * ε) ≤ deriv u (resources f δ ε) * resources f δ ε :=
+        mul_le_mul hmono hfε' hfpos (P.u_prime_pos _ hFεpos).le
+      linarith
+    have hbf : 1 < β * deriv f ε := by
+      have := (div_lt_iff₀' P.β_pos).mp hfε
+      linarith
+    have hgain : deriv u a * ε < β * (deriv u a * (deriv f ε * ε)) := by
+      have := mul_lt_mul_of_pos_left hbf (mul_pos hua hεpos')
+      nlinarith
+    simp only [sub_zero] at hcmp
+    have := mul_le_mul_of_nonneg_left (hu2.trans hV1) P.β_pos.le
+    linarith
+  · -- consumption is positive
+    by_contra hle
+    push Not at hle
+    have hy : y = resources f δ x := le_antisymm hyF hle
+    subst hy
+    set Y := resources f δ x
+    set S := 2 * (value P Y - value P 0) / Y
+    obtain ⟨ε, hε⟩ := ((eventually_mem_nhdsWithin : ∀ᶠ x in 𝓝[>] (0 : ℝ), x ∈ Ioi 0).and
+      ((P.u_inada0.eventually (eventually_gt_atTop (β * S))).and
+      (Ioo_mem_nhdsGT (half_pos hFx) : ∀ᶠ x in 𝓝[>] (0 : ℝ), x ∈ Ioo 0 (Y / 2)))).exists
+    obtain ⟨hεpos, huε, hεY⟩ := hε
+    have hεpos' : (0 : ℝ) < ε := hεpos
+    have hYε : Y / 2 < Y - ε := by linarith [hεY.2]
+    have hcmp := hmax (Y - ε) (by linarith) (by linarith)
+    rw [sub_self, show Y - (Y - ε) = ε by ring] at hcmp
+    -- `u(ε) - u(0) ≥ u'(ε) ε`
+    have hu : deriv u ε * ε ≤ u ε - u 0 := by
+      have hs := concave_support P.u_conc.concaveOn (mem_Ici.mpr hεpos'.le) (mem_Ici.mpr le_rfl)
+        (P.u_diff _ hεpos').hasDerivAt
+      linarith
+    -- `V(Y) - V(Y - ε) ≤ S ε` by concavity and monotonicity
+    have hV : value P Y - value P (Y - ε) ≤ S * ε := by
+      have hslope := hVconc.concaveOn.slope_anti_adjacent (x := 0) (y := Y - ε) (z := Y)
+        (mem_Ici.mpr le_rfl) (mem_Ici.mpr hFx.le) (by linarith) (by linarith)
+      rw [show Y - (Y - ε) = ε by ring, div_le_div_iff₀ hεpos' (by linarith : (0 : ℝ) < Y - ε - 0),
+        sub_zero] at hslope
+      have hmono : value P (Y - ε) ≤ value P Y :=
+        hVmono.monotoneOn (mem_Ici.mpr (by linarith)) (mem_Ici.mpr hFx.le) (by linarith)
+      have hV0 : value P 0 ≤ value P (Y - ε) :=
+        hVmono.monotoneOn (mem_Ici.mpr le_rfl) (mem_Ici.mpr (by linarith)) (by linarith)
+      have hS : (value P (Y - ε) - value P 0) / (Y - ε) ≤ S := by
+        rw [div_le_iff₀ (by linarith)]
+        simp only [S]
+        rw [div_mul_eq_mul_div, le_div_iff₀ hFx]
+        nlinarith
+      have h2 : (value P Y - value P (Y - ε)) * (Y - ε) ≤
+          (value P (Y - ε) - value P 0) * ε := hslope
+      have h3 := (div_le_iff₀ (by linarith : (0 : ℝ) < Y - ε)).mp hS
+      nlinarith
+    have hgain : β * S * ε < deriv u ε * ε := mul_lt_mul_of_pos_right huε hεpos'
+    have := mul_le_mul_of_nonneg_left hV P.β_pos.le
+    linarith
+
+theorem Primitives.resources_pos (P : Primitives f u β δ) {k : ℝ} (hk : 0 < k) :
+    0 < resources f δ k := by
+  have h := P.resources_strictMono (mem_Ici.mpr le_rfl) (mem_Ici.mpr hk.le) hk
+  rwa [resources_zero P] at h
+
+/-- An optimal path from positive capital keeps capital strictly positive and
+consumption strictly positive. -/
+theorem IsOptimal.interior (P : Primitives f u β δ) {x : ℝ} (hx : 0 < x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) (t : ℕ) :
+    0 < k t ∧ 0 < k (t + 1) ∧ 0 < consumption f δ k t := by
+  have hpos : ∀ t, 0 < k t := by
+    intro t
+    induction t with
+    | zero => rw [hk.1.1]; exact hx
+    | succ t ih =>
+      have hbell := hk.bellman_eq P hx.le t
+      exact (interior_choice P ih (hk.1.2 t).1 (hk.1.2 t).2 (fun z hz0 hzF => by
+        rw [← hbell]; exact (bellman P (hk.1.nonneg hx.le t)).2 z hz0 hzF)).1
+  refine ⟨hpos t, hpos (t + 1), ?_⟩
+  have hbell := hk.bellman_eq P hx.le t
+  have h := (interior_choice P (hpos t) (hk.1.2 t).1 (hk.1.2 t).2 (fun z hz0 hzF => by
+    rw [← hbell]; exact (bellman P (hk.1.nonneg hx.le t)).2 z hz0 hzF)).2
+  simp only [consumption]
+  linarith
+
+theorem hasDerivAt_resources (P : Primitives f u β δ) {k : ℝ} (hk : 0 < k) :
+    HasDerivAt (resources f δ) (deriv f k + (1 - δ)) k := by
+  have h1 : HasDerivAt (fun y => f y + (1 - δ) * y) (deriv f k + (1 - δ) * 1) k :=
+    (P.f_diff k hk).hasDerivAt.add ((hasDerivAt_id' k).const_mul (1 - δ))
+  rw [mul_one] at h1
+  exact h1
+
+/-- The Euler equation along an optimal path. -/
+theorem IsOptimal.euler (P : Primitives f u β δ) {x : ℝ} (hx : 0 < x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) (t : ℕ) :
+    deriv u (consumption f δ k t) =
+      β * deriv u (consumption f δ k (t + 1)) * (deriv f (k (t + 1)) + (1 - δ)) := by
+  obtain ⟨hkt, hkt1, hct⟩ := hk.interior P hx t
+  obtain ⟨-, -, hct1⟩ := hk.interior P hx (t + 1)
+  set ψ : ℝ → ℝ := fun y => u (resources f δ (k t) - y) +
+    β * (u (resources f δ y - k (t + 2)) + β * value P (k (t + 2)))
+  have hct' : 0 < resources f δ (k t) - k (t + 1) := hct
+  have hct1' : 0 < resources f δ (k (t + 1)) - k (t + 2) := hct1
+  -- `ψ` has a local maximum at `k (t + 1)`
+  have hloc : IsLocalMax ψ (k (t + 1)) := by
+    have hFc : ContinuousAt (resources f δ) (k (t + 1)) :=
+      (hasDerivAt_resources P hkt1).continuousAt
+    have hnear : ∀ᶠ y in 𝓝 (k (t + 1)), 0 < y ∧ y < resources f δ (k t) ∧
+        k (t + 2) < resources f δ y := by
+      refine (lt_mem_nhds hkt1).and
+        ((gt_mem_nhds (by linarith : k (t + 1) < resources f δ (k t))).and ?_)
+      exact hFc.eventually (lt_mem_nhds (by linarith : k (t + 2) < resources f δ (k (t + 1))))
+    filter_upwards [hnear] with y hy
+    obtain ⟨hypos, hyF, hy2⟩ := hy
+    have hbt := hk.bellman_eq P hx.le t
+    have hbt1 := hk.bellman_eq P hx.le (t + 1)
+    have hin1 := (bellman P hypos.le).2 (k (t + 2)) (hk.1.2 (t + 1)).1 hy2.le
+    have hin0 := (bellman P (hk.1.nonneg hx.le t)).2 y hypos.le hyF.le
+    have := mul_le_mul_of_nonneg_left hin1 P.β_pos.le
+    simp only [ψ]
+    rw [show t + 1 + 1 = t + 2 by ring] at hbt1
+    have hbt1' : β * value P (k (t + 1)) = β * (u (resources f δ (k (t + 1)) - k (t + 2)) +
+        β * value P (k (t + 2))) := by rw [hbt1]
+    linarith
+  -- its derivative at `k (t + 1)`
+  have hd1 : HasDerivAt (fun y => u (resources f δ (k t) - y))
+      (deriv u (resources f δ (k t) - k (t + 1)) * (-1)) (k (t + 1)) :=
+    (P.u_diff _ hct').hasDerivAt.comp (k (t + 1)) ((hasDerivAt_id (k (t + 1))).const_sub _)
+  have hd2 : HasDerivAt (fun y => u (resources f δ y - k (t + 2)))
+      (deriv u (resources f δ (k (t + 1)) - k (t + 2)) * (deriv f (k (t + 1)) + (1 - δ)))
+      (k (t + 1)) :=
+    (P.u_diff _ hct1').hasDerivAt.comp (k (t + 1)) ((hasDerivAt_resources P hkt1).sub_const _)
+  have hd := hd1.add ((hd2.add_const (β * value P (k (t + 2)))).const_mul β)
+  have h0 := hloc.hasDerivAt_eq_zero hd
+  have hc0 : consumption f δ k t = resources f δ (k t) - k (t + 1) := rfl
+  have hc1 : consumption f δ k (t + 1) = resources f δ (k (t + 1)) - k (t + 2) := rfl
+  rw [hc0, hc1]
+  linarith
+
+end RamseyCassKoopmans.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# The policy function and global dynamics of the discrete Ramsey–Cass model
+
+* `policy`: next period's capital `g(x)` on the optimal path from `x`;
+  `IsOptimal.succ_eq_policy`: every optimal path follows `k(t+1) = g(k(t))`.
+* `policy_strictMono`: `g` is strictly increasing (increasing differences of
+  `u(F(x) - y)` in `(x, y)`; strictness from the Euler equation).
+* `existsUnique_steady`, `steady`: the unique positive `k*` with
+  `β (f'(k*) + 1 - δ) = 1`.
+* `IsOptimal.tendsto`: every optimal path from positive capital converges to `k*`;
+  `IsOptimal.dynamics_below`, `IsOptimal.dynamics_above`: strictly monotonically,
+  with consumption moving in the same direction, and never crossing `k*`.
+* `consumptionPolicy_strictMono`, `IsOptimal.capital_lt`, `IsOptimal.consumption_lt`,
+  `IsOptimal.absolute_convergence`: consumption is strictly increasing in capital,
+  optimal paths of identical economies never cross, and they converge to each other.
+-/
+
+open Set Filter
+open scoped Topology
+
+namespace RamseyCassKoopmans.DiscreteTime
+
+variable {f u : ℝ → ℝ} {β δ : ℝ}
+
+/-- Shifting an interval right lowers the increment of a strictly concave function. -/
+theorem shift_increment_lt (P : Primitives f u β δ) {a b Δ : ℝ} (ha : 0 ≤ a) (hab : a < b)
+    (hΔ : 0 < Δ) : u (b + Δ) - u (a + Δ) < u b - u a := by
+  have hs1 := P.u_conc.secant_strict_mono (a := a) (x := b) (y := b + Δ) (mem_Ici.mpr ha)
+    (mem_Ici.mpr (by linarith)) (mem_Ici.mpr (by linarith)) (ne_of_gt hab)
+    (by linarith) (by linarith)
+  have hs2 := P.u_conc.secant_strict_mono (a := b + Δ) (x := a) (y := a + Δ)
+    (mem_Ici.mpr (by linarith)) (mem_Ici.mpr ha) (mem_Ici.mpr (by linarith)) (by linarith)
+    (by linarith) (by linarith)
+  have hL : 0 < b - a := sub_pos.mpr hab
+  have e1 : (u (a + Δ) - u (b + Δ)) / (a + Δ - (b + Δ)) = (u (b + Δ) - u (a + Δ)) / (b - a) := by
+    rw [show a + Δ - (b + Δ) = -(b - a) by ring, div_neg, ← neg_div]
+    ring_nf
+  have e2 : (u a - u (b + Δ)) / (a - (b + Δ)) = (u (b + Δ) - u a) / (b + Δ - a) := by
+    rw [show a - (b + Δ) = -(b + Δ - a) by ring, div_neg, ← neg_div]
+    ring_nf
+  rw [e1, e2] at hs2
+  have h := hs2.trans hs1
+  rwa [div_lt_div_iff_of_pos_right hL] at h
+
+/-- Next period's capital chosen from `x`. -/
+noncomputable def policy (P : Primitives f u β δ) (x : ℝ) : ℝ :=
+  if hx : 0 ≤ x then optimalPath P hx 1 else 0
+
+theorem policy_eq (P : Primitives f u β δ) {x : ℝ} (hx : 0 ≤ x) :
+    policy P x = optimalPath P hx 1 := by
+  simp only [policy, hx, ↓reduceDIte]
+
+/-- Every optimal path follows the policy. -/
+theorem IsOptimal.succ_eq_policy (P : Primitives f u β δ) {x : ℝ} (hx : 0 ≤ x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) (t : ℕ) : k (t + 1) = policy P (k t) := by
+  have hkt := hk.1.nonneg hx t
+  have hs := hk.shift P hx t
+  have heq := optimal_unique P hkt hs.1 hs.2
+  rw [policy_eq P hkt]
+  exact congrFun heq 1
+
+/-- The Bellman equation at the policy, with its feasibility. -/
+theorem bellman_policy (P : Primitives f u β δ) {x : ℝ} (hx : 0 ≤ x) :
+    value P x = u (resources f δ x - policy P x) + β * value P (policy P x) ∧
+      0 ≤ policy P x ∧ policy P x ≤ resources f δ x := by
+  obtain ⟨hk, -⟩ := optimalPath_spec P hx
+  rw [policy_eq P hx]
+  exact ⟨(bellman P hx).1, (hk.2 0).1, (hk.2 0).2.trans_eq (congrArg (resources f δ) hk.1)⟩
+
+/-- From `x > 0`, next capital is interior and the Euler equation holds at date zero. -/
+theorem policy_interior (P : Primitives f u β δ) {x : ℝ} (hx : 0 < x) :
+    0 < policy P x ∧ policy P x < resources f δ x ∧
+      deriv u (resources f δ x - policy P x) =
+        β * deriv u (resources f δ (policy P x) - policy P (policy P x)) *
+          (deriv f (policy P x) + (1 - δ)) := by
+  have hk := isOptimal_optimalPath P hx.le
+  obtain ⟨-, h1, hc⟩ := hk.interior P hx 0
+  have he := hk.euler P hx 0
+  have hs0 := hk.succ_eq_policy P hx.le 0
+  have hs1 := hk.succ_eq_policy P hx.le 1
+  have h0 : optimalPath P hx.le 0 = x := hk.1.1
+  simp only [consumption, zero_add] at hc he h1 hs0 hs1
+  rw [h0] at hs0 hc he
+  rw [hs0] at h1 hc he hs1
+  rw [hs1] at he
+  exact ⟨h1, by linarith, he⟩
+
+/-- The policy is strictly increasing. -/
+theorem policy_strictMono (P : Primitives f u β δ) : StrictMonoOn (policy P) (Ioi 0) := by
+  intro x hx x' hx' hxx
+  have hx0 : (0 : ℝ) < x := hx
+  have hx0' : (0 : ℝ) < x' := hx'
+  obtain ⟨-, hy0, hyF⟩ := bellman_policy P hx0.le
+  obtain ⟨-, hy0', hyF'⟩ := bellman_policy P hx0'.le
+  have hFF := P.resources_strictMono (mem_Ici.mpr hx0.le) (mem_Ici.mpr hx0'.le) hxx
+  have hweak : policy P x ≤ policy P x' := by
+    by_contra hlt
+    push Not at hlt
+    have h1 := (bellman P hx0.le).2 (policy P x') hy0' (hlt.le.trans hyF)
+    have h2 := (bellman P hx0'.le).2 (policy P x) hy0 (hyF.trans hFF.le)
+    have hb1 := (bellman_policy P hx0.le).1
+    have hb2 := (bellman_policy P hx0'.le).1
+    have hinc := shift_increment_lt P (a := resources f δ x - policy P x)
+      (b := resources f δ x - policy P x') (Δ := resources f δ x' - resources f δ x)
+      (sub_nonneg.mpr hyF) (by linarith) (by linarith)
+    rw [show resources f δ x - policy P x' + (resources f δ x' - resources f δ x) =
+        resources f δ x' - policy P x' by ring,
+      show resources f δ x - policy P x + (resources f δ x' - resources f δ x) =
+        resources f δ x' - policy P x by ring] at hinc
+    linarith
+  rcases lt_or_eq_of_le hweak with hlt | heq
+  · exact hlt
+  · -- equal choices contradict the two Euler equations
+    exfalso
+    obtain ⟨hp, hpF, he⟩ := policy_interior P hx0
+    obtain ⟨-, hpF', he'⟩ := policy_interior P hx0'
+    rw [← heq] at he' hpF'
+    have hu : deriv u (resources f δ x - policy P x) = deriv u (resources f δ x' - policy P x) := by
+      rw [he, he']
+    have hc : 0 < resources f δ x - policy P x := by linarith
+    have hc' : 0 < resources f δ x' - policy P x := by linarith
+    have := P.u_prime_anti.injOn hc hc' hu
+    linarith
+
+theorem Primitives.target_pos (P : Primitives f u β δ) : 0 < 1 / β - (1 - δ) := by
+  have h1 : 1 < 1 / β := by rw [lt_div_iff₀ P.β_pos]; linarith [P.β_lt_one]
+  linarith [P.δ_pos]
+
+theorem Primitives.existsUnique_steady (P : Primitives f u β δ) :
+    ∃! k : ℝ, 0 < k ∧ deriv f k = 1 / β - (1 - δ) :=
+  existsUnique_positive_root_of_inada (deriv f) _ P.target_pos P.f_prime_cont
+    (production_deriv_strictAnti f P.f_conc P.f_diff) P.f_inada0 P.f_inadaTop
+
+/-- The steady state: `β (f'(k*) + 1 - δ) = 1`. -/
+noncomputable def steady (P : Primitives f u β δ) : ℝ :=
+  Classical.choose P.existsUnique_steady.exists
+
+theorem steady_spec (P : Primitives f u β δ) :
+    0 < steady P ∧ deriv f (steady P) = 1 / β - (1 - δ) :=
+  Classical.choose_spec P.existsUnique_steady.exists
+
+theorem steady_euler (P : Primitives f u β δ) : β * (deriv f (steady P) + (1 - δ)) = 1 := by
+  rw [(steady_spec P).2]
+  field_simp [P.β_pos.ne']
+  ring
+
+/-- Steady-state consumption `c* = F(k*) - k*` is positive. -/
+theorem steady_consumption_pos (P : Primitives f u β δ) :
+    0 < resources f δ (steady P) - steady P := by
+  obtain ⟨hk, hd⟩ := steady_spec P
+  have hgap := marginal_product_times_capital_lt_output f _ P.f_conc P.f_zero hk (P.f_diff _ hk)
+  rw [hd] at hgap
+  have h1 : 1 < 1 / β := by rw [lt_div_iff₀ P.β_pos]; linarith [P.β_lt_one]
+  have : (1 - (1 - δ)) * steady P < (1 / β - (1 - δ)) * steady P :=
+    mul_lt_mul_of_pos_right (by linarith) hk
+  simp only [resources]
+  nlinarith
+
+theorem hasDerivAt_resources_pos (P : Primitives f u β δ) {k : ℝ} (hk : 0 < k) :
+    0 < deriv f k + (1 - δ) := by
+  have := P.f_prime_pos k hk
+  linarith [P.δ_le_one]
+
+/-- An optimal path is monotone. -/
+theorem IsOptimal.monotone_or_antitone (P : Primitives f u β δ) {x : ℝ} (hx : 0 < x)
+    {k : ℕ → ℝ} (hk : IsOptimal f u β δ x k) :
+    (k 0 ≤ k 1 → Monotone k) ∧ (k 1 ≤ k 0 → Antitone k) := by
+  have hpos : ∀ t, 0 < k t := fun t => (hk.interior P hx t).1
+  have hsucc := hk.succ_eq_policy P hx.le
+  constructor
+  · intro h01
+    apply monotone_nat_of_le_succ
+    intro t
+    induction t with
+    | zero => exact h01
+    | succ t ih =>
+      calc k (t + 1) = policy P (k t) := hsucc t
+        _ ≤ policy P (k (t + 1)) := (policy_strictMono P).monotoneOn (hpos t) (hpos (t + 1)) ih
+        _ = k (t + 1 + 1) := (hsucc (t + 1)).symm
+  · intro h10
+    apply antitone_nat_of_succ_le
+    intro t
+    induction t with
+    | zero => exact h10
+    | succ t ih =>
+      calc k (t + 1 + 1) = policy P (k (t + 1)) := hsucc (t + 1)
+        _ ≤ policy P (k t) := (policy_strictMono P).monotoneOn (hpos (t + 1)) (hpos t) ih
+        _ = k (t + 1) := (hsucc t).symm
+
+/-- Every optimal path from positive capital converges to the steady state. -/
+theorem IsOptimal.tendsto (P : Primitives f u β δ) {x : ℝ} (hx : 0 < x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) : Tendsto k atTop (𝓝 (steady P)) := by
+  have hpos : ∀ t, 0 < k t := fun t => (hk.interior P hx t).1
+  have hcpos : ∀ t, 0 < consumption f δ k t := fun t => (hk.interior P hx t).2.2
+  have hbd : ∀ t, k t ≤ bound P x := fun t => hk.1.le_bound P hx.le t
+  obtain ⟨hmono, hanti⟩ := hk.monotone_or_antitone P hx
+  -- the limit
+  obtain ⟨L, hL⟩ : ∃ L, Tendsto k atTop (𝓝 L) := by
+    rcases le_total (k 0) (k 1) with h | h
+    · exact ⟨_, tendsto_atTop_ciSup (hmono h) ⟨bound P x, by rintro _ ⟨t, rfl⟩; exact hbd t⟩⟩
+    · exact ⟨_, tendsto_atTop_ciInf (hanti h) ⟨0, by rintro _ ⟨t, rfl⟩; exact (hpos t).le⟩⟩
+  have hL0 : 0 ≤ L := ge_of_tendsto' hL (fun t => (hpos t).le)
+  have hshift : Tendsto (fun t => k (t + 1)) atTop (𝓝 L) := hL.comp (tendsto_add_atTop_nat 1)
+  have hFcont : ContinuousWithinAt (resources f δ) (Ici 0) L := P.resources_cont L hL0
+  have hFk : Tendsto (fun t => resources f δ (k t)) atTop (𝓝 (resources f δ L)) :=
+    hFcont.tendsto.comp (tendsto_nhdsWithin_iff.mpr ⟨hL, Eventually.of_forall
+      (fun t => mem_Ici.mpr (hpos t).le)⟩)
+  have hc : Tendsto (consumption f δ k) atTop (𝓝 (resources f δ L - L)) := hFk.sub hshift
+  have hLF : L ≤ resources f δ L := by
+    have h := le_of_tendsto_of_tendsto hshift hFk (Eventually.of_forall (fun t => (hk.1.2 t).2))
+    exact h
+  obtain ⟨hks, hkd⟩ := steady_spec P
+  have hr := P.target_pos
+  -- case `L = 0` is impossible
+  rcases hL0.eq_or_lt with hL00 | hLpos
+  · exfalso
+    subst hL00
+    have hk0 : Tendsto (fun t => k (t + 1)) atTop (𝓝[>] 0) :=
+      tendsto_nhdsWithin_iff.mpr ⟨hshift, Eventually.of_forall (fun t => hpos (t + 1))⟩
+    have hbig := (P.f_inada0.comp hk0).eventually (eventually_gt_atTop (1 / β - (1 - δ)))
+    obtain ⟨T, hT⟩ := eventually_atTop.mp hbig
+    -- consumption rises from `T` on
+    have hrise : ∀ t, T ≤ t → consumption f δ k t < consumption f δ k (t + 1) := by
+      intro t ht
+      have he := hk.euler P hx t
+      have hg : 1 < β * (deriv f (k (t + 1)) + (1 - δ)) := by
+        have h := hT t ht
+        simp only [Function.comp_apply] at h
+        have := mul_lt_mul_of_pos_left h P.β_pos
+        rw [mul_sub, mul_div_cancel₀ _ P.β_pos.ne'] at this
+        nlinarith
+      by_contra hle
+      push Not at hle
+      have hu := P.u_prime_anti.antitoneOn (hcpos (t + 1)) (hcpos t) hle
+      have hup := P.u_prime_pos _ (hcpos (t + 1))
+      have : deriv u (consumption f δ k (t + 1)) <
+          β * deriv u (consumption f δ k (t + 1)) * (deriv f (k (t + 1)) + (1 - δ)) := by
+        nlinarith
+      linarith
+    have hge : ∀ n, consumption f δ k T ≤ consumption f δ k (T + n) := by
+      intro n
+      induction n with
+      | zero => exact le_rfl
+      | succ n ih => exact ih.trans (hrise (T + n) (by omega)).le
+    rw [resources_zero P, sub_zero] at hc
+    have hev := (hc.eventually (gt_mem_nhds (hcpos T)))
+    obtain ⟨N, hN⟩ := eventually_atTop.mp hev
+    have := hN (T + N) (by omega)
+    have := hge N
+    linarith
+  -- case `F(L) = L`: consumption vanishes, contradicted by jumping to `k*`
+  rcases lt_or_eq_of_le hLF with hFL | hFL
+  · -- `F(L) > L`: the Euler equation in the limit pins down `L = k*`
+    have hcL : 0 < resources f δ L - L := sub_pos.mpr hFL
+    have huc : ContinuousAt (deriv u) (resources f δ L - L) :=
+      P.u_prime_cont.continuousAt (Ioi_mem_nhds hcL)
+    have hfc : ContinuousAt (deriv f) L := P.f_prime_cont.continuousAt (Ioi_mem_nhds hLpos)
+    have hlhs := huc.tendsto.comp hc
+    have hrhs := ((huc.tendsto.comp (hc.comp (tendsto_add_atTop_nat 1))).const_mul β).mul
+      ((hfc.tendsto.comp hshift).add_const (1 - δ))
+    have heq : deriv u (resources f δ L - L) =
+        β * deriv u (resources f δ L - L) * (deriv f L + (1 - δ)) :=
+      tendsto_nhds_unique hlhs (hrhs.congr (fun t => by
+        simp only [Function.comp_apply]
+        exact (hk.euler P hx t).symm))
+    have hup := P.u_prime_pos _ hcL
+    have hβ : β * (deriv f L + (1 - δ)) = 1 := by
+      have : deriv u (resources f δ L - L) * (β * (deriv f L + (1 - δ)) - 1) = 0 := by
+        linear_combination -heq
+      rcases mul_eq_zero.mp this with h | h
+      · exact absurd h (ne_of_gt hup)
+      · linarith
+    have hfL : deriv f L = 1 / β - (1 - δ) := by
+      field_simp [P.β_pos.ne']
+      linarith
+    have := P.existsUnique_steady.unique ⟨hLpos, hfL⟩ ⟨hks, hkd⟩
+    rw [this] at hL
+    exact hL
+  · exfalso
+    -- consumption tends to zero and `L > k*`
+    rw [← hFL, sub_self] at hc
+    have hLks : steady P < L := by
+      have hfL : f L = δ * L := by simp only [resources] at hFL; linarith
+      have hgap := marginal_product_times_capital_lt_output f L P.f_conc P.f_zero hLpos
+        (P.f_diff L hLpos)
+      rw [hfL] at hgap
+      have hdL : deriv f L < δ := by nlinarith
+      by_contra hle
+      push Not at hle
+      have := (production_deriv_strictAnti f P.f_conc P.f_diff).antitoneOn hLpos hks hle
+      rw [hkd] at this
+      have h1 : 1 < 1 / β := by rw [lt_div_iff₀ P.β_pos]; linarith [P.β_lt_one]
+      linarith
+    have hcs0 := steady_consumption_pos P
+    set cs := resources f δ (steady P) - steady P with hcs_def
+    have hcs : 0 < cs := hcs0
+    obtain ⟨T, hT⟩ := eventually_atTop.mp ((hL.eventually (lt_mem_nhds hLks)).and
+      (hc.eventually (gt_mem_nhds (half_pos hcs))))
+    -- the alternative path from `k T`: move to `k*` and stay there
+    set z : ℕ → ℝ := fun s => if s = 0 then k T else steady P
+    have hFmono : resources f δ (steady P) ≤ resources f δ (k T) :=
+      P.resources_strictMono.monotoneOn (mem_Ici.mpr hks.le) (mem_Ici.mpr (hpos T).le)
+        (hT T le_rfl).1.le
+    have hFT : steady P < resources f δ (k T) := by linarith
+    have hz : Feasible f δ (k T) z := by
+      refine ⟨rfl, fun s => ⟨?_, ?_⟩⟩
+      · simp only [z, Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte]; exact hks.le
+      · rcases s with _ | s
+        · simp only [z, zero_add, one_ne_zero, ↓reduceIte]; exact hFT.le
+        · simp only [z, Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte]; linarith
+    have hzc : ∀ s, cs ≤ consumption f δ z s := by
+      intro s
+      rcases s with _ | s
+      · simp only [consumption, z, zero_add, one_ne_zero, ↓reduceIte]
+        linarith
+      · simp only [consumption, z, Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte]
+        exact le_rfl
+    have hsT := hk.shift P hx.le T
+    have hle := hsT.2 z hz
+    -- compare welfare termwise
+    have hshc : ∀ s, consumption f δ (fun s => k (T + s)) s ≤ cs / 2 := by
+      intro s
+      have := (hT (T + s) (by omega)).2
+      exact this.le
+    have hshnn : ∀ s, 0 ≤ consumption f δ (fun s => k (T + s)) s :=
+      fun s => (hsT.1.consumption_mem P (hpos T).le s).1
+    have hgeo := summable_geometric_of_lt_one P.β_pos.le P.β_lt_one
+    have h1 : welfare f u β δ (fun s => k (T + s)) ≤ ∑' s, β ^ s * u (cs / 2) :=
+      (hsT.1.summable P (hpos T).le).tsum_le_tsum (fun s => mul_le_mul_of_nonneg_left
+        (P.u_strictMono.monotoneOn (hshnn s) (mem_Ici.mpr (half_pos hcs).le) (hshc s))
+        (pow_pos P.β_pos s).le) (hgeo.mul_right _)
+    have h2 : ∑' s, β ^ s * u (cs / 2) < ∑' s, β ^ s * u cs :=
+      (hgeo.mul_right _).tsum_lt_tsum (i := 0) (fun s => mul_le_mul_of_nonneg_left
+        (P.u_strictMono.monotoneOn (mem_Ici.mpr (half_pos hcs).le) (mem_Ici.mpr hcs.le)
+          (half_le_self hcs.le)) (pow_pos P.β_pos s).le)
+        (by
+          simp only [pow_zero, one_mul]
+          exact P.u_strictMono (mem_Ici.mpr (half_pos hcs).le) (mem_Ici.mpr hcs.le)
+            (half_lt_self hcs))
+        (hgeo.mul_right _)
+    have h3 : ∑' s, β ^ s * u cs ≤ welfare f u β δ z :=
+      (hgeo.mul_right _).tsum_le_tsum (fun s => mul_le_mul_of_nonneg_left
+        (P.u_strictMono.monotoneOn (mem_Ici.mpr hcs.le)
+          (mem_Ici.mpr (hcs.le.trans (hzc s))) (hzc s)) (pow_pos P.β_pos s).le)
+        (hz.summable P (hpos T).le)
+    linarith
+
+/-- Consumption converges to `c* = F(k*) - k*`. -/
+theorem IsOptimal.consumption_tendsto (P : Primitives f u β δ) {x : ℝ} (hx : 0 < x)
+    {k : ℕ → ℝ} (hk : IsOptimal f u β δ x k) :
+    Tendsto (consumption f δ k) atTop (𝓝 (resources f δ (steady P) - steady P)) := by
+  have hL := hk.tendsto P hx
+  have hks := (steady_spec P).1
+  have hFk : Tendsto (fun t => resources f δ (k t)) atTop (𝓝 (resources f δ (steady P))) :=
+    (P.resources_cont _ (mem_Ici.mpr hks.le)).tendsto.comp (tendsto_nhdsWithin_iff.mpr
+      ⟨hL, Eventually.of_forall (fun t => mem_Ici.mpr (hk.interior P hx t).1.le)⟩)
+  exact hFk.sub (hL.comp (tendsto_add_atTop_nat 1))
+
+/-- Below the steady state an optimal path rises strictly toward `k*`, with rising
+consumption. -/
+theorem IsOptimal.dynamics_below (P : Primitives f u β δ) {x : ℝ} (hx : 0 < x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) (hlt : x < steady P) :
+    StrictMono k ∧ (∀ t, k t < steady P) ∧ StrictMono (consumption f δ k) := by
+  have hpos : ∀ t, 0 < k t := fun t => (hk.interior P hx t).1
+  have hL := hk.tendsto P hx
+  obtain ⟨hmono, hanti⟩ := hk.monotone_or_antitone P hx
+  have hsucc := hk.succ_eq_policy P hx.le
+  have h01 : k 0 < k 1 := by
+    by_contra hle
+    push Not at hle
+    have hlim := le_of_tendsto' hL (fun t => (hanti hle) (Nat.zero_le t))
+    rw [hk.1.1] at hlim
+    linarith
+  have hsm : StrictMono k := by
+    apply strictMono_nat_of_lt_succ
+    intro t
+    induction t with
+    | zero => exact h01
+    | succ t ih =>
+      calc k (t + 1) = policy P (k t) := hsucc t
+        _ < policy P (k (t + 1)) := policy_strictMono P (hpos t) (hpos (t + 1)) ih
+        _ = k (t + 1 + 1) := (hsucc (t + 1)).symm
+  have hbelow : ∀ t, k t < steady P := fun t =>
+    (hsm (Nat.lt_succ_self t)).trans_le (ge_of_tendsto hL (eventually_atTop.mpr
+      ⟨t + 1, fun s hs => hsm.monotone hs⟩))
+  refine ⟨hsm, hbelow, strictMono_nat_of_lt_succ (fun t => ?_)⟩
+  have he := hk.euler P hx t
+  have hks := steady_spec P
+  have hfd : deriv f (steady P) < deriv f (k (t + 1)) :=
+    (production_deriv_strictAnti f P.f_conc P.f_diff) (hpos (t + 1)) hks.1 (hbelow (t + 1))
+  have hg : 1 < β * (deriv f (k (t + 1)) + (1 - δ)) := by
+    have := steady_euler P
+    nlinarith [P.β_pos]
+  have hcpos := fun t => (hk.interior P hx t).2.2
+  by_contra hle
+  push Not at hle
+  have hu := P.u_prime_anti.antitoneOn (hcpos (t + 1)) (hcpos t) hle
+  have hup := P.u_prime_pos _ (hcpos (t + 1))
+  nlinarith
+
+/-- Above the steady state an optimal path falls strictly toward `k*`, with falling
+consumption. -/
+theorem IsOptimal.dynamics_above (P : Primitives f u β δ) {x : ℝ} (hx : 0 < x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) (hgt : steady P < x) :
+    StrictAnti k ∧ (∀ t, steady P < k t) ∧ StrictAnti (consumption f δ k) := by
+  have hpos : ∀ t, 0 < k t := fun t => (hk.interior P hx t).1
+  have hL := hk.tendsto P hx
+  obtain ⟨hmono, hanti⟩ := hk.monotone_or_antitone P hx
+  have hsucc := hk.succ_eq_policy P hx.le
+  have h10 : k 1 < k 0 := by
+    by_contra hle
+    push Not at hle
+    have hlim := ge_of_tendsto' hL (fun t => (hmono hle) (Nat.zero_le t))
+    rw [hk.1.1] at hlim
+    linarith
+  have hsa : StrictAnti k := by
+    apply strictAnti_nat_of_succ_lt
+    intro t
+    induction t with
+    | zero => exact h10
+    | succ t ih =>
+      calc k (t + 1 + 1) = policy P (k (t + 1)) := hsucc (t + 1)
+        _ < policy P (k t) := policy_strictMono P (hpos (t + 1)) (hpos t) ih
+        _ = k (t + 1) := (hsucc t).symm
+  have habove : ∀ t, steady P < k t := fun t =>
+    lt_of_le_of_lt (le_of_tendsto hL (eventually_atTop.mpr
+      ⟨t + 1, fun s hs => hsa.antitone hs⟩)) (hsa (Nat.lt_succ_self t))
+  refine ⟨hsa, habove, strictAnti_nat_of_succ_lt (fun t => ?_)⟩
+  have he := hk.euler P hx t
+  have hks := steady_spec P
+  have hfd : deriv f (k (t + 1)) < deriv f (steady P) :=
+    (production_deriv_strictAnti f P.f_conc P.f_diff) hks.1 (hpos (t + 1)) (habove (t + 1))
+  have hg : β * (deriv f (k (t + 1)) + (1 - δ)) < 1 := by
+    have := steady_euler P
+    nlinarith [P.β_pos]
+  have hcpos := fun t => (hk.interior P hx t).2.2
+  by_contra hle
+  push Not at hle
+  have hu := P.u_prime_anti.antitoneOn (hcpos t) (hcpos (t + 1)) hle
+  have hup := P.u_prime_pos _ (hcpos (t + 1))
+  have hFp := hasDerivAt_resources_pos P (hpos (t + 1))
+  nlinarith
+
+/-- Optimal paths of identical economies never cross. -/
+theorem IsOptimal.capital_lt (P : Primitives f u β δ) {x x' : ℝ} (hx : 0 < x)
+    {k k' : ℕ → ℝ} (hk : IsOptimal f u β δ x k) (hk' : IsOptimal f u β δ x' k') (hxx : x < x')
+    (t : ℕ) : k t < k' t := by
+  have hx' : 0 < x' := hx.trans hxx
+  induction t with
+  | zero => rw [hk.1.1, hk'.1.1]; exact hxx
+  | succ t ih =>
+    rw [hk.succ_eq_policy P hx.le t, hk'.succ_eq_policy P hx'.le t]
+    exact policy_strictMono P (hk.interior P hx t).1 (hk'.interior P hx' t).1 ih
+
+/-- Consumption as a function of capital. -/
+noncomputable def consumptionPolicy (P : Primitives f u β δ) (x : ℝ) : ℝ :=
+  resources f δ x - policy P x
+
+theorem IsOptimal.consumption_eq (P : Primitives f u β δ) {x : ℝ} (hx : 0 ≤ x) {k : ℕ → ℝ}
+    (hk : IsOptimal f u β δ x k) (t : ℕ) :
+    consumption f δ k t = consumptionPolicy P (k t) := by
+  simp only [consumption, consumptionPolicy, hk.succ_eq_policy P hx t]
+
+/-- Consumption is strictly increasing in capital. -/
+theorem consumptionPolicy_strictMono (P : Primitives f u β δ) :
+    StrictMonoOn (consumptionPolicy P) (Ioi 0) := by
+  intro x hx x' hx' hxx
+  have hx0 : (0 : ℝ) < x := hx
+  have hx0' : (0 : ℝ) < x' := hx'
+  set k := optimalPath P hx0.le
+  set k' := optimalPath P hx0'.le
+  have hk := isOptimal_optimalPath P hx0.le
+  have hk' := isOptimal_optimalPath P hx0'.le
+  have hc0 : consumption f δ k 0 = consumptionPolicy P x := by
+    rw [hk.consumption_eq P hx0.le 0, hk.1.1]
+  have hc0' : consumption f δ k' 0 = consumptionPolicy P x' := by
+    rw [hk'.consumption_eq P hx0'.le 0, hk'.1.1]
+  rw [← hc0, ← hc0']
+  by_contra hle
+  push Not at hle
+  have hcp := fun t => (hk.interior P hx0 t).2.2
+  have hcp' := fun t => (hk'.interior P hx0' t).2.2
+  have hkp := fun t => (hk.interior P hx0 t).1
+  have hkp' := fun t => (hk'.interior P hx0' t).1
+  -- the marginal-utility ratio `R t = u'(c'_t)/u'(c_t)` rises strictly
+  set R : ℕ → ℝ := fun t => deriv u (consumption f δ k' t) / deriv u (consumption f δ k t)
+  have hup := fun t => P.u_prime_pos _ (hcp t)
+  have hup' := fun t => P.u_prime_pos _ (hcp' t)
+  have hstep : ∀ t, R t < R (t + 1) := by
+    intro t
+    have he := hk.euler P hx0 t
+    have he' := hk'.euler P hx0' t
+    have hlt := hk.capital_lt P hx0 hk' hxx (t + 1)
+    have hfd : deriv f (k' (t + 1)) < deriv f (k (t + 1)) :=
+      (production_deriv_strictAnti f P.f_conc P.f_diff) (hkp (t + 1)) (hkp' (t + 1)) hlt
+    have hF := hasDerivAt_resources_pos P (hkp' (t + 1))
+    simp only [R]
+    rw [div_lt_div_iff₀ (hup t) (hup (t + 1)), he, he']
+    have := mul_pos (mul_pos P.β_pos (hup' (t + 1))) (hup (t + 1))
+    nlinarith
+  have hR0 : 1 ≤ R 0 := by
+    simp only [R]
+    rw [le_div_iff₀ (hup 0), one_mul]
+    exact P.u_prime_anti.antitoneOn (hcp' 0) (hcp 0) hle
+  have hR1 : ∀ t, R 1 ≤ R (t + 1) := by
+    intro t
+    induction t with
+    | zero => exact le_rfl
+    | succ t ih => exact ih.trans (hstep (t + 1)).le
+  -- but `R t → 1`
+  have hcs := steady_consumption_pos P
+  have huc : ContinuousAt (deriv u) (resources f δ (steady P) - steady P) :=
+    P.u_prime_cont.continuousAt (Ioi_mem_nhds hcs)
+  have hlim : Tendsto R atTop (𝓝 1) := by
+    have h := (huc.tendsto.comp (hk'.consumption_tendsto P hx0')).div
+      (huc.tendsto.comp (hk.consumption_tendsto P hx0)) (ne_of_gt (P.u_prime_pos _ hcs))
+    rw [div_self (ne_of_gt (P.u_prime_pos _ hcs))] at h
+    exact h
+  have hge : R 1 ≤ 1 := ge_of_tendsto' (hlim.comp (tendsto_add_atTop_nat 1))
+    (fun t => hR1 t)
+  have := hstep 0
+  linarith
+
+/-- The poorer economy consumes strictly less at every date. -/
+theorem IsOptimal.consumption_lt (P : Primitives f u β δ) {x x' : ℝ} (hx : 0 < x)
+    {k k' : ℕ → ℝ} (hk : IsOptimal f u β δ x k) (hk' : IsOptimal f u β δ x' k') (hxx : x < x')
+    (t : ℕ) : consumption f δ k t < consumption f δ k' t := by
+  have hx' : 0 < x' := hx.trans hxx
+  rw [hk.consumption_eq P hx.le t, hk'.consumption_eq P hx'.le t]
+  exact consumptionPolicy_strictMono P (hk.interior P hx t).1 (hk'.interior P hx' t).1
+    (hk.capital_lt P hx hk' hxx t)
+
+/-- Absolute convergence of identical economies. -/
+theorem IsOptimal.absolute_convergence (P : Primitives f u β δ) {x x' : ℝ} (hx : 0 < x)
+    (hx' : 0 < x') {k k' : ℕ → ℝ} (hk : IsOptimal f u β δ x k)
+    (hk' : IsOptimal f u β δ x' k') :
+    Tendsto (fun t => k' t - k t) atTop (𝓝 0) ∧
+      Tendsto (fun t => consumption f δ k' t - consumption f δ k t) atTop (𝓝 0) := by
+  constructor
+  · simpa only [sub_self] using (hk'.tendsto P hx').sub (hk.tendsto P hx)
+  · simpa only [sub_self] using (hk'.consumption_tendsto P hx').sub (hk.consumption_tendsto P hx)
+
+end RamseyCassKoopmans.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# The envelope theorem and steady-state comparative statics in discrete time
+
+* `value_hasDerivAt`: `V'(x) = u'(c₀) (f'(x) + 1 - δ)` at every `x > 0`, where
+  `c₀ = F(x) - g(x)`. As in continuous time the proof is the Clausen–Strub sandwich
+  (`clausen_strub_sandwich`): the lower support is `u(F(z) - g(x)) + β V(g(x))`
+  (keep next period's capital), and the upper support is the tangent line, which
+  bounds `V` from above by concavity (`concave_le_tangent_of_lower_support`).
+* `steady_strictMono_patience`, `steady_strictAnti_depreciation`: the steady state
+  rises with patience `β` and falls with depreciation `δ`.
+-/
+
+open Set Filter
+open scoped Topology
+
+namespace RamseyCassKoopmans.DiscreteTime
+
+variable {f u : ℝ → ℝ} {β δ : ℝ}
+
+/-- A concave function with a lower support touching it at an interior point, and
+differentiable there, lies below the support's tangent line. -/
+theorem concave_le_tangent_of_lower_support {V L : ℝ → ℝ} {x D : ℝ}
+    (hV : ConcaveOn ℝ (Ici 0) V) (hx : 0 < x) (hL : HasDerivAt L D x)
+    (hLV : ∀ᶠ z in 𝓝 x, L z ≤ V z) (hLx : L x = V x) {z : ℝ} (hz : 0 ≤ z) :
+    V z ≤ V x + D * (z - x) := by
+  rw [hasDerivAt_iff_tendsto_slope, ← nhdsLT_sup_nhdsGT, tendsto_sup] at hL
+  rcases lt_trichotomy z x with hzx | hzx | hzx
+  · -- slopes to the right of `x` are at most the slope over `[z, x]`
+    have hbound : D ≤ (V x - V z) / (x - z) := by
+      refine le_of_tendsto hL.2 ?_
+      filter_upwards [nhdsWithin_le_nhds hLV, self_mem_nhdsWithin] with w hw hwx
+      have hwx' : x < w := hwx
+      have hslope := hV.slope_anti_adjacent (x := z) (y := x) (z := w) (mem_Ici.mpr hz)
+        (mem_Ici.mpr (hx.le.trans hwx'.le)) hzx hwx'
+      rw [slope_def_field]
+      calc (L w - L x) / (w - x) ≤ (V w - V x) / (w - x) :=
+            div_le_div_of_nonneg_right (by linarith) (sub_nonneg.mpr hwx'.le)
+        _ ≤ (V x - V z) / (x - z) := hslope
+    rw [le_div_iff₀ (sub_pos.mpr hzx)] at hbound
+    linarith
+  · rw [hzx]; simp
+  · -- slopes to the left of `x` are at least the slope over `[x, z]`
+    have hbound : (V z - V x) / (z - x) ≤ D := by
+      refine ge_of_tendsto hL.1 ?_
+      filter_upwards [nhdsWithin_le_nhds hLV, self_mem_nhdsWithin,
+        nhdsWithin_le_nhds (lt_mem_nhds hx)] with w hw hwx hw0
+      have hwx' : w < x := hwx
+      have hslope := hV.slope_anti_adjacent (x := w) (y := x) (z := z) (mem_Ici.mpr hw0.le)
+        (mem_Ici.mpr hz) hwx' hzx
+      rw [slope_def_field]
+      calc (V z - V x) / (z - x) ≤ (V x - V w) / (x - w) := hslope
+        _ ≤ (L x - L w) / (x - w) :=
+            div_le_div_of_nonneg_right (by linarith) (sub_nonneg.mpr hwx'.le)
+        _ = (L w - L x) / (w - x) := by
+            rw [show L x - L w = -(L w - L x) by ring, show x - w = -(w - x) by ring,
+              neg_div_neg_eq]
+    rw [div_le_iff₀ (sub_pos.mpr hzx)] at hbound
+    linarith
+
+/-- The envelope theorem: `V'(x) = u'(c₀) (f'(x) + 1 - δ)`. -/
+theorem value_hasDerivAt (P : Primitives f u β δ) {x : ℝ} (hx : 0 < x) :
+    HasDerivAt (value P) (deriv u (resources f δ x - policy P x) * (deriv f x + (1 - δ))) x := by
+  obtain ⟨hy, hyF, -⟩ := policy_interior P hx
+  set y := policy P x
+  have hc : 0 < resources f δ x - y := by linarith
+  set D := deriv u (resources f δ x - y) * (deriv f x + (1 - δ))
+  set L : ℝ → ℝ := fun z => u (resources f δ z - y) + β * value P y
+  have hL : HasDerivAt L D x := by
+    exact ((P.u_diff _ hc).hasDerivAt.comp x
+      ((hasDerivAt_resources P hx).sub_const y)).add_const (β * value P y)
+  have hLx : L x = value P x := (bellman_policy P hx.le).1.symm
+  have hLV : ∀ᶠ z in 𝓝 x, L z ≤ value P z := by
+    have hFc : ContinuousAt (resources f δ) x := (hasDerivAt_resources P hx).continuousAt
+    filter_upwards [lt_mem_nhds hx, hFc.eventually (lt_mem_nhds hyF)] with z hz hzF
+    exact (bellman P hz.le).2 y hy.le hzF.le
+  have hH : HasDerivAt (fun z => value P x + D * (z - x)) D x := by
+    have := ((hasDerivAt_id x).sub_const x).const_mul D |>.const_add (value P x)
+    simpa only [id, mul_one] using this
+  refine clausen_strub_sandwich hL hH hLV ?_ hLx (by ring)
+  filter_upwards [lt_mem_nhds hx] with z hz
+  exact concave_le_tangent_of_lower_support (value_strictConcave P).concaveOn hx hL hLV hLx hz.le
+
+/-- A more patient economy has a larger steady state. -/
+theorem steady_strictMono_patience {β' : ℝ} (P : Primitives f u β δ)
+    (P' : Primitives f u β' δ) (hββ : β < β') : steady P < steady P' := by
+  obtain ⟨hk, hd⟩ := steady_spec P
+  obtain ⟨hk', hd'⟩ := steady_spec P'
+  by_contra hle
+  push Not at hle
+  have hanti := (production_deriv_strictAnti f P.f_conc P.f_diff).antitoneOn hk' hk hle
+  rw [hd, hd'] at hanti
+  have : 1 / β' < 1 / β := one_div_lt_one_div_of_lt P.β_pos hββ
+  linarith
+
+/-- Faster depreciation lowers the steady state. -/
+theorem steady_strictAnti_depreciation {δ' : ℝ} (P : Primitives f u β δ)
+    (P' : Primitives f u β δ') (hδδ : δ < δ') : steady P' < steady P := by
+  obtain ⟨hk, hd⟩ := steady_spec P
+  obtain ⟨hk', hd'⟩ := steady_spec P'
+  by_contra hle
+  push Not at hle
+  have hanti := (production_deriv_strictAnti f P.f_conc P.f_diff).antitoneOn hk hk' hle
+  rw [hd, hd'] at hanti
+  linarith
+
+end RamseyCassKoopmans.DiscreteTime
+
 #print axioms RamseyCassKoopmans.FeasiblePath
 #print axioms RamseyCassKoopmans.FeasiblePath.mk
 #print axioms RamseyCassKoopmans.FeasiblePath.capital
@@ -7266,3 +11344,257 @@ end RamseyCassKoopmans.KoopmansBoundary
 #print axioms RamseyCassKoopmans.KoopmansBoundary.production_prime_limit
 #print axioms RamseyCassKoopmans.KoopmansBoundary.capital_positive
 #print axioms RamseyCassKoopmans.KoopmansBoundary.no_convergent_euler_path
+#print axioms RamseyCassKoopmans.CassPrimitives
+#print axioms RamseyCassKoopmans.CassPrimitives.mk
+#print axioms RamseyCassKoopmans.CassPrimitives.d_pos
+#print axioms RamseyCassKoopmans.CassPrimitives.m_pos
+#print axioms RamseyCassKoopmans.CassPrimitives.f_conc
+#print axioms RamseyCassKoopmans.CassPrimitives.f_zero
+#print axioms RamseyCassKoopmans.CassPrimitives.f_diff
+#print axioms RamseyCassKoopmans.CassPrimitives.f_prime_cont
+#print axioms RamseyCassKoopmans.CassPrimitives.f_prime_pos
+#print axioms RamseyCassKoopmans.CassPrimitives.f_second
+#print axioms RamseyCassKoopmans.CassPrimitives.f_second_cont
+#print axioms RamseyCassKoopmans.CassPrimitives.f_inada0
+#print axioms RamseyCassKoopmans.CassPrimitives.f_inadaTop
+#print axioms RamseyCassKoopmans.CassPrimitives.U_conc
+#print axioms RamseyCassKoopmans.CassPrimitives.U_diff
+#print axioms RamseyCassKoopmans.CassPrimitives.U_prime_pos
+#print axioms RamseyCassKoopmans.CassPrimitives.U_second
+#print axioms RamseyCassKoopmans.CassPrimitives.U_second_cont
+#print axioms RamseyCassKoopmans.CassPrimitives.U_second_neg
+#print axioms RamseyCassKoopmans.CassPrimitives.U_inada0
+#print axioms RamseyCassKoopmans.CassPrimitives.U_cont
+#print axioms RamseyCassKoopmans.CassPrimitives.U_prime_cont
+#print axioms RamseyCassKoopmans.CassPrimitives.existsUnique_steady
+#print axioms RamseyCassKoopmans.cassSteady
+#print axioms RamseyCassKoopmans.cassSteady_spec
+#print axioms RamseyCassKoopmans.cassSteady_eq
+#print axioms RamseyCassKoopmans.CassPrimitives.exists_capacity
+#print axioms RamseyCassKoopmans.CassCertificate
+#print axioms RamseyCassKoopmans.CassCertificate.mk
+#print axioms RamseyCassKoopmans.CassCertificate.capital_pos
+#print axioms RamseyCassKoopmans.CassCertificate.investment_nonneg
+#print axioms RamseyCassKoopmans.CassCertificate.price_nonneg
+#print axioms RamseyCassKoopmans.CassCertificate.costate
+#print axioms RamseyCassKoopmans.CassCertificate.wedge
+#print axioms RamseyCassKoopmans.CassCertificate.slack
+#print axioms RamseyCassKoopmans.CassCertificate.transversality
+#print axioms RamseyCassKoopmans.CassCertificate.welfare
+#print axioms RamseyCassKoopmans.exists_certified
+#print axioms RamseyCassKoopmans.CassCertificate.isCassOptimal
+#print axioms RamseyCassKoopmans.CassCertificate.eq_of_isCassOptimal
+#print axioms RamseyCassKoopmans.CassCertificate.eq
+#print axioms RamseyCassKoopmans.FeasiblePath.shift
+#print axioms RamseyCassKoopmans.FeasiblePath.shift_capital
+#print axioms RamseyCassKoopmans.FeasiblePath.shift_consumption
+#print axioms RamseyCassKoopmans.FeasiblePath.shift_investment
+#print axioms RamseyCassKoopmans.hasWelfare_shift
+#print axioms RamseyCassKoopmans.CassCertificate.shift
+#print axioms RamseyCassKoopmans.CassCertificate.dynamics
+#print axioms RamseyCassKoopmans.CassCertificate.capital_bounds
+#print axioms RamseyCassKoopmans.cassSteadyConsumption
+#print axioms RamseyCassKoopmans.optimalPath
+#print axioms RamseyCassKoopmans.optimalPath_spec
+#print axioms RamseyCassKoopmans.policy
+#print axioms RamseyCassKoopmans.consumption_eq_policy
+#print axioms RamseyCassKoopmans.tail_eq_optimalPath
+#print axioms RamseyCassKoopmans.policy_steady
+#print axioms RamseyCassKoopmans.exists_hit_of_lt
+#print axioms RamseyCassKoopmans.exists_hit_of_gt
+#print axioms RamseyCassKoopmans.exists_shift_of_between
+#print axioms RamseyCassKoopmans.capital_lt_of_lt
+#print axioms RamseyCassKoopmans.policy_strictMono
+#print axioms RamseyCassKoopmans.consumption_lt_of_lt
+#print axioms RamseyCassKoopmans.absolute_convergence
+#print axioms RamseyCassKoopmans.hasDerivAt_of_comp_eq
+#print axioms RamseyCassKoopmans.tendsto_div_of_deriv_tendsto
+#print axioms RamseyCassKoopmans.riccati_algebra
+#print axioms RamseyCassKoopmans.riccati_tendsto
+#print axioms RamseyCassKoopmans.cassCurvature
+#print axioms RamseyCassKoopmans.cassSpeed
+#print axioms RamseyCassKoopmans.cassSteadyConsumption_pos
+#print axioms RamseyCassKoopmans.cassCurvature_pos
+#print axioms RamseyCassKoopmans.cassSpeed_pos
+#print axioms RamseyCassKoopmans.stable_root_eq
+#print axioms RamseyCassKoopmans.CassCertificate.eventually_positive_investment
+#print axioms RamseyCassKoopmans.FeasiblePath.hasDerivAt_capital'
+#print axioms RamseyCassKoopmans.CassCertificate.gap_sign
+#print axioms RamseyCassKoopmans.CassCertificate.hasDerivAt_consumption
+#print axioms RamseyCassKoopmans.slope_tendsto
+#print axioms RamseyCassKoopmans.speed_tendsto
+#print axioms RamseyCassKoopmans.capital_rate
+#print axioms RamseyCassKoopmans.consumption_rate
+#print axioms RamseyCassKoopmans.policy_hasDerivAt
+#print axioms RamseyCassKoopmans.CassPrimitives.existsUnique_marginal
+#print axioms RamseyCassKoopmans.marginalInverse
+#print axioms RamseyCassKoopmans.marginalInverse_spec
+#print axioms RamseyCassKoopmans.marginalInverse_eq
+#print axioms RamseyCassKoopmans.marginalInverse_deriv
+#print axioms RamseyCassKoopmans.cassSteady_eq_marginalInverse
+#print axioms RamseyCassKoopmans.marginalInverse_strictAnti
+#print axioms RamseyCassKoopmans.marginalInverse_hasDerivAt
+#print axioms RamseyCassKoopmans.steady_hasDerivAt_discount
+#print axioms RamseyCassKoopmans.steady_hasDerivAt_dilution
+#print axioms RamseyCassKoopmans.steadyConsumption_hasDerivAt_discount
+#print axioms RamseyCassKoopmans.steadyConsumption_hasDerivAt_dilution
+#print axioms RamseyCassKoopmans.steady_strictAnti_discount
+#print axioms RamseyCassKoopmans.steady_strictAnti_dilution'
+#print axioms RamseyCassKoopmans.steady_productivity
+#print axioms RamseyCassKoopmans.steady_strictMono_productivity
+#print axioms RamseyCassKoopmans.gap_exp_hasDerivAt
+#print axioms RamseyCassKoopmans.patience_rise
+#print axioms RamseyCassKoopmans.impatience_rise
+#print axioms RamseyCassKoopmans.exists_pos_bounds
+#print axioms RamseyCassKoopmans.CassPrimitives.f_cont
+#print axioms RamseyCassKoopmans.CassPrimitives.f_strictMono
+#print axioms RamseyCassKoopmans.CassPrimitives.U_strictMono
+#print axioms RamseyCassKoopmans.CassPrimitives.exists_welfare
+#print axioms RamseyCassKoopmans.optimalPath_welfare
+#print axioms RamseyCassKoopmans.value
+#print axioms RamseyCassKoopmans.value_spec
+#print axioms RamseyCassKoopmans.value_ge
+#print axioms RamseyCassKoopmans.value_eq
+#print axioms RamseyCassKoopmans.finite_horizon_comparison'
+#print axioms RamseyCassKoopmans.value_le_supergradient
+#print axioms RamseyCassKoopmans.FeasiblePath.mimic
+#print axioms RamseyCassKoopmans.value_strictMono
+#print axioms RamseyCassKoopmans.FeasiblePath.mix
+#print axioms RamseyCassKoopmans.value_strictConcave
+#print axioms RamseyCassKoopmans.clausen_strub_sandwich
+#print axioms RamseyCassKoopmans.mimicConsumption
+#print axioms RamseyCassKoopmans.integral_exp_neg_le
+#print axioms RamseyCassKoopmans.value_hasDerivAt
+#print axioms RamseyCassKoopmans.value_deriv_eq_marginal_utility
+#print axioms RamseyCassKoopmans.HouseholdPlan
+#print axioms RamseyCassKoopmans.HouseholdPlan.mk
+#print axioms RamseyCassKoopmans.HouseholdPlan.capital
+#print axioms RamseyCassKoopmans.HouseholdPlan.consumption
+#print axioms RamseyCassKoopmans.HouseholdPlan.investment
+#print axioms RamseyCassKoopmans.HouseholdPlan.capital_nonneg
+#print axioms RamseyCassKoopmans.HouseholdPlan.consumption_pos
+#print axioms RamseyCassKoopmans.HouseholdPlan.consumption_continuous
+#print axioms RamseyCassKoopmans.HouseholdPlan.investment_continuous
+#print axioms RamseyCassKoopmans.HouseholdPlan.investment_nonneg
+#print axioms RamseyCassKoopmans.HouseholdPlan.budget
+#print axioms RamseyCassKoopmans.HouseholdPlan.dynamics
+#print axioms RamseyCassKoopmans.CompetitiveEquilibrium
+#print axioms RamseyCassKoopmans.CompetitiveEquilibrium.mk
+#print axioms RamseyCassKoopmans.CompetitiveEquilibrium.capital_pos
+#print axioms RamseyCassKoopmans.CompetitiveEquilibrium.rental
+#print axioms RamseyCassKoopmans.CompetitiveEquilibrium.wage
+#print axioms RamseyCassKoopmans.CompetitiveEquilibrium.investment_nonneg
+#print axioms RamseyCassKoopmans.CompetitiveEquilibrium.welfare
+#print axioms RamseyCassKoopmans.CompetitiveEquilibrium.household_optimal
+#print axioms RamseyCassKoopmans.firm_optimal
+#print axioms RamseyCassKoopmans.second_welfare_theorem
+#print axioms RamseyCassKoopmans.first_welfare_theorem
+#print axioms RamseyCassKoopmans.equilibrium_eq_optimum
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.mk
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.β_pos
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.β_lt_one
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.δ_pos
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.δ_le_one
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.f_cont
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.f_zero
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.f_conc
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.f_diff
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.f_prime_pos
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.f_prime_cont
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.f_inada0
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.f_inadaTop
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.u_cont
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.u_conc
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.u_diff
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.u_prime_pos
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.u_prime_cont
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.u_inada0
+#print axioms RamseyCassKoopmans.DiscreteTime.resources
+#print axioms RamseyCassKoopmans.DiscreteTime.Feasible
+#print axioms RamseyCassKoopmans.DiscreteTime.consumption
+#print axioms RamseyCassKoopmans.DiscreteTime.welfare
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.f_strictMono
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.u_strictMono
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.resources_strictMono
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.resources_cont
+#print axioms RamseyCassKoopmans.DiscreteTime.resources_zero
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.resources_nonneg
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.exists_capacity
+#print axioms RamseyCassKoopmans.DiscreteTime.bound
+#print axioms RamseyCassKoopmans.DiscreteTime.bound_spec
+#print axioms RamseyCassKoopmans.DiscreteTime.Feasible.nonneg
+#print axioms RamseyCassKoopmans.DiscreteTime.Feasible.le_bound
+#print axioms RamseyCassKoopmans.DiscreteTime.Feasible.consumption_mem
+#print axioms RamseyCassKoopmans.DiscreteTime.exists_utility_bound
+#print axioms RamseyCassKoopmans.DiscreteTime.Feasible.summable
+#print axioms RamseyCassKoopmans.DiscreteTime.feasible_consume_all
+#print axioms RamseyCassKoopmans.DiscreteTime.feasibleSet
+#print axioms RamseyCassKoopmans.DiscreteTime.isCompact_feasibleSet
+#print axioms RamseyCassKoopmans.DiscreteTime.continuousOn_welfare
+#print axioms RamseyCassKoopmans.DiscreteTime.exists_optimal
+#print axioms RamseyCassKoopmans.DiscreteTime.optimalPath
+#print axioms RamseyCassKoopmans.DiscreteTime.optimalPath_spec
+#print axioms RamseyCassKoopmans.DiscreteTime.value
+#print axioms RamseyCassKoopmans.DiscreteTime.value_eq
+#print axioms RamseyCassKoopmans.DiscreteTime.welfare_le_value
+#print axioms RamseyCassKoopmans.DiscreteTime.tail
+#print axioms RamseyCassKoopmans.DiscreteTime.prepend
+#print axioms RamseyCassKoopmans.DiscreteTime.Feasible.tail
+#print axioms RamseyCassKoopmans.DiscreteTime.Feasible.prepend
+#print axioms RamseyCassKoopmans.DiscreteTime.consumption_tail
+#print axioms RamseyCassKoopmans.DiscreteTime.welfare_eq_head_add
+#print axioms RamseyCassKoopmans.DiscreteTime.consumption_prepend_zero
+#print axioms RamseyCassKoopmans.DiscreteTime.tail_prepend
+#print axioms RamseyCassKoopmans.DiscreteTime.welfare_prepend
+#print axioms RamseyCassKoopmans.DiscreteTime.tail_optimal
+#print axioms RamseyCassKoopmans.DiscreteTime.bellman
+#print axioms RamseyCassKoopmans.DiscreteTime.resources_mix
+#print axioms RamseyCassKoopmans.DiscreteTime.Feasible.mix
+#print axioms RamseyCassKoopmans.DiscreteTime.utility_mix
+#print axioms RamseyCassKoopmans.DiscreteTime.welfare_mix
+#print axioms RamseyCassKoopmans.DiscreteTime.optimal_unique
+#print axioms RamseyCassKoopmans.DiscreteTime.value_strictMono
+#print axioms RamseyCassKoopmans.DiscreteTime.value_strictConcave
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal
+#print axioms RamseyCassKoopmans.DiscreteTime.isOptimal_optimalPath
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.welfare_eq
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.tail
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.shift
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.bellman_eq
+#print axioms RamseyCassKoopmans.DiscreteTime.value_zero
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.u_prime_anti
+#print axioms RamseyCassKoopmans.DiscreteTime.interior_choice
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.resources_pos
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.interior
+#print axioms RamseyCassKoopmans.DiscreteTime.hasDerivAt_resources
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.euler
+#print axioms RamseyCassKoopmans.DiscreteTime.shift_increment_lt
+#print axioms RamseyCassKoopmans.DiscreteTime.policy
+#print axioms RamseyCassKoopmans.DiscreteTime.policy_eq
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.succ_eq_policy
+#print axioms RamseyCassKoopmans.DiscreteTime.bellman_policy
+#print axioms RamseyCassKoopmans.DiscreteTime.policy_interior
+#print axioms RamseyCassKoopmans.DiscreteTime.policy_strictMono
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.target_pos
+#print axioms RamseyCassKoopmans.DiscreteTime.Primitives.existsUnique_steady
+#print axioms RamseyCassKoopmans.DiscreteTime.steady
+#print axioms RamseyCassKoopmans.DiscreteTime.steady_spec
+#print axioms RamseyCassKoopmans.DiscreteTime.steady_euler
+#print axioms RamseyCassKoopmans.DiscreteTime.steady_consumption_pos
+#print axioms RamseyCassKoopmans.DiscreteTime.hasDerivAt_resources_pos
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.monotone_or_antitone
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.tendsto
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.consumption_tendsto
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.dynamics_below
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.dynamics_above
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.capital_lt
+#print axioms RamseyCassKoopmans.DiscreteTime.consumptionPolicy
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.consumption_eq
+#print axioms RamseyCassKoopmans.DiscreteTime.consumptionPolicy_strictMono
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.consumption_lt
+#print axioms RamseyCassKoopmans.DiscreteTime.IsOptimal.absolute_convergence
+#print axioms RamseyCassKoopmans.DiscreteTime.concave_le_tangent_of_lower_support
+#print axioms RamseyCassKoopmans.DiscreteTime.value_hasDerivAt
+#print axioms RamseyCassKoopmans.DiscreteTime.steady_strictMono_patience
+#print axioms RamseyCassKoopmans.DiscreteTime.steady_strictAnti_depreciation

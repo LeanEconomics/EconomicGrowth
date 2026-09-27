@@ -82,6 +82,18 @@ candidate welfare also holds for utility that takes negative values.
 The fresh source audit at this milestone checks 423 theorems and 576 audited
 declarations in 52 modules. See [the general proof](cass-general.md).
 
+## Extensions: policy, rate, comparative statics, value function, decentralization
+
+Time consistency, the policy function, non-crossing paths and absolute convergence;
+the exact local convergence rate and differentiability of the policy at the steady
+state (assuming `f''(k*) < 0`); comparative statics with derivatives and comparative
+dynamics of a change in patience; the value function's monotonicity, strict
+concavity and envelope theorem; and both welfare theorems for a competitive
+decentralization with irreversible investment. See
+[the extensions](cass-extensions.md). A discrete-time library covers the
+standard discrete model ([discrete time](discrete-time.md)). The fresh source audit
+now checks 581 theorems and 830 declarations in 65 modules.
+
 ## Koopmans boundary obstruction
 
 The general regular Euler existence claim under the extracted published scalar

@@ -1,6 +1,6 @@
 {
-  "checked_at_utc": "2026-09-21T22:05:32.768978+00:00",
-  "theorems": 423,
+  "checked_at_utc": "2026-09-27T05:15:44.373537+00:00",
+  "theorems": 581,
   "module_theorems": {
     "RamseyCassKoopmans/Model.lean": 5,
     "RamseyCassKoopmans/Algebra.lean": 12,
@@ -53,9 +53,22 @@
     "RamseyCassKoopmans/Hamiltonian.lean": 3,
     "RamseyCassKoopmans/KoopmansBoundaryEconomy.lean": 24,
     "RamseyCassKoopmans/KoopmansBoundaryCompetitor.lean": 7,
-    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean": 5
+    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean": 5,
+    "RamseyCassKoopmans/CassCertified.lean": 17,
+    "RamseyCassKoopmans/CassPolicy.lean": 11,
+    "RamseyCassKoopmans/RiccatiRate.lean": 4,
+    "RamseyCassKoopmans/CassRate.lean": 13,
+    "RamseyCassKoopmans/CassComparative.lean": 18,
+    "RamseyCassKoopmans/CassValue.lean": 13,
+    "RamseyCassKoopmans/CassEnvelope.lean": 4,
+    "RamseyCassKoopmans/CassDecentralization.lean": 4,
+    "DiscreteTime/Model.lean": 20,
+    "DiscreteTime/Bellman.lean": 16,
+    "DiscreteTime/Euler.lean": 12,
+    "DiscreteTime/Dynamics.lean": 22,
+    "DiscreteTime/Envelope.lean": 4
   },
-  "audited_declarations": 576,
+  "audited_declarations": 830,
   "declarations": [
     {
       "name": "RamseyCassKoopmans.FeasiblePath",
@@ -2936,6 +2949,1276 @@
       "name": "RamseyCassKoopmans.KoopmansBoundary.no_convergent_euler_path",
       "kind": "theorem",
       "module": "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives",
+      "kind": "structure",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.mk",
+      "kind": "constructor",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.d_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.m_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_conc",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_zero",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_diff",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_prime_cont",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_prime_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_second",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_second_cont",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_inada0",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_inadaTop",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.U_conc",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.U_diff",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.U_prime_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.U_second",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.U_second_cont",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.U_second_neg",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.U_inada0",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.U_cont",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.U_prime_cont",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.existsUnique_steady",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.cassSteady",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.cassSteady_spec",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.cassSteady_eq",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.exists_capacity",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate",
+      "kind": "structure",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.mk",
+      "kind": "constructor",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.capital_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.investment_nonneg",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.price_nonneg",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.costate",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.wedge",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.slack",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.transversality",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.welfare",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.exists_certified",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.isCassOptimal",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.eq_of_isCassOptimal",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.eq",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.shift",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.shift_capital",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.shift_consumption",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.shift_investment",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.hasWelfare_shift",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.shift",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.dynamics",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.capital_bounds",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassCertified.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.cassSteadyConsumption",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.optimalPath",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.optimalPath_spec",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.policy",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.consumption_eq_policy",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.tail_eq_optimalPath",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.policy_steady",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.exists_hit_of_lt",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.exists_hit_of_gt",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.exists_shift_of_between",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.capital_lt_of_lt",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.policy_strictMono",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.consumption_lt_of_lt",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.absolute_convergence",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassPolicy.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.hasDerivAt_of_comp_eq",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/RiccatiRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.tendsto_div_of_deriv_tendsto",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/RiccatiRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.riccati_algebra",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/RiccatiRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.riccati_tendsto",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/RiccatiRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.cassCurvature",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.cassSpeed",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.cassSteadyConsumption_pos",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.cassCurvature_pos",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.cassSpeed_pos",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.stable_root_eq",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.eventually_positive_investment",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.hasDerivAt_capital'",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.gap_sign",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassCertificate.hasDerivAt_consumption",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.slope_tendsto",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.speed_tendsto",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.capital_rate",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.consumption_rate",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.policy_hasDerivAt",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassRate.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.existsUnique_marginal",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.marginalInverse",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.marginalInverse_spec",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.marginalInverse_eq",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.marginalInverse_deriv",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.cassSteady_eq_marginalInverse",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.marginalInverse_strictAnti",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.marginalInverse_hasDerivAt",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.steady_hasDerivAt_discount",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.steady_hasDerivAt_dilution",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.steadyConsumption_hasDerivAt_discount",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.steadyConsumption_hasDerivAt_dilution",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.steady_strictAnti_discount",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.steady_strictAnti_dilution'",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.steady_productivity",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.steady_strictMono_productivity",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.gap_exp_hasDerivAt",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.patience_rise",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.impatience_rise",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassComparative.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.exists_pos_bounds",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_cont",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.f_strictMono",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.U_strictMono",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CassPrimitives.exists_welfare",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.optimalPath_welfare",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.value",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.value_spec",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.value_ge",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.value_eq",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.finite_horizon_comparison'",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.value_le_supergradient",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.mimic",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.value_strictMono",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.FeasiblePath.mix",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.value_strictConcave",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassValue.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.clausen_strub_sandwich",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassEnvelope.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.mimicConsumption",
+      "kind": "def",
+      "module": "RamseyCassKoopmans/CassEnvelope.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.integral_exp_neg_le",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassEnvelope.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.value_hasDerivAt",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassEnvelope.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.value_deriv_eq_marginal_utility",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassEnvelope.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan",
+      "kind": "structure",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.mk",
+      "kind": "constructor",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.capital",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.consumption",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.investment",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.capital_nonneg",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.consumption_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.consumption_continuous",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.investment_continuous",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.investment_nonneg",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.budget",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.HouseholdPlan.dynamics",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CompetitiveEquilibrium",
+      "kind": "structure",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CompetitiveEquilibrium.mk",
+      "kind": "constructor",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CompetitiveEquilibrium.capital_pos",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CompetitiveEquilibrium.rental",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CompetitiveEquilibrium.wage",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CompetitiveEquilibrium.investment_nonneg",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CompetitiveEquilibrium.welfare",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.CompetitiveEquilibrium.household_optimal",
+      "kind": "projection",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.firm_optimal",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.second_welfare_theorem",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.first_welfare_theorem",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.equilibrium_eq_optimum",
+      "kind": "theorem",
+      "module": "RamseyCassKoopmans/CassDecentralization.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives",
+      "kind": "structure",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.mk",
+      "kind": "constructor",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.\u03b2_pos",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.\u03b2_lt_one",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.\u03b4_pos",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.\u03b4_le_one",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.f_cont",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.f_zero",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.f_conc",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.f_diff",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.f_prime_pos",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.f_prime_cont",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.f_inada0",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.f_inadaTop",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.u_cont",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.u_conc",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.u_diff",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.u_prime_pos",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.u_prime_cont",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.u_inada0",
+      "kind": "projection",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.resources",
+      "kind": "def",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Feasible",
+      "kind": "def",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.consumption",
+      "kind": "def",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.welfare",
+      "kind": "def",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.f_strictMono",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.u_strictMono",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.resources_strictMono",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.resources_cont",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.resources_zero",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.resources_nonneg",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.exists_capacity",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.bound",
+      "kind": "def",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.bound_spec",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Feasible.nonneg",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Feasible.le_bound",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Feasible.consumption_mem",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.exists_utility_bound",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Feasible.summable",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.feasible_consume_all",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.feasibleSet",
+      "kind": "def",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.isCompact_feasibleSet",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.continuousOn_welfare",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.exists_optimal",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.optimalPath",
+      "kind": "def",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.optimalPath_spec",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.value",
+      "kind": "def",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.value_eq",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.welfare_le_value",
+      "kind": "theorem",
+      "module": "DiscreteTime/Model.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.tail",
+      "kind": "def",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.prepend",
+      "kind": "def",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Feasible.tail",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Feasible.prepend",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.consumption_tail",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.welfare_eq_head_add",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.consumption_prepend_zero",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.tail_prepend",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.welfare_prepend",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.tail_optimal",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.bellman",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.resources_mix",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Feasible.mix",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.utility_mix",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.welfare_mix",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.optimal_unique",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.value_strictMono",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.value_strictConcave",
+      "kind": "theorem",
+      "module": "DiscreteTime/Bellman.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal",
+      "kind": "def",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.isOptimal_optimalPath",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.welfare_eq",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.tail",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.shift",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.bellman_eq",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.value_zero",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.u_prime_anti",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.interior_choice",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.resources_pos",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.interior",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.hasDerivAt_resources",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.euler",
+      "kind": "theorem",
+      "module": "DiscreteTime/Euler.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.shift_increment_lt",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.policy",
+      "kind": "def",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.policy_eq",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.succ_eq_policy",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.bellman_policy",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.policy_interior",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.policy_strictMono",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.target_pos",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.Primitives.existsUnique_steady",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.steady",
+      "kind": "def",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.steady_spec",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.steady_euler",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.steady_consumption_pos",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.hasDerivAt_resources_pos",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.monotone_or_antitone",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.tendsto",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.consumption_tendsto",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.dynamics_below",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.dynamics_above",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.capital_lt",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.consumptionPolicy",
+      "kind": "def",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.consumption_eq",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.consumptionPolicy_strictMono",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.consumption_lt",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.IsOptimal.absolute_convergence",
+      "kind": "theorem",
+      "module": "DiscreteTime/Dynamics.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.concave_le_tangent_of_lower_support",
+      "kind": "theorem",
+      "module": "DiscreteTime/Envelope.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.value_hasDerivAt",
+      "kind": "theorem",
+      "module": "DiscreteTime/Envelope.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.steady_strictMono_patience",
+      "kind": "theorem",
+      "module": "DiscreteTime/Envelope.lean"
+    },
+    {
+      "name": "RamseyCassKoopmans.DiscreteTime.steady_strictAnti_depreciation",
+      "kind": "theorem",
+      "module": "DiscreteTime/Envelope.lean"
     }
   ],
   "full_build": "passed",
@@ -5824,6 +7107,1276 @@
       "propext",
       "Classical.choice",
       "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.d_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.m_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_conc": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_diff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_prime_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_prime_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_second": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_second_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_inada0": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_inadaTop": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.U_conc": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.U_diff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.U_prime_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.U_second": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.U_second_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.U_second_neg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.U_inada0": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.U_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.U_prime_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.existsUnique_steady": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.cassSteady": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.cassSteady_spec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.cassSteady_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.exists_capacity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.capital_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.investment_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.price_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.costate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.wedge": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.slack": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.transversality": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.welfare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.exists_certified": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.isCassOptimal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.eq_of_isCassOptimal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.shift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.shift_capital": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.shift_consumption": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.shift_investment": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.hasWelfare_shift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.shift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.dynamics": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.capital_bounds": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.cassSteadyConsumption": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.optimalPath": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.optimalPath_spec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.policy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.consumption_eq_policy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.tail_eq_optimalPath": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.policy_steady": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.exists_hit_of_lt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.exists_hit_of_gt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.exists_shift_of_between": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.capital_lt_of_lt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.policy_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.consumption_lt_of_lt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.absolute_convergence": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.hasDerivAt_of_comp_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.tendsto_div_of_deriv_tendsto": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.riccati_algebra": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.riccati_tendsto": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.cassCurvature": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.cassSpeed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.cassSteadyConsumption_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.cassCurvature_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.cassSpeed_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.stable_root_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.eventually_positive_investment": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.hasDerivAt_capital'": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.gap_sign": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassCertificate.hasDerivAt_consumption": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.slope_tendsto": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.speed_tendsto": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.capital_rate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.consumption_rate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.policy_hasDerivAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.existsUnique_marginal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.marginalInverse": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.marginalInverse_spec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.marginalInverse_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.marginalInverse_deriv": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.cassSteady_eq_marginalInverse": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.marginalInverse_strictAnti": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.marginalInverse_hasDerivAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.steady_hasDerivAt_discount": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.steady_hasDerivAt_dilution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.steadyConsumption_hasDerivAt_discount": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.steadyConsumption_hasDerivAt_dilution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.steady_strictAnti_discount": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.steady_strictAnti_dilution'": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.steady_productivity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.steady_strictMono_productivity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.gap_exp_hasDerivAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.patience_rise": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.impatience_rise": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.exists_pos_bounds": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.f_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.U_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CassPrimitives.exists_welfare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.optimalPath_welfare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.value": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.value_spec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.value_ge": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.value_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.finite_horizon_comparison'": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.value_le_supergradient": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.mimic": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.value_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.FeasiblePath.mix": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.value_strictConcave": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.clausen_strub_sandwich": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.mimicConsumption": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.integral_exp_neg_le": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.value_hasDerivAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.value_deriv_eq_marginal_utility": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.capital": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.consumption": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.investment": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.capital_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.consumption_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.consumption_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.investment_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.investment_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.budget": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.HouseholdPlan.dynamics": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CompetitiveEquilibrium": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CompetitiveEquilibrium.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CompetitiveEquilibrium.capital_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CompetitiveEquilibrium.rental": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CompetitiveEquilibrium.wage": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CompetitiveEquilibrium.investment_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CompetitiveEquilibrium.welfare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.CompetitiveEquilibrium.household_optimal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.firm_optimal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.second_welfare_theorem": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.first_welfare_theorem": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.equilibrium_eq_optimum": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.\u03b2_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.\u03b2_lt_one": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.\u03b4_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.\u03b4_le_one": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.f_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.f_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.f_conc": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.f_diff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.f_prime_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.f_prime_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.f_inada0": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.f_inadaTop": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.u_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.u_conc": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.u_diff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.u_prime_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.u_prime_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.u_inada0": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.resources": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Feasible": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.consumption": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.welfare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.f_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.u_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.resources_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.resources_cont": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.resources_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.resources_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.exists_capacity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.bound_spec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Feasible.nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Feasible.le_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Feasible.consumption_mem": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.exists_utility_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Feasible.summable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.feasible_consume_all": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.feasibleSet": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.isCompact_feasibleSet": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.continuousOn_welfare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.exists_optimal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.optimalPath": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.optimalPath_spec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.value": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.value_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.welfare_le_value": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.tail": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.prepend": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Feasible.tail": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Feasible.prepend": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.consumption_tail": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.welfare_eq_head_add": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.consumption_prepend_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.tail_prepend": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.welfare_prepend": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.tail_optimal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.bellman": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.resources_mix": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Feasible.mix": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.utility_mix": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.welfare_mix": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.optimal_unique": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.value_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.value_strictConcave": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.isOptimal_optimalPath": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.welfare_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.tail": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.shift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.bellman_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.value_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.u_prime_anti": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.interior_choice": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.resources_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.interior": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.hasDerivAt_resources": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.euler": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.shift_increment_lt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.policy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.policy_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.succ_eq_policy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.bellman_policy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.policy_interior": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.policy_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.target_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.Primitives.existsUnique_steady": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.steady": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.steady_spec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.steady_euler": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.steady_consumption_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.hasDerivAt_resources_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.monotone_or_antitone": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.tendsto": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.consumption_tendsto": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.dynamics_below": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.dynamics_above": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.capital_lt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.consumptionPolicy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.consumption_eq": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.consumptionPolicy_strictMono": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.consumption_lt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.IsOptimal.absolute_convergence": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.concave_le_tangent_of_lower_support": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.value_hasDerivAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.steady_strictMono_patience": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "RamseyCassKoopmans.DiscreteTime.steady_strictAnti_depreciation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
     ]
   },
   "source_sha256": {
@@ -5879,19 +8432,33 @@
     "RamseyCassKoopmans/KoopmansBoundaryEconomy.lean": "9ddc289d5ff834a25b270fcc6d8dd1ed87996b94365a364f2de136a73d2b0891",
     "RamseyCassKoopmans/KoopmansBoundaryCompetitor.lean": "5c78ed82b1babb062b1b5aea6fb457a2e56889b222584ca0007f7e52a60a12aa",
     "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean": "03e3cdf4dcac5ccfdee4e2645c0b3a13bf52093a6256e67044d8e1aac3d7aa2c",
-    "RamseyCassKoopmans.lean": "eb47aae1e325767e63047083b95037c5de09de78603959340beb3e2f62c4df8a",
+    "RamseyCassKoopmans/CassCertified.lean": "491c0bd77414590e2fbd5a662020e9bac5332cb63502d866fd523c1696609d38",
+    "RamseyCassKoopmans/CassPolicy.lean": "e2e956ae643ffc22de5c7d1eeb64cc3910bb0ff0fe6b03a8167893e6c8860408",
+    "RamseyCassKoopmans/RiccatiRate.lean": "b34a7c1e1f849fdf49583d6f8dc674f4bb16b7a787917aab48aa80b3b1a46eea",
+    "RamseyCassKoopmans/CassRate.lean": "3a63e61e37a175c63adafd61a552c6c602768243e663231ec7769bb177b96a1e",
+    "RamseyCassKoopmans/CassComparative.lean": "6abd38de19a10ed1d8eeecb70843b5170963174691f4f08976551f812419f00c",
+    "RamseyCassKoopmans/CassValue.lean": "08f926098c560f43df68b0ecaabf1c631daa9bddbd41e88fcce5a634a9d6a40f",
+    "RamseyCassKoopmans/CassEnvelope.lean": "3a778d436e9fce871b3eeb32659fc5b494933f224bd30ef0b0e7f3337528e121",
+    "RamseyCassKoopmans/CassDecentralization.lean": "7ea81b6451dff14acd8d8d2d8c3851612cd2f04c9f853f1ddec51531e9502b0c",
+    "DiscreteTime/Model.lean": "a2008f9386aba2a31e307415a5940fc692d99c82166e0aa592a56afa0c69c09f",
+    "DiscreteTime/Bellman.lean": "8695250665b0198e3c77b560af254e86854f34feb85c19fa9005d17ff4cd0d4c",
+    "DiscreteTime/Euler.lean": "1720dd6a0e976a809236deab495dfa13b1a0f24e5ad9daa991eece2a598980f9",
+    "DiscreteTime/Dynamics.lean": "dbc4fbd2e1ab98def72a0e15d00e74637fdec64f74a2e7959dfddb382676a5f9",
+    "DiscreteTime/Envelope.lean": "e907282cc0a73488b14b2160a1299532640be11dc15e2f43d90211942b86e588",
+    "RamseyCassKoopmans.lean": "0f71ad4883000c284eb3046b5539ec236ee8fe1e573ceaaac9434817ff7d5632",
+    "DiscreteTime.lean": "b6c5b37b391d1574548ec3a8ffc50e254e5b5b86aab15bab246446d0b9691f59",
     "lean-toolchain": "8733782dc070a99b312039cda424f601b80f3be6f6f512627da5ba25adc27632",
-    "lakefile.toml": "40c45c4c815d8d3a74fa7c798f01086e11af17b200f018ffb256c90e76aa0217",
+    "lakefile.toml": "127e61d8462ec6571fb4697a3efec1947fdc7f18829a8dc228cfa506137dea72",
     "lake-manifest.json": "1bb3337875efd2ba5d979d520cae76e4a23d176b42f4ee6f8e45df4f7da0170d",
-    "proof-manifest.json": "a4520b8ec76e2d177870aae93590f6b1eb9514e6bc882c4690169664ee2f33af",
-    "scripts/verify.py": "ed2ba44fa8c69fbadac9b8961728090a7f9f2de30a153395e1878432e2331265",
+    "proof-manifest.json": "52cb7c5d4fe192549eda0d5831b84e53302b08fd23c77f64315ed5cc15a4c0b1",
+    "scripts/verify.py": "470bd4cfe9005fe9b2d6eeee284e05c42e4faf75348e9609f1f2e846ce53b0d4",
     "scripts/verify_evidence.py": "75518db86e6a5a21996cc87d7fe2492da49ab9aa47170ea1b074094247446f1e",
     "scripts/check_theorydebugger.py": "0784c67bf6f1a2266900df9f3da4fabb85aaeb49f6b8f7fa2cb6681f1c55f626",
     "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c"
   },
-  "fresh_audit_sha256": "f862f1b083c74d9a9092b7e691aba82f0895d214f28d5fb7bf27abcd7f578ff2",
+  "fresh_audit_sha256": "a5da6ff21af1551999cff02b0054c2fc91a381aaf3920a40bab6e0edf6e12e5e",
   "lean_toolchain": "leanprover/lean4:v4.34.0",
-  "scope": "General positive-discount Cass constructed existence, capital and consumption monotonicity, convergence, eventual positive investment, finite candidate welfare, all-competitor asymptotic welfare dominance, and finite-welfare optimality/uniqueness from primitive Inada and C2 assumptions. Explicit square-root specialization. Certified obstruction to the regular convergent Euler characterization under Koopmans appendix scalar assumptions. Original undiscounted Ramsey and zero/negative-discount extensions are outside scope.",
+  "scope": "General positive-discount Cass constructed existence, capital and consumption monotonicity, convergence, eventual positive investment, finite candidate welfare, all-competitor asymptotic welfare dominance, and finite-welfare optimality/uniqueness from primitive Inada and C2 assumptions. Explicit square-root specialization. Certified obstruction to the regular convergent Euler characterization under Koopmans appendix scalar assumptions. Original undiscounted Ramsey and zero/negative-discount extensions are outside scope. A discrete-time library (DiscreteTime/) proves existence, uniqueness, the Bellman and Euler equations, the policy function, monotone convergence, and the envelope theorem for the discrete Ramsey-Cass model.",
   "source_provenance": null,
   "theorydebugger": {
     "cases": 24,
