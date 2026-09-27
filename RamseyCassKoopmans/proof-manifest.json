@@ -52,7 +52,15 @@
     "RamseyCassKoopmans/Hamiltonian.lean",
     "RamseyCassKoopmans/KoopmansBoundaryEconomy.lean",
     "RamseyCassKoopmans/KoopmansBoundaryCompetitor.lean",
-    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean"
+    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean",
+    "RamseyCassKoopmans/CassCertified.lean",
+    "RamseyCassKoopmans/CassPolicy.lean",
+    "RamseyCassKoopmans/RiccatiRate.lean",
+    "RamseyCassKoopmans/CassRate.lean",
+    "RamseyCassKoopmans/CassComparative.lean",
+    "RamseyCassKoopmans/CassValue.lean",
+    "RamseyCassKoopmans/CassEnvelope.lean",
+    "RamseyCassKoopmans/CassDecentralization.lean"
   ],
   "theorem_counts": {
     "RamseyCassKoopmans/Model.lean": 5,
@@ -106,7 +114,15 @@
     "RamseyCassKoopmans/Hamiltonian.lean": 3,
     "RamseyCassKoopmans/KoopmansBoundaryEconomy.lean": 24,
     "RamseyCassKoopmans/KoopmansBoundaryCompetitor.lean": 7,
-    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean": 5
+    "RamseyCassKoopmans/KoopmansBoundaryObstruction.lean": 5,
+    "RamseyCassKoopmans/CassCertified.lean": 17,
+    "RamseyCassKoopmans/CassPolicy.lean": 11,
+    "RamseyCassKoopmans/RiccatiRate.lean": 4,
+    "RamseyCassKoopmans/CassRate.lean": 13,
+    "RamseyCassKoopmans/CassComparative.lean": 18,
+    "RamseyCassKoopmans/CassValue.lean": 13,
+    "RamseyCassKoopmans/CassEnvelope.lean": 4,
+    "RamseyCassKoopmans/CassDecentralization.lean": 4
   },
   "scope": "General positive-discount Cass constructed existence, capital and consumption monotonicity, convergence, eventual positive investment, finite candidate welfare, all-competitor asymptotic welfare dominance, and finite-welfare optimality/uniqueness from primitive Inada and C2 assumptions. Explicit square-root specialization. Certified obstruction to the regular convergent Euler characterization under Koopmans appendix scalar assumptions. Original undiscounted Ramsey and zero/negative-discount extensions are outside scope."
 }

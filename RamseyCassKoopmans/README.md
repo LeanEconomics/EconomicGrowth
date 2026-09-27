@@ -96,6 +96,15 @@ the price certificate, lifetime welfare, uniqueness and monotone convergence.
 from optimality itself, without assuming an Euler equation for the competitor.
 See the [detailed construction and proof](docs/cass-square-root.md).
 
+**Extensions** ([statements and proofs](docs/cass-extensions.md)): time consistency
+and the policy function `c = C(k)`, which is strictly increasing; non-crossing optimal
+paths and absolute convergence of identical economies; the exact local speed of
+convergence `β* = (√(d² + 4 f''(k*)U'(c*)/U''(c*)) − d)/2` and differentiability of
+the policy at `k*`, proved without a stable-manifold theorem; steady-state comparative
+statics with derivatives and the comparative dynamics of a change in patience; the
+value function's monotonicity, strict concavity and envelope theorem `V'(k₀) = q(0)`;
+and competitive decentralization with both welfare theorems.
+
 The exact statements are in [the source map](docs/source-map.md). The
 [proof status](docs/proof-status.md) separates proved statements, regularity
 restrictions and the remaining extensions.
@@ -163,8 +172,8 @@ and checks their proof types against the original diagnostic inputs. This step
 requires only Lean and Python; it does not rerun CVC5 or trust saved success labels.
 Only Lean's standard `propext`, `Classical.choice` and `Quot.sound` are accepted.
 See [verification/verification.json](verification/verification.json).
-The current fresh-source audit covers **423 theorems and 576 declarations in
-52 modules**, including structure constructors and projections, with no
+The current fresh-source audit covers **507 theorems and 722 declarations in
+60 modules**, including structure constructors and projections, with no
 placeholder proofs or additional axioms.
 
 Replaying the diagnostic search additionally needs a TheoryDebugger checkout
