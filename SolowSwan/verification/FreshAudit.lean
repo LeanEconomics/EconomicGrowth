@@ -20,6 +20,9 @@ import Mathlib.Topology.Order.Lattice
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 import Mathlib.Analysis.Convex.SpecificFunctions.Pow
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Topology.Instances.Real.Lemmas
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 set_option autoImplicit false
 
 /-
@@ -2530,6 +2533,1640 @@ theorem cobbDouglas_speed {α s m : ℝ} (hα : 0 < α) (hα1 : α < 1) (hs : 0 
 
 end Solow1956.Neoclassical
 
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-! # Positive scalar difference equations with a unique attracting fixed point
+
+The discrete-time counterpart of `Solow1956.ODE.exists_attracting_scalar_path`.
+For an increasing map that is continuous on positive reals, lies above the
+diagonal below a positive fixed point and below the diagonal above it, every
+positive orbit is strictly monotone, stays on its side of the fixed point, and
+converges to it. No derivative is needed.
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime.Map
+
+theorem attracting_orbit {g : ℝ → ℝ} {xs : ℝ} {x : ℕ → ℝ}
+    (hmono : StrictMonoOn g (Ioi 0)) (hc : ContinuousOn g (Ioi 0))
+    (hxs : 0 < xs) (hfix : g xs = xs)
+    (hbelow : ∀ y, 0 < y → y < xs → y < g y) (habove : ∀ y, xs < y → g y < y)
+    (h0 : 0 < x 0) (hsucc : ∀ t, x (t + 1) = g (x t)) :
+    (∀ t, 0 < x t) ∧
+      (x 0 < xs → StrictMono x ∧ ∀ t, x t < xs) ∧
+      (xs < x 0 → StrictAnti x ∧ ∀ t, xs < x t) ∧
+      (x 0 = xs → ∀ t, x t = xs) ∧
+      (∀ t, min (x 0) xs ≤ x t ∧ x t ≤ max (x 0) xs) ∧
+      Tendsto x atTop (𝓝 xs) := by
+  -- the limit of a convergent positive orbit is a positive fixed point, hence `xs`
+  have hlimit : ∀ L, 0 < L → Tendsto x atTop (𝓝 L) → L = xs := by
+    intro L hL hx
+    have h1 : Tendsto (fun t => x (t + 1)) atTop (𝓝 L) := hx.comp (tendsto_add_atTop_nat 1)
+    have h2 : Tendsto (fun t => x (t + 1)) atTop (𝓝 (g L)) := by
+      simp only [hsucc]
+      exact ((hc.continuousAt (Ioi_mem_nhds hL)).tendsto).comp hx
+    have hgL : g L = L := tendsto_nhds_unique h2 h1
+    rcases lt_trichotomy L xs with hlt | heq | hgt
+    · exact absurd hgL (ne_of_gt (hbelow L hL hlt))
+    · exact heq
+    · exact absurd hgL (ne_of_lt (habove L hgt))
+  have hlow : x 0 < xs → StrictMono x ∧ ∀ t, x t < xs := by
+    intro hx0
+    have hb : ∀ t, 0 < x t ∧ x t < xs := by
+      intro t
+      induction t with
+      | zero => exact ⟨h0, hx0⟩
+      | succ t ih =>
+        rw [hsucc]
+        exact ⟨ih.1.trans (hbelow _ ih.1 ih.2),
+          hfix ▸ hmono ih.1 hxs ih.2⟩
+    exact ⟨strictMono_nat_of_lt_succ (fun t => by
+      rw [hsucc]; exact hbelow _ (hb t).1 (hb t).2), fun t => (hb t).2⟩
+  have hhigh : xs < x 0 → StrictAnti x ∧ ∀ t, xs < x t := by
+    intro hx0
+    have hb : ∀ t, xs < x t := by
+      intro t
+      induction t with
+      | zero => exact hx0
+      | succ t ih =>
+        rw [hsucc]
+        exact hfix ▸ hmono hxs (hxs.trans ih) ih
+    exact ⟨strictAnti_nat_of_succ_lt (fun t => by rw [hsucc]; exact habove _ (hb t)), hb⟩
+  have hconst : x 0 = xs → ∀ t, x t = xs := by
+    intro hx0 t
+    induction t with
+    | zero => exact hx0
+    | succ t ih => rw [hsucc, ih, hfix]
+  have hpos : ∀ t, 0 < x t := by
+    intro t
+    rcases lt_trichotomy (x 0) xs with hlt | heq | hgt
+    · exact h0.trans_le ((hlow hlt).1.monotone (Nat.zero_le t))
+    · rw [hconst heq t]; exact hxs
+    · exact hxs.trans ((hhigh hgt).2 t)
+  have hbounds : ∀ t, min (x 0) xs ≤ x t ∧ x t ≤ max (x 0) xs := by
+    intro t
+    rcases lt_trichotomy (x 0) xs with hlt | heq | hgt
+    · exact ⟨(min_le_left _ _).trans ((hlow hlt).1.monotone (Nat.zero_le t)),
+        ((hlow hlt).2 t).le.trans (le_max_right _ _)⟩
+    · rw [hconst heq t]; exact ⟨min_le_right _ _, le_max_right _ _⟩
+    · exact ⟨(min_le_right _ _).trans ((hhigh hgt).2 t).le,
+        ((hhigh hgt).1.antitone (Nat.zero_le t)).trans (le_max_left _ _)⟩
+  refine ⟨hpos, hlow, hhigh, hconst, hbounds, ?_⟩
+  rcases lt_trichotomy (x 0) xs with hlt | heq | hgt
+  · obtain ⟨hm, hb⟩ := hlow hlt
+    have hbdd : BddAbove (range x) := ⟨xs, by rintro _ ⟨t, rfl⟩; exact (hb t).le⟩
+    have hx := tendsto_atTop_ciSup hm.monotone hbdd
+    have hL : 0 < ⨆ t, x t := h0.trans_le (le_ciSup hbdd 0)
+    rwa [hlimit _ hL hx] at hx
+  · have : x = fun _ => xs := funext (hconst heq)
+    rw [this]
+    exact tendsto_const_nhds
+  · obtain ⟨hm, hb⟩ := hhigh hgt
+    have hbdd : BddBelow (range x) := ⟨xs, by rintro _ ⟨t, rfl⟩; exact (hb t).le⟩
+    have hx := tendsto_atTop_ciInf hm.antitone hbdd
+    have hL : 0 < ⨅ t, x t := hxs.trans_le (le_ciInf fun t => (hb t).le)
+    rwa [hlimit _ hL hx] at hx
+
+end Solow1956.DiscreteTime.Map
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# The discrete-time Solow map and its steady state
+
+Source: Acemoglu, *Introduction to Modern Economic Growth*, Chapter 2,
+equation (2.17) and Proposition 2.2. With saving `s`, depreciation `δ` and gross
+growth `γ = (1 + n)(1 + g)` of effective labour, capital per effective worker
+obeys
+
+`k(t+1) = (s f(k(t)) + (1 - δ) k(t)) / γ`.
+
+Acemoglu's equation (2.17) is the case `γ = 1`. The map moves capital by
+`rate f s m k / γ` with `m = γ - 1 + δ`, so its positive fixed point is the
+continuous-time steady state `steadyCapital h s m`: stationary results are shared
+by the two models, only the dynamics differ. The restriction `δ ≤ 1` makes the
+map increasing, which the global dynamics require.
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime
+
+open Solow1956.Neoclassical
+
+variable {f : ℝ → ℝ}
+
+/-- Discrete-time parameters: positive saving, depreciation at most one, positive
+gross growth of effective labour, and positive effective dilution `γ - 1 + δ`. -/
+structure Params (s δ γ : ℝ) : Prop where
+  saving_pos : 0 < s
+  depreciation_le_one : δ ≤ 1
+  growth_pos : 0 < γ
+  dilution_pos : 0 < γ - 1 + δ
+
+/-- The discrete-time law of motion for capital per effective worker. -/
+noncomputable def next (f : ℝ → ℝ) (s δ γ k : ℝ) : ℝ := (s * f k + (1 - δ) * k) / γ
+
+/-- The positive steady state of the map: the continuous steady state with
+effective dilution `m = γ - 1 + δ`. -/
+noncomputable def steady (h : Technology f) (s δ γ : ℝ) : ℝ := steadyCapital h s (γ - 1 + δ)
+
+/-- The one-period change in capital is the continuous accumulation rate divided by `γ`. -/
+theorem next_sub_self {s δ γ : ℝ} (hγ : 0 < γ) (k : ℝ) :
+    next f s δ γ k - k = rate f s (γ - 1 + δ) k / γ := by
+  unfold next rate
+  field_simp
+  ring
+
+/-- Acemoglu's case `γ = 1`: `k(t+1) = s f(k(t)) + (1 - δ) k(t)`. -/
+theorem next_acemoglu (s δ k : ℝ) : next f s δ 1 k = s * f k + (1 - δ) * k := by
+  simp [next]
+
+theorem next_zero (h : Technology f) (s δ γ : ℝ) : next f s δ γ 0 = 0 := by
+  simp [next, h.zero]
+
+theorem next_pos (h : Technology f) {s δ γ k : ℝ} (P : Params s δ γ) (hk : 0 < k) :
+    0 < next f s δ γ k := by
+  have h1 := mul_pos P.saving_pos (h.output_pos hk)
+  have h2 := mul_nonneg (sub_nonneg.mpr P.depreciation_le_one) hk.le
+  exact div_pos (by linarith) P.growth_pos
+
+theorem next_nonneg (h : Technology f) {s δ γ k : ℝ} (P : Params s δ γ) (hk : 0 ≤ k) :
+    0 ≤ next f s δ γ k := by
+  rcases hk.eq_or_lt with he | he
+  · rw [← he, next_zero h]
+  · exact (next_pos h P he).le
+
+/-- Acemoglu's proof of Proposition 2.5 starts from `g' > 0`: the map is increasing. -/
+theorem next_strictMono (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    StrictMonoOn (next f s δ γ) (Ici 0) := by
+  intro a ha b hb hab
+  have h1 := mul_lt_mul_of_pos_left (h.output_strictMono ha hb hab) P.saving_pos
+  have h2 := mul_le_mul_of_nonneg_left hab.le (sub_nonneg.mpr P.depreciation_le_one)
+  exact div_lt_div_of_pos_right (by linarith) P.growth_pos
+
+theorem next_continuousOn (h : Technology f) (s δ γ : ℝ) :
+    ContinuousOn (next f s δ γ) (Ici 0) :=
+  (((h.continuous.const_mul s).add (continuousOn_id.const_mul (1 - δ)))).div_const γ
+
+theorem next_hasDerivAt (h : Technology f) (s δ γ : ℝ) {k : ℝ} (hk : 0 < k) :
+    HasDerivAt (next f s δ γ) ((s * deriv f k + (1 - δ)) / γ) k := by
+  have h1 : HasDerivAt (fun y => s * f y + (1 - δ) * y) (s * deriv f k + (1 - δ) * 1) k :=
+    ((h.differentiable k hk).hasDerivAt.const_mul s).add ((hasDerivAt_id' k).const_mul (1 - δ))
+  rw [mul_one] at h1
+  exact h1.div_const γ
+
+/-- Positive fixed points of the map are exactly the positive roots of the continuous rate. -/
+theorem next_eq_self_iff {s δ γ k : ℝ} (hγ : 0 < γ) :
+    next f s δ γ k = k ↔ rate f s (γ - 1 + δ) k = 0 := by
+  rw [← sub_eq_zero, next_sub_self hγ, div_eq_zero_iff]
+  exact ⟨fun h => h.resolve_right (ne_of_gt hγ), fun h => Or.inl h⟩
+
+/-- Acemoglu Proposition 2.2: a unique positive steady state exists. -/
+theorem existsUnique_steadyState (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    ∃! k : ℝ, 0 < k ∧ next f s δ γ k = k := by
+  simpa only [next_eq_self_iff P.growth_pos] using
+    Neoclassical.existsUnique_steadyState h P.saving_pos P.dilution_pos
+
+theorem steady_spec (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    0 < steady h s δ γ ∧ next f s δ γ (steady h s δ γ) = steady h s δ γ := by
+  obtain ⟨hk, he⟩ := steadyCapital_spec h P.saving_pos P.dilution_pos
+  exact ⟨hk, (next_eq_self_iff P.growth_pos).mpr he⟩
+
+theorem steady_eq (h : Technology f) {s δ γ k : ℝ} (P : Params s δ γ) (hk : 0 < k)
+    (he : next f s δ γ k = k) : steady h s δ γ = k :=
+  steadyCapital_eq h P.saving_pos P.dilution_pos hk ((next_eq_self_iff P.growth_pos).mp he)
+
+/-- Zero is also a fixed point; Proposition 2.2 ignores it by convention. -/
+theorem zero_fixed (h : Technology f) (s δ γ : ℝ) : next f s δ γ 0 = 0 := next_zero h s δ γ
+
+/-- Proposition 2.2 in full: the steady state, its output `y* = f(k*)`, and its
+consumption `c* = (1 - s) f(k*) = f(k*) - m k*`. -/
+theorem steady_state_equilibrium (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    0 < steady h s δ γ ∧ next f s δ γ (steady h s δ γ) = steady h s δ γ ∧
+      s * f (steady h s δ γ) = (γ - 1 + δ) * steady h s δ γ ∧
+      (1 - s) * f (steady h s δ γ) = f (steady h s δ γ) - (γ - 1 + δ) * steady h s δ γ := by
+  obtain ⟨hk, he⟩ := steady_spec h P
+  have hr := (next_eq_self_iff P.growth_pos).mp he
+  unfold rate at hr
+  exact ⟨hk, he, by linarith, by linarith⟩
+
+theorem next_gt_self (h : Technology f) {s δ γ k : ℝ} (P : Params s δ γ)
+    (hk : 0 < k) (hlt : k < steady h s δ γ) : k < next f s δ γ k := by
+  have hr := rate_pos_below h P.saving_pos hk hlt
+    ((next_eq_self_iff P.growth_pos).mp (steady_spec h P).2)
+  have := next_sub_self (f := f) (s := s) (δ := δ) P.growth_pos k
+  have := div_pos hr P.growth_pos
+  linarith
+
+theorem next_lt_self (h : Technology f) {s δ γ k : ℝ} (P : Params s δ γ)
+    (hgt : steady h s δ γ < k) : next f s δ γ k < k := by
+  have hr := rate_neg_above h P.saving_pos (steady_spec h P).1 hgt
+    ((next_eq_self_iff P.growth_pos).mp (steady_spec h P).2)
+  have := next_sub_self (f := f) (s := s) (δ := δ) P.growth_pos k
+  have := div_neg_of_neg_of_pos hr P.growth_pos
+  linarith
+
+/-- Local stability, Proposition 2.5: the slope of the map at `k*` lies in `(0, 1)`. -/
+theorem slope_at_steady (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    0 < (s * deriv f (steady h s δ γ) + (1 - δ)) / γ ∧
+      (s * deriv f (steady h s δ γ) + (1 - δ)) / γ < 1 := by
+  obtain ⟨hk, _, hss, _⟩ := steady_state_equilibrium h P
+  set ks := steady h s δ γ
+  have hmp := mul_pos P.saving_pos (h.marginal_positive ks hk)
+  have hgap := mul_lt_mul_of_pos_left (h.output_gap hk) P.saving_pos
+  refine ⟨div_pos (by linarith [P.depreciation_le_one]) P.growth_pos,
+    (div_lt_one P.growth_pos).mpr ?_⟩
+  have : s * deriv f ks < γ - 1 + δ := by
+    have h' : s * (deriv f ks * ks) < (γ - 1 + δ) * ks := by linarith
+    nlinarith
+  linarith
+
+end Solow1956.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-! # Global dynamics of the discrete-time Solow model, Acemoglu Proposition 2.5
+
+In discrete time a path is generated by iterating the map, so existence and
+uniqueness are immediate. The substance is global monotone convergence.
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime
+
+open Solow1956.Neoclassical
+
+variable {f : ℝ → ℝ}
+
+/-- An admissible discrete-time path from positive initial capital. -/
+structure IsPath (f : ℝ → ℝ) (s δ γ : ℝ) (k : ℕ → ℝ) : Prop where
+  initial_pos : 0 < k 0
+  succ : ∀ t, k (t + 1) = next f s δ γ (k t)
+
+/-- The path obtained by iterating the map from `k₀`. -/
+noncomputable def path (f : ℝ → ℝ) (s δ γ k₀ : ℝ) (t : ℕ) : ℝ := (next f s δ γ)^[t] k₀
+
+theorem path_zero (s δ γ k₀ : ℝ) : path f s δ γ k₀ 0 = k₀ := rfl
+
+theorem path_succ (s δ γ k₀ : ℝ) (t : ℕ) :
+    path f s δ γ k₀ (t + 1) = next f s δ γ (path f s δ γ k₀ t) :=
+  Function.iterate_succ_apply' _ _ _
+
+theorem isPath_path {s δ γ k₀ : ℝ} (hk₀ : 0 < k₀) : IsPath f s δ γ (path f s δ γ k₀) :=
+  ⟨hk₀, path_succ s δ γ k₀⟩
+
+/-- Uniqueness: a path is determined by its initial stock. -/
+theorem path_unique {s δ γ : ℝ} {k l : ℕ → ℝ}
+    (hk : ∀ t, k (t + 1) = next f s δ γ (k t)) (hl : ∀ t, l (t + 1) = next f s δ γ (l t))
+    (h0 : k 0 = l 0) : k = l := by
+  funext t
+  induction t with
+  | zero => exact h0
+  | succ t ih => rw [hk, hl, ih]
+
+theorem IsPath.eq_path {s δ γ : ℝ} {k : ℕ → ℝ} (hk : IsPath f s δ γ k) :
+    k = path f s δ γ (k 0) :=
+  path_unique hk.succ (path_succ s δ γ (k 0)) rfl
+
+/-- A nonnegative initial stock stays nonnegative; zero stays at zero. -/
+theorem path_nonneg (h : Technology f) {s δ γ k₀ : ℝ} (P : Params s δ γ) (hk₀ : 0 ≤ k₀)
+    (t : ℕ) : 0 ≤ path f s δ γ k₀ t := by
+  induction t with
+  | zero => exact hk₀
+  | succ t ih => rw [path_succ]; exact next_nonneg h P ih
+
+theorem path_of_zero (h : Technology f) (s δ γ : ℝ) (t : ℕ) : path f s δ γ 0 t = 0 := by
+  induction t with
+  | zero => rfl
+  | succ t ih => rw [path_succ, ih, next_zero h]
+
+/-- Acemoglu Proposition 2.5, with existence and uniqueness explicit: from any
+positive stock the path is positive, strictly monotone toward `k*`, stays on its
+side of `k*`, and converges to it. -/
+theorem general_solow (h : Technology f) {s δ γ k₀ : ℝ} (P : Params s δ γ) (hk₀ : 0 < k₀) :
+    ∃ ks : ℝ, 0 < ks ∧ next f s δ γ ks = ks ∧
+      (∀ k, 0 < k → next f s δ γ k = k → k = ks) ∧
+      ∃ k : ℕ → ℝ, k 0 = k₀ ∧ (∀ t, 0 < k t ∧ k (t + 1) = next f s δ γ (k t)) ∧
+        (k₀ < ks → StrictMono k ∧ ∀ t, k t < ks) ∧
+        (ks < k₀ → StrictAnti k ∧ ∀ t, ks < k t) ∧
+        (k₀ = ks → ∀ t, k t = ks) ∧
+        (∀ t, min k₀ ks ≤ k t ∧ k t ≤ max k₀ ks) ∧
+        Tendsto k atTop (𝓝 ks) ∧
+        (∀ l : ℕ → ℝ, l 0 = k₀ → (∀ t, l (t + 1) = next f s δ γ (l t)) → l = k) := by
+  obtain ⟨hks, hfix⟩ := steady_spec h P
+  obtain ⟨hpos, hlow, hhigh, hconst, hbd, hlim⟩ := Map.attracting_orbit
+    (x := path f s δ γ k₀)
+    ((next_strictMono h P).mono Ioi_subset_Ici_self)
+    ((next_continuousOn h s δ γ).mono Ioi_subset_Ici_self) hks hfix
+    (fun _ hy hlt => next_gt_self h P hy hlt) (fun _ hgt => next_lt_self h P hgt)
+    hk₀ (path_succ s δ γ k₀)
+  refine ⟨steady h s δ γ, hks, hfix, fun k hk he => (steady_eq h P hk he).symm,
+    path f s δ γ k₀, rfl, fun t => ⟨hpos t, path_succ s δ γ k₀ t⟩,
+    hlow, hhigh, hconst, hbd, hlim, fun l hl0 hl => ?_⟩
+  exact path_unique hl (path_succ s δ γ k₀) hl0
+
+/-- Every admissible path has the full Proposition 2.5 behaviour relative to `k*`. -/
+theorem IsPath.orbit (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) {k : ℕ → ℝ}
+    (hk : IsPath f s δ γ k) :
+    (∀ t, 0 < k t) ∧
+      (k 0 < steady h s δ γ → StrictMono k ∧ ∀ t, k t < steady h s δ γ) ∧
+      (steady h s δ γ < k 0 → StrictAnti k ∧ ∀ t, steady h s δ γ < k t) ∧
+      (k 0 = steady h s δ γ → ∀ t, k t = steady h s δ γ) ∧
+      (∀ t, min (k 0) (steady h s δ γ) ≤ k t ∧ k t ≤ max (k 0) (steady h s δ γ)) ∧
+      Tendsto k atTop (𝓝 (steady h s δ γ)) :=
+  Map.attracting_orbit ((next_strictMono h P).mono Ioi_subset_Ici_self)
+    ((next_continuousOn h s δ γ).mono Ioi_subset_Ici_self) (steady_spec h P).1
+    (steady_spec h P).2 (fun _ hy hlt => next_gt_self h P hy hlt)
+    (fun _ hgt => next_lt_self h P hgt) hk.initial_pos hk.succ
+
+theorem IsPath.pos (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) {k : ℕ → ℝ}
+    (hk : IsPath f s δ γ k) (t : ℕ) : 0 < k t :=
+  (hk.orbit h P).1 t
+
+theorem IsPath.tendsto (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) {k : ℕ → ℝ}
+    (hk : IsPath f s δ γ k) : Tendsto k atTop (𝓝 (steady h s δ γ)) :=
+  (hk.orbit h P).2.2.2.2.2
+
+theorem IsPath.bounds (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) {k : ℕ → ℝ}
+    (hk : IsPath f s δ γ k) (t : ℕ) :
+    min (k 0) (steady h s δ γ) ≤ k t ∧ k t ≤ max (k 0) (steady h s δ γ) :=
+  (hk.orbit h P).2.2.2.2.1 t
+
+/-- Output and consumption converge along any path; positive consumption needs `s < 1`. -/
+theorem output_consumption_limit (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k : ℕ → ℝ} (hk : IsPath f s δ γ k) :
+    Tendsto (fun t => f (k t)) atTop (𝓝 (f (steady h s δ γ))) ∧
+      Tendsto (fun t => (1 - s) * f (k t)) atTop (𝓝 ((1 - s) * f (steady h s δ γ))) := by
+  have hy := (h.differentiable _ (steady_spec h P).1).continuousAt.tendsto.comp (hk.tendsto h P)
+  exact ⟨hy, hy.const_mul (1 - s)⟩
+
+end Solow1956.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-! # Discrete-time comparative statics, Acemoglu Proposition 2.3
+
+The discrete steady state is the continuous steady state at effective dilution
+`γ - 1 + δ`, so its derivatives follow from the inverse-function construction in
+`Solow1956.Growth.SolowComparative`. With `γ = 1 + n` the dilution is exactly
+`δ + n`, and Acemoglu's discrete Proposition 2.3 is recovered, together with the
+population-growth partial.
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime
+
+open Solow1956.Neoclassical
+
+variable {f : ℝ → ℝ}
+
+theorem steady_strictMono_saving (h : Technology f) {δ γ : ℝ} (hm : 0 < γ - 1 + δ) :
+    StrictMonoOn (fun s => steady h s δ γ) (Ioi 0) :=
+  steadyCapital_strictMono_saving h hm
+
+theorem steady_strictAnti_depreciation (h : Technology f) {s γ δ₁ δ₂ : ℝ} (hs : 0 < s)
+    (hm : 0 < γ - 1 + δ₁) (hδ : δ₁ < δ₂) : steady h s δ₂ γ < steady h s δ₁ γ :=
+  steadyCapital_strictAnti_dilution h hs hm (by simp only [mem_Ioi]; linarith) (by linarith)
+
+theorem steady_strictAnti_growth (h : Technology f) {s δ γ₁ γ₂ : ℝ} (hs : 0 < s)
+    (hm : 0 < γ₁ - 1 + δ) (hγ : γ₁ < γ₂) : steady h s δ γ₂ < steady h s δ γ₁ :=
+  steadyCapital_strictAnti_dilution h hs hm (by simp only [mem_Ioi]; linarith) (by linarith)
+
+/-- Actual partial derivatives of the discrete steady state in saving, depreciation
+and effective-labour growth. -/
+theorem steady_derivative_signs (h : Technology f) {s δ γ : ℝ} (hs : 0 < s)
+    (hm : 0 < γ - 1 + δ) :
+    0 < deriv (fun z => steady h z δ γ) s ∧
+      deriv (fun z => steady h s z γ) δ < 0 ∧
+      deriv (fun z => steady h s δ z) γ < 0 := by
+  have hsave := steadyCapital_hasDerivAt_saving h hs hm
+  have hdil := steadyCapital_hasDerivAt_dilution h hs hm
+  have hδ : HasDerivAt (fun z => steady h s z γ) (dilutionResponse h s (γ - 1 + δ) * 1) δ :=
+    hdil.comp δ ((hasDerivAt_id δ).const_add (γ - 1))
+  have hγ : HasDerivAt (fun z => steady h s δ z) (dilutionResponse h s (γ - 1 + δ) * 1) γ :=
+    hdil.comp γ (((hasDerivAt_id γ).sub_const 1).add_const δ)
+  rw [mul_one] at hδ hγ
+  refine ⟨?_, ?_, ?_⟩
+  · rw [show (fun z => steady h z δ γ) = fun z => steadyCapital h z (γ - 1 + δ) from rfl,
+      hsave.deriv]
+    exact savingResponse_pos h hs hm
+  · rw [hδ.deriv]; exact dilutionResponse_neg h hs hm
+  · rw [hγ.deriv]; exact dilutionResponse_neg h hs hm
+
+theorem steady_rewrite (h : Technology f) (s δ n : ℝ) :
+    steady h s δ (1 + n) = steadyCapital h s (δ + n) := by
+  unfold steady
+  congr 1
+  ring
+
+/-- Acemoglu Proposition 2.3 in discrete time, with `f = A f̃` and `γ = 1 + n`:
+capital rises with productivity and saving and falls with depreciation and
+population growth. -/
+theorem acemoglu_capital_partials (h : Technology f) {A s δ n : ℝ}
+    (hA : 0 < A) (hs : 0 < s) (hm : 0 < δ + n) :
+    0 < deriv (fun a => steady h (s * a) δ (1 + n)) A ∧
+    0 < deriv (fun z => steady h (z * A) δ (1 + n)) s ∧
+    deriv (fun z => steady h (s * A) z (1 + n)) δ < 0 ∧
+    deriv (fun z => steady h (s * A) δ (1 + z)) n < 0 := by
+  simp only [steady_rewrite]
+  exact Neoclassical.acemoglu_capital_partials h hA hs hm
+
+/-- The output partials of Proposition 2.3, including productivity's direct effect. -/
+theorem acemoglu_output_partials (h : Technology f) {A s δ n : ℝ}
+    (hA : 0 < A) (hs : 0 < s) (hm : 0 < δ + n) :
+    0 < deriv (fun a => a * f (steady h (s * a) δ (1 + n))) A ∧
+    0 < deriv (fun z => A * f (steady h (z * A) δ (1 + n))) s ∧
+    deriv (fun z => A * f (steady h (s * A) z (1 + n))) δ < 0 ∧
+    deriv (fun z => A * f (steady h (s * A) δ (1 + z))) n < 0 := by
+  simp only [steady_rewrite]
+  exact Neoclassical.acemoglu_output_partials h hA hs hm
+
+end Solow1956.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-! # Discrete-time Golden Rule, Acemoglu Proposition 2.4, and the Cass comparison
+
+Acemoglu states Proposition 2.4 in the discrete-time model with `γ = 1`, where the
+Golden Rule stock solves `f'(k) = δ`. With effective-labour growth the condition is
+`f'(k) = γ - 1 + δ`. The discrete Cass modified Golden Rule is
+`β (1 + f'(k) - δ) = γ`; for `0 < β < 1` it lies strictly below the Golden Rule.
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime
+
+open Solow1956.Neoclassical
+
+variable {f : ℝ → ℝ}
+
+/-- Stationary consumption is output less the investment that keeps `k*` constant. -/
+theorem stationary_consumption (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    (1 - s) * f (steady h s δ γ) = f (steady h s δ γ) - (γ - 1 + δ) * steady h s δ γ :=
+  (steady_state_equilibrium h P).2.2.2
+
+/-- Acemoglu Proposition 2.4 in discrete time: a unique saving rate in `(0, 1)`
+maximises steady-state consumption, and its stock satisfies `f'(k) = γ - 1 + δ`
+(`f'(k) = δ` in Acemoglu's case `γ = 1`). -/
+theorem exists_unique_golden_saving (h : Technology f) {δ γ : ℝ}
+    (hm : 0 < γ - 1 + δ) :
+    ∃ kg sg : ℝ, 0 < kg ∧ deriv f kg = γ - 1 + δ ∧ 0 < sg ∧ sg < 1 ∧
+      steady h sg δ γ = kg ∧
+      ∀ s, 0 < s → s < 1 → s ≠ sg →
+        (1 - s) * f (steady h s δ γ) < (1 - sg) * f kg := by
+  obtain ⟨kg, sg, hkg, hg, hsg, hsg1, _, hstock, hmax⟩ :=
+    Neoclassical.exists_unique_golden_saving h hm
+  exact ⟨kg, sg, hkg, hg, hsg, hsg1, hstock, hmax⟩
+
+/-- Acemoglu's own statement, `γ = 1`: the Golden Rule stock solves `f'(k) = δ`. -/
+theorem acemoglu_golden_rule (h : Technology f) {δ : ℝ} (hδ : 0 < δ) :
+    ∃ kg sg : ℝ, 0 < kg ∧ deriv f kg = δ ∧ 0 < sg ∧ sg < 1 ∧
+      steady h sg δ 1 = kg ∧
+      ∀ s, 0 < s → s < 1 → s ≠ sg →
+        (1 - s) * f (steady h s δ 1) < (1 - sg) * f kg := by
+  have hm : (0 : ℝ) < 1 - 1 + δ := by linarith
+  obtain ⟨kg, sg, hkg, hg, hsg, hsg1, hstock, hmax⟩ := exists_unique_golden_saving h hm
+  exact ⟨kg, sg, hkg, by rw [hg]; ring, hsg, hsg1, hstock, hmax⟩
+
+/-- Discrete Cass comparison. A stationary optimal-growth stock with discount factor
+`0 < β < 1`, `β (1 + f'(kc) - δ) = γ`, lies strictly below the Golden Rule stock
+and is sustained by a unique constant Solow saving rate below Golden Rule saving.
+This compares stationary equations only, not transition paths. -/
+theorem cass_stationary_bridge (h : Technology f) {β δ γ kc kg : ℝ}
+    (hβ : 0 < β) (hβ1 : β < 1) (hγ : 0 < γ) (hm : 0 < γ - 1 + δ)
+    (hkc : 0 < kc) (hkg : 0 < kg)
+    (hc : β * (1 + deriv f kc - δ) = γ) (hg : deriv f kg = γ - 1 + δ) :
+    kc < kg ∧ 0 < sustainingSaving f (γ - 1 + δ) kc ∧
+      sustainingSaving f (γ - 1 + δ) kc < sustainingSaving f (γ - 1 + δ) kg ∧
+      sustainingSaving f (γ - 1 + δ) kg < 1 ∧
+      steady h (sustainingSaving f (γ - 1 + δ) kc) δ γ = kc ∧
+      (1 - sustainingSaving f (γ - 1 + δ) kc) * f kc = f kc - (γ - 1 + δ) * kc := by
+  have hd : 0 < γ * (1 / β - 1) :=
+    mul_pos hγ (sub_pos.mpr ((one_lt_div hβ).mpr hβ1))
+  have hc' : deriv f kc = γ * (1 / β - 1) + (γ - 1 + δ) := by
+    field_simp
+    linarith
+  exact Neoclassical.cass_stationary_bridge h hd hm hkc hkg hc' hg
+
+end Solow1956.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-! # Discrete-time stability, saving shocks, effective labour, and factor prices
+
+Discrete counterparts of `Solow1956.Growth.GeneralSolowApplications`, together with
+Acemoglu Proposition 2.6: along a path from below the steady state the wage rises
+and the rental rate falls every period.
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime
+
+open Solow1956.Neoclassical
+
+variable {f : ℝ → ℝ}
+
+/-- Global attraction for every admissible path. -/
+theorem every_path_converges (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k : ℕ → ℝ} (hk : IsPath f s δ γ k) : Tendsto k atTop (𝓝 (steady h s δ γ)) :=
+  hk.tendsto h P
+
+/-- Lyapunov stability, strictly: away from `k*` the distance to `k*` falls every period. -/
+theorem path_stable (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k : ℕ → ℝ} (hk : IsPath f s δ γ k) (t : ℕ) :
+    |k (t + 1) - steady h s δ γ| ≤ |k t - steady h s δ γ| ∧
+      (k t ≠ steady h s δ γ → |k (t + 1) - steady h s δ γ| < |k t - steady h s δ γ|) := by
+  obtain ⟨hks, hfix⟩ := steady_spec h P
+  have hkt := hk.pos h P t
+  set ks := steady h s δ γ
+  rw [hk.succ]
+  rcases lt_trichotomy (k t) ks with hlt | heq | hgt
+  · have h1 := next_gt_self h P hkt hlt
+    have h2 : next f s δ γ (k t) < ks := hfix ▸ next_strictMono h P hkt.le hks.le hlt
+    rw [abs_of_neg (sub_neg.mpr h2), abs_of_neg (sub_neg.mpr hlt)]
+    exact ⟨by linarith, fun _ => by linarith⟩
+  · rw [heq, hfix]
+    exact ⟨le_rfl, fun hne => absurd rfl hne⟩
+  · have h1 := next_lt_self h P hgt
+    have h2 : ks < next f s δ γ (k t) := hfix ▸ next_strictMono h P hks.le hkt.le hgt
+    rw [abs_of_pos (sub_pos.mpr h2), abs_of_pos (sub_pos.mpr hgt)]
+    exact ⟨by linarith, fun _ => by linarith⟩
+
+/-- The distance to `k*` never exceeds its initial value. -/
+theorem path_stable_initial (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k : ℕ → ℝ} (hk : IsPath f s δ γ k) (t : ℕ) :
+    |k t - steady h s δ γ| ≤ |k 0 - steady h s δ γ| := by
+  induction t with
+  | zero => exact le_rfl
+  | succ t ih => exact (path_stable h P hk t).1.trans ih
+
+/-- A permanent saving increase from an old steady state: strict capital deepening,
+convergence to the higher new steady state, and an immediate consumption loss. -/
+theorem saving_increase_transition (h : Technology f) {s0 s1 δ γ : ℝ}
+    (P0 : Params s0 δ γ) (hs : s0 < s1) :
+    ∃ k : ℕ → ℝ, k 0 = steady h s0 δ γ ∧ IsPath f s1 δ γ k ∧ StrictMono k ∧
+      (∀ t, k t < steady h s1 δ γ) ∧ Tendsto k atTop (𝓝 (steady h s1 δ γ)) ∧
+      (1 - s1) * f (k 0) < (1 - s0) * f (k 0) := by
+  have P1 : Params s1 δ γ := ⟨P0.saving_pos.trans hs, P0.depreciation_le_one,
+    P0.growth_pos, P0.dilution_pos⟩
+  have h0 := (steady_spec h P0).1
+  have hk := isPath_path (f := f) (s := s1) (δ := δ) (γ := γ) h0
+  have hlt : steady h s0 δ γ < steady h s1 δ γ :=
+    steady_strictMono_saving h P0.dilution_pos P0.saving_pos P1.saving_pos hs
+  obtain ⟨_, hlow, _, _, _, hlim⟩ := hk.orbit h P1
+  obtain ⟨hmono, hbelow⟩ := hlow hlt
+  refine ⟨_, rfl, hk, hmono, hbelow, hlim, ?_⟩
+  have hy : 0 < f (steady h s0 δ γ) := h.output_pos h0
+  exact mul_lt_mul_of_pos_right (by linarith) hy
+
+/-- Aggregate accumulation `K(t+1) = s Y(t) + (1 - δ) K(t)` with effective labour
+`E(t+1) = γ E(t)` and `Y = E f(K/E)` gives the intensive map. -/
+theorem capitalPerEffectiveWorker_succ {K E Y : ℕ → ℝ} {s δ γ : ℝ} {t : ℕ}
+    (hγ : 0 < γ) (hE : 0 < E t)
+    (hK : K (t + 1) = s * Y t + (1 - δ) * K t) (hEs : E (t + 1) = γ * E t)
+    (hY : Y t = E t * f (K t / E t)) :
+    K (t + 1) / E (t + 1) = next f s δ γ (K t / E t) := by
+  rw [hK, hEs, hY]
+  unfold next
+  field_simp
+
+/-- Effective capital converges with labour-augmenting progress, derived from the
+aggregate equations. -/
+theorem effective_labour_convergence (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {K E Y : ℕ → ℝ} (hK0 : 0 < K 0) (hE : ∀ t, 0 < E t)
+    (hK : ∀ t, K (t + 1) = s * Y t + (1 - δ) * K t) (hEs : ∀ t, E (t + 1) = γ * E t)
+    (hY : ∀ t, Y t = E t * f (K t / E t)) :
+    Tendsto (fun t => K t / E t) atTop (𝓝 (steady h s δ γ)) :=
+  IsPath.tendsto h P ⟨div_pos hK0 (hE 0), fun t =>
+    capitalPerEffectiveWorker_succ P.growth_pos (hE t) (hK t) (hEs t) (hY t)⟩
+
+/-- Competitive wage per worker, `w = f(k) - k f'(k)`. -/
+noncomputable def wage (f : ℝ → ℝ) (k : ℝ) : ℝ := f k - k * deriv f k
+
+/-- The wage is strictly increasing in capital per worker. -/
+theorem wage_strictMono (h : Technology f) : StrictMonoOn (wage f) (Ioi 0) := by
+  intro a ha b hb hab
+  have ha' : (0 : ℝ) < a := ha
+  have hs := h.concave.deriv_lt_slope (show a ∈ Ici 0 from ha'.le)
+    (show b ∈ Ici 0 from (ha'.trans hab).le) hab (h.differentiable b (ha'.trans hab))
+  rw [slope_def_field] at hs
+  have hs' := (lt_div_iff₀ (sub_pos.mpr hab)).mp hs
+  have hm := h.marginal_strictAnti ha hb hab
+  unfold wage
+  nlinarith
+
+/-- Acemoglu Proposition 2.6: from below the steady state the wage rises and the
+rental rate `R = f'(k)` falls every period; from above the opposite holds. -/
+theorem factor_prices (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k : ℕ → ℝ} (hk : IsPath f s δ γ k) :
+    (k 0 < steady h s δ γ →
+      StrictMono (fun t => wage f (k t)) ∧ StrictAnti (fun t => deriv f (k t))) ∧
+    (steady h s δ γ < k 0 →
+      StrictAnti (fun t => wage f (k t)) ∧ StrictMono (fun t => deriv f (k t))) := by
+  obtain ⟨hpos, hlow, hhigh, _, _, _⟩ := hk.orbit h P
+  refine ⟨fun hlt => ⟨fun a b hab => ?_, fun a b hab => ?_⟩,
+    fun hgt => ⟨fun a b hab => ?_, fun a b hab => ?_⟩⟩
+  · exact wage_strictMono h (hpos a) (hpos b) ((hlow hlt).1 hab)
+  · exact h.marginal_strictAnti (hpos a) (hpos b) ((hlow hlt).1 hab)
+  · exact wage_strictMono h (hpos b) (hpos a) ((hhigh hgt).1 hab)
+  · exact h.marginal_strictAnti (hpos b) (hpos a) ((hhigh hgt).1 hab)
+
+end Solow1956.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-! # Concrete discrete-time economies and boundary checks
+
+The technology examples of `Solow1956.Growth.GeneralSolowExamples` are time-free
+and are reused. The checks below concern the map itself, including why the
+restrictions in `Params` cannot be dropped.
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime
+
+open Solow1956.Neoclassical
+
+/-- Sample parameters for a concrete non-Cobb–Douglas economy satisfy `Params`. -/
+theorem example_params : Params (1 / 4) (1 / 2) 1 := ⟨by norm_num, by norm_num, by norm_num,
+  by norm_num⟩
+
+/-- A sum of powers has a unique positive fixed point of the discrete map. -/
+theorem mixed_power_fixed_exists :
+    ∃! k : ℝ, 0 < k ∧
+      next (fun k : ℝ => k ^ (1 / 2 : ℝ) + k ^ (1 / 3 : ℝ)) (1 / 4) (1 / 2) 1 k = k :=
+  existsUnique_steadyState mixed_power_technology example_params
+
+/-- Every positive path of that economy converges monotonically to its steady state. -/
+theorem mixed_power_converges {k₀ : ℝ} (hk₀ : 0 < k₀) :
+    Tendsto (path (fun k : ℝ => k ^ (1 / 2 : ℝ) + k ^ (1 / 3 : ℝ)) (1 / 4) (1 / 2) 1 k₀) atTop
+      (𝓝 (steady mixed_power_technology (1 / 4) (1 / 2) 1)) :=
+  (isPath_path hk₀).tendsto mixed_power_technology example_params
+
+/-- Without positive effective dilution capital grows every period: there is no
+positive steady state. -/
+theorem no_positive_fixed_without_dilution {f : ℝ → ℝ} (h : Technology f)
+    {s δ γ k : ℝ} (hs : 0 < s) (hγ : 0 < γ) (hm : γ - 1 + δ ≤ 0) (hk : 0 < k) :
+    k < next f s δ γ k := by
+  have := no_positive_steady_without_dilution h hs hm hk
+  have hd := next_sub_self (f := f) (s := s) (δ := δ) hγ k
+  have := div_pos this hγ
+  linarith
+
+/-- Depreciation above one breaks positivity of the map, so `δ ≤ 1` cannot be dropped:
+with `f = √k`, `s = 1`, `δ = 3`, `γ = 1`, the stock `4` is sent to `-6`. -/
+theorem depreciation_above_one_breaks_positivity :
+    next (fun k : ℝ => k ^ (1 / 2 : ℝ)) 1 3 1 4 = -6 := by
+  have h4 : (4 : ℝ) ^ (1 / 2 : ℝ) = 2 := by
+    rw [show (4 : ℝ) = 2 ^ (2 : ℝ) by norm_num, ← Real.rpow_mul (by norm_num)]
+    norm_num
+  simp only [next, h4]
+  norm_num
+
+/-- Linear technology can have more than one positive fixed point. -/
+theorem linear_technology_multiple_fixed :
+    next (fun k : ℝ => 2 * k) (1 / 2) 1 1 1 = 1 ∧
+      next (fun k : ℝ => 2 * k) (1 / 2) 1 1 2 = 2 ∧ (1 : ℝ) ≠ 2 := by
+  norm_num [next]
+
+end Solow1956.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# Solow's net-output model in discrete time, with square-root production
+
+The discrete counterpart of `Solow1956.Growth.SolowSwan`. Net accumulation
+`K(t+1) = K(t) + s F(K(t), L(t))` with labour `L(t+1) = (1 + n) L(t)` gives
+
+`k(t+1) = (s f(k(t)) + k(t)) / (1 + n)`,
+
+the general map with `δ = 0` and `γ = 1 + n`, whose effective dilution is `n`.
+Homogeneity (`intensiveForm_of_homogeneous`) is a static fact and is reused. For
+`f(k) = A √k` the fixed points are exactly `0` and Solow's `k* = (sA/n)^2`; the
+comparative statics and capital/output ratio of the continuous module are
+statements about this same stock. Unlike the continuous module, which proves
+only signs for this economy, the discrete map is solved globally: every positive
+path converges monotonically to `k*`.
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime
+
+open Solow1956.Neoclassical Solow1956.SolowSwan
+
+/-- Derive the intensive map from aggregate net accumulation, labour growth, and the
+constant-returns normalization. -/
+theorem capitalPerWorker_succ {K L : ℕ → ℝ} {f : ℝ → ℝ} {F : ℝ → ℝ → ℝ} {s n : ℝ} {t : ℕ}
+    (hn : 0 < 1 + n) (hL : 0 < L t)
+    (hK : K (t + 1) = K t + s * F (K t) (L t)) (hLs : L (t + 1) = (1 + n) * L t)
+    (hF : F (K t) (L t) = L t * f (K t / L t)) :
+    K (t + 1) / L (t + 1) = next f s 0 (1 + n) (K t / L t) := by
+  rw [hK, hLs, hF]
+  unfold next
+  field_simp
+  ring
+
+/-- The net-output map moves capital by Solow's `capitalChange` divided by `1 + n`. -/
+theorem next_sub_self_net {f : ℝ → ℝ} {s n : ℝ} (hn : 0 < 1 + n) (k : ℝ) :
+    next f s 0 (1 + n) k - k = capitalChange f s n k / (1 + n) := by
+  unfold next capitalChange
+  field_simp
+  ring
+
+namespace SquareRoot
+
+open Solow1956.SolowSwan.SquareRoot
+
+/-- Square-root production is a power technology after absorbing `A` into saving. -/
+theorem next_production (s A δ γ : ℝ) :
+    next (production A) s δ γ = next (fun k : ℝ => k ^ (1 / 2 : ℝ)) (s * A) δ γ := by
+  funext k
+  simp only [next, production, Real.sqrt_eq_rpow, one_div]
+  ring
+
+@[simp] theorem next_zero (s A n : ℝ) : next (production A) s 0 (1 + n) 0 = 0 := by
+  simp [next, production]
+
+/-- On the economic domain, the fixed points are exactly zero and `k*`. -/
+theorem next_eq_self_iff {s A n k : ℝ} (hs : 0 ≤ s) (hA : 0 ≤ A) (hn : 0 < n) (hk : 0 ≤ k) :
+    next (production A) s 0 (1 + n) k = k ↔ k = 0 ∨ k = steadyState s A n := by
+  have hn1 : 0 < 1 + n := by linarith
+  rw [← sub_eq_zero, next_sub_self_net hn1, div_eq_zero_iff, or_iff_left (ne_of_gt hn1)]
+  exact capitalChange_eq_zero_iff hs hA hn hk
+
+/-- Existence and uniqueness of the positive fixed point. -/
+theorem existsUnique_positive_fixed {s A n : ℝ} (hs : 0 < s) (hA : 0 < A) (hn : 0 < n) :
+    ∃! k : ℝ, 0 < k ∧ next (production A) s 0 (1 + n) k = k := by
+  refine ⟨steadyState s A n, ⟨steadyState_pos hs hA hn,
+    (next_eq_self_iff hs.le hA.le hn (steadyState_pos hs hA hn).le).mpr (Or.inr rfl)⟩, ?_⟩
+  intro k hk
+  exact ((next_eq_self_iff hs.le hA.le hn hk.1.le).mp hk.2).resolve_left (ne_of_gt hk.1)
+
+/-- Capital rises in every period at a positive stock below `k*`. -/
+theorem lt_next_of_lt {s A n k : ℝ} (hs : 0 < s) (hA : 0 < A) (hn : 0 < n) (hk : 0 < k)
+    (hlt : k < steadyState s A n) : k < next (production A) s 0 (1 + n) k := by
+  have hn1 : 0 < 1 + n := by linarith
+  have := div_pos (capitalChange_pos_of_lt hs hA hn hk hlt) hn1
+  have := next_sub_self_net (f := production A) (s := s) hn1 k
+  linarith
+
+/-- Capital falls in every period at a stock above `k*`. -/
+theorem next_lt_of_gt {s A n k : ℝ} (hs : 0 < s) (hA : 0 < A) (hn : 0 < n)
+    (hgt : steadyState s A n < k) : next (production A) s 0 (1 + n) k < k := by
+  have hn1 : 0 < 1 + n := by linarith
+  have := div_neg_of_neg_of_pos (capitalChange_neg_of_gt hs hA hn hgt) hn1
+  have := next_sub_self_net (f := production A) (s := s) hn1 k
+  linarith
+
+theorem params {s A n : ℝ} (hs : 0 < s) (hA : 0 < A) (hn : 0 < n) :
+    Params (s * A) 0 (1 + n) :=
+  ⟨mul_pos hs hA, by norm_num, by linarith, by linarith⟩
+
+/-- The general steady state of the net-output economy is Solow's `(sA/n)^2`. -/
+theorem steady_eq_steadyState {s A n : ℝ} (hs : 0 < s) (hA : 0 < A) (hn : 0 < n) :
+    steady (technology_rpow (α := 1 / 2) (by norm_num) (by norm_num)) (s * A) 0 (1 + n) =
+      steadyState s A n := by
+  apply steady_eq _ (params hs hA hn) (steadyState_pos hs hA hn)
+  rw [← next_production]
+  exact (next_eq_self_iff hs.le hA.le hn (steadyState_pos hs hA hn).le).mpr (Or.inr rfl)
+
+/-- Global dynamics of the square-root economy in discrete time: from any positive
+stock, capital converges monotonically to `k* = (sA/n)^2` and never crosses it. -/
+theorem global_dynamics {s A n k₀ : ℝ} (hs : 0 < s) (hA : 0 < A) (hn : 0 < n) (hk₀ : 0 < k₀) :
+    (∀ t, 0 < path (production A) s 0 (1 + n) k₀ t) ∧
+      (k₀ < steadyState s A n → StrictMono (path (production A) s 0 (1 + n) k₀) ∧
+        ∀ t, path (production A) s 0 (1 + n) k₀ t < steadyState s A n) ∧
+      (steadyState s A n < k₀ → StrictAnti (path (production A) s 0 (1 + n) k₀) ∧
+        ∀ t, steadyState s A n < path (production A) s 0 (1 + n) k₀ t) ∧
+      Tendsto (path (production A) s 0 (1 + n) k₀) atTop (𝓝 (steadyState s A n)) := by
+  have hT := technology_rpow (α := 1 / 2) (by norm_num) (by norm_num)
+  have hp : path (production A) s 0 (1 + n) k₀ =
+      path (fun k : ℝ => k ^ (1 / 2 : ℝ)) (s * A) 0 (1 + n) k₀ := by
+    unfold path; rw [next_production]
+  obtain ⟨hpos, hlow, hhigh, _, _, hlim⟩ := (isPath_path (f := fun k : ℝ => k ^ (1 / 2 : ℝ))
+    (s := s * A) (δ := 0) (γ := 1 + n) hk₀).orbit hT (params hs hA hn)
+  rw [steady_eq_steadyState hs hA hn] at hlow hhigh hlim
+  rw [hp]
+  exact ⟨hpos, hlow, hhigh, hlim⟩
+
+/-- The stationary capital/output ratio of the discrete economy is `s/n`, as in
+Solow (p. 77); it is a property of the shared stock `k*`. -/
+theorem fixed_capital_output_ratio {s A n : ℝ} (hs : 0 < s) (hA : 0 < A) (hn : 0 < n) :
+    steadyState s A n / production A (steadyState s A n) = s / n :=
+  steadyState_capital_output_ratio hs hA hn
+
+end SquareRoot
+
+end Solow1956.DiscreteTime
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# Discrete-time Cobb–Douglas dynamics
+
+The discrete counterpart of `Solow1956.Growth.SolowSwanDynamics`, for
+
+`k(t+1) = (b k(t)^α + (1 - δ) k(t)) / γ`,   `b = sA`.
+
+The positive fixed point is Solow's `k* = (b/m)^(1/(1-α))` with `m = γ - 1 + δ`.
+The continuous model linearises in `z = k^(1-α)`; the discrete map does not, and
+for `δ < 1` there is no closed form. With full depreciation `δ = 1` the map is
+`k ↦ (b/γ) k^α`, which is linear in `log k`, and the path is explicit:
+`k(t) = k*^(1 - α^t) k₀^(α^t)`, so the log distance to `k*` shrinks by exactly `α`
+every period. For general `δ` the dynamics come from the general theorem.
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime.CobbDouglas
+
+open Solow1956.Neoclassical Solow1956.SolowSwan.CobbDouglas
+
+/-- The positive fixed point is the continuous Cobb–Douglas steady state at dilution
+`γ - 1 + δ`. -/
+theorem steady_eq {b δ γ α : ℝ} (hα : 0 < α) (hα1 : α < 1) (P : Params b δ γ) :
+    steady (technology_rpow hα hα1) b δ γ = steadyState b (γ - 1 + δ) α :=
+  DiscreteTime.steady_eq _ P (steadyState_pos P.saving_pos P.dilution_pos)
+    ((next_eq_self_iff P.growth_pos).mpr (rate_steadyState P.saving_pos P.dilution_pos hα1))
+
+theorem next_zero {b δ γ α : ℝ} (hα : 0 < α) : next (fun k : ℝ => k ^ α) b δ γ 0 = 0 := by
+  simp [next, Real.zero_rpow (ne_of_gt hα)]
+
+/-- Full depreciation: the map is `k ↦ (b/γ) k^α`. -/
+theorem next_full_depreciation (b γ α k : ℝ) :
+    next (fun k : ℝ => k ^ α) b 1 γ k = b / γ * k ^ α := by
+  simp only [next, sub_self, zero_mul, add_zero]
+  ring
+
+/-- Closed form under full depreciation: `k(t) = k*^(1 - α^t) k₀^(α^t)`. -/
+theorem path_full_depreciation {b γ α k₀ : ℝ} (hb : 0 < b) (hγ : 0 < γ) (hα1 : α < 1)
+    (hk₀ : 0 < k₀) (t : ℕ) :
+    path (fun k : ℝ => k ^ α) b 1 γ k₀ t =
+      steadyState b γ α ^ (1 - α ^ t) * k₀ ^ (α ^ t) := by
+  have hks := steadyState_pos (α := α) hb hγ
+  have hpow : steadyState b γ α ^ (1 - α) = b / γ := by
+    have := steadyState_power (α := α) hb hγ hα1
+    exact this
+  induction t with
+  | zero => simp [path_zero]
+  | succ t ih =>
+    rw [path_succ, ih, next_full_depreciation,
+      Real.mul_rpow (Real.rpow_pos_of_pos hks _).le (Real.rpow_pos_of_pos hk₀ _).le,
+      ← Real.rpow_mul hks.le, ← Real.rpow_mul hk₀.le, ← hpow, ← mul_assoc,
+      ← Real.rpow_add hks, pow_succ]
+    congr 2
+    ring
+
+/-- Exact convergence rate under full depreciation: the log distance to `k*` is
+multiplied by `α` every period, `log k(t) - log k* = α^t (log k₀ - log k*)`. -/
+theorem log_gap_full_depreciation {b γ α k₀ : ℝ} (hb : 0 < b) (hγ : 0 < γ) (hα1 : α < 1)
+    (hk₀ : 0 < k₀) (t : ℕ) :
+    Real.log (path (fun k : ℝ => k ^ α) b 1 γ k₀ t) - Real.log (steadyState b γ α) =
+      α ^ t * (Real.log k₀ - Real.log (steadyState b γ α)) := by
+  have hks := steadyState_pos (α := α) hb hγ
+  rw [path_full_depreciation hb hγ hα1 hk₀,
+    Real.log_mul (Real.rpow_pos_of_pos hks _).ne' (Real.rpow_pos_of_pos hk₀ _).ne',
+    Real.log_rpow hks, Real.log_rpow hk₀]
+  ring
+
+/-- Under full depreciation the path converges to `k*`. -/
+theorem tendsto_path_full_depreciation {b γ α k₀ : ℝ} (hb : 0 < b) (hγ : 0 < γ)
+    (hα : 0 < α) (hα1 : α < 1) (hk₀ : 0 < k₀) :
+    Tendsto (path (fun k : ℝ => k ^ α) b 1 γ k₀) atTop (𝓝 (steadyState b γ α)) := by
+  have hks := steadyState_pos (α := α) hb hγ
+  have hpow : Tendsto (fun t : ℕ => α ^ t) atTop (𝓝 0) :=
+    tendsto_pow_atTop_nhds_zero_of_lt_one hα.le hα1
+  have h1 : Tendsto (fun t : ℕ => steadyState b γ α ^ (1 - α ^ t)) atTop
+      (𝓝 (steadyState b γ α ^ (1 - 0 : ℝ))) :=
+    ((Real.continuousAt_const_rpow (ne_of_gt hks)).tendsto).comp
+      (tendsto_const_nhds.sub hpow)
+  have h2 : Tendsto (fun t : ℕ => k₀ ^ (α ^ t)) atTop (𝓝 (k₀ ^ (0 : ℝ))) :=
+    ((Real.continuousAt_const_rpow (ne_of_gt hk₀)).tendsto).comp hpow
+  have := h1.mul h2
+  simp only [sub_zero, Real.rpow_one, Real.rpow_zero, mul_one] at this
+  exact this.congr (fun t => (path_full_depreciation hb hγ hα1 hk₀ t).symm)
+
+/-- Solow's Cobb–Douglas theorem in discrete time: the iterated path is positive,
+converges to `k*`, and is the only path from `k₀`. -/
+theorem positive_dynamics {b δ γ α k₀ : ℝ} (hα : 0 < α) (hα1 : α < 1) (P : Params b δ γ)
+    (hk₀ : 0 < k₀) :
+    IsPath (fun k : ℝ => k ^ α) b δ γ (path (fun k : ℝ => k ^ α) b δ γ k₀) ∧
+      (∀ t, 0 < path (fun k : ℝ => k ^ α) b δ γ k₀ t) ∧
+      Tendsto (path (fun k : ℝ => k ^ α) b δ γ k₀) atTop (𝓝 (steadyState b (γ - 1 + δ) α)) ∧
+      ∀ k : ℕ → ℝ, k 0 = k₀ → (∀ t, k (t + 1) = next (fun k : ℝ => k ^ α) b δ γ (k t)) →
+        k = path (fun k : ℝ => k ^ α) b δ γ k₀ := by
+  have hp := isPath_path (f := fun k : ℝ => k ^ α) (s := b) (δ := δ) (γ := γ) hk₀
+  have ho := hp.orbit (technology_rpow hα hα1) P
+  rw [steady_eq hα hα1 P] at ho
+  exact ⟨hp, ho.1, ho.2.2.2.2.2, fun k hk0 hk => path_unique hk (path_succ b δ γ k₀) hk0⟩
+
+/-- Convergence holds for every admissible path, not only the iterated witness. -/
+theorem tendsto_of_isPath {b δ γ α : ℝ} (hα : 0 < α) (hα1 : α < 1) (P : Params b δ γ)
+    {k : ℕ → ℝ} (hk : IsPath (fun k : ℝ => k ^ α) b δ γ k) :
+    Tendsto k atTop (𝓝 (steadyState b (γ - 1 + δ) α)) := by
+  have := hk.tendsto (technology_rpow hα hα1) P
+  rwa [steady_eq hα hα1 P] at this
+
+/-- Paths never cross the stationary stock. -/
+theorem path_lt_steadyState_iff {b δ γ α : ℝ} (hα : 0 < α) (hα1 : α < 1) (P : Params b δ γ)
+    {k : ℕ → ℝ} (hk : IsPath (fun k : ℝ => k ^ α) b δ γ k) (t : ℕ) :
+    k t < steadyState b (γ - 1 + δ) α ↔ k 0 < steadyState b (γ - 1 + δ) α := by
+  obtain ⟨_, hlow, hhigh, hconst, _, _⟩ := hk.orbit (technology_rpow hα hα1) P
+  rw [steady_eq hα hα1 P] at hlow hhigh hconst
+  constructor
+  · intro ht
+    rcases lt_trichotomy (k 0) (steadyState b (γ - 1 + δ) α) with hlt | heq | hgt
+    · exact hlt
+    · exact absurd (hconst heq t) (ne_of_lt ht)
+    · exact absurd ((hhigh hgt).2 t) (not_lt.mpr ht.le)
+  · intro h0
+    exact (hlow h0).2 t
+
+/-- Starting below the steady state gives a strictly increasing path. -/
+theorem path_strictMono_of_lt {b δ γ α : ℝ} (hα : 0 < α) (hα1 : α < 1) (P : Params b δ γ)
+    {k : ℕ → ℝ} (hk : IsPath (fun k : ℝ => k ^ α) b δ γ k)
+    (hbelow : k 0 < steadyState b (γ - 1 + δ) α) : StrictMono k := by
+  obtain ⟨_, hlow, _, _, _, _⟩ := hk.orbit (technology_rpow hα hα1) P
+  rw [steady_eq hα hα1 P] at hlow
+  exact (hlow hbelow).1
+
+/-- Starting above the steady state gives a strictly decreasing path. -/
+theorem path_strictAnti_of_gt {b δ γ α : ℝ} (hα : 0 < α) (hα1 : α < 1) (P : Params b δ γ)
+    {k : ℕ → ℝ} (hk : IsPath (fun k : ℝ => k ^ α) b δ γ k)
+    (habove : steadyState b (γ - 1 + δ) α < k 0) : StrictAnti k := by
+  obtain ⟨_, _, hhigh, _, _, _⟩ := hk.orbit (technology_rpow hα hα1) P
+  rw [steady_eq hα hα1 P] at hhigh
+  exact (hhigh habove).1
+
+/-- Below the positive steady state capital rises; above it capital falls. -/
+theorem lt_next_iff {b δ γ α k : ℝ} (hα : 0 < α) (hα1 : α < 1) (P : Params b δ γ)
+    (hk : 0 < k) :
+    (k < steadyState b (γ - 1 + δ) α → k < next (fun k : ℝ => k ^ α) b δ γ k) ∧
+      (steadyState b (γ - 1 + δ) α < k → next (fun k : ℝ => k ^ α) b δ γ k < k) := by
+  rw [← steady_eq hα hα1 P]
+  exact ⟨next_gt_self (technology_rpow hα hα1) P hk, next_lt_self (technology_rpow hα hα1) P⟩
+
+/-- Output per effective worker converges. -/
+theorem tendsto_output {b δ γ α A : ℝ} (hα : 0 < α) (hα1 : α < 1) (P : Params b δ γ)
+    {k : ℕ → ℝ} (hk : IsPath (fun k : ℝ => k ^ α) b δ γ k) :
+    Tendsto (fun t => A * k t ^ α) atTop (𝓝 (A * steadyState b (γ - 1 + δ) α ^ α)) :=
+  ((Real.continuousAt_rpow_const _ α (Or.inl (ne_of_gt
+    (steadyState_pos P.saving_pos P.dilution_pos)))).tendsto.comp
+      (tendsto_of_isPath hα hα1 P hk)).const_mul A
+
+/-- Higher investment raises the discrete steady state. -/
+theorem steady_strictMono_investment {b₁ b₂ δ γ α : ℝ} (hα : 0 < α) (hα1 : α < 1)
+    (P : Params b₁ δ γ) (hbb : b₁ < b₂) :
+    steady (technology_rpow hα hα1) b₁ δ γ < steady (technology_rpow hα hα1) b₂ δ γ := by
+  have P2 : Params b₂ δ γ := ⟨P.saving_pos.trans hbb, P.depreciation_le_one, P.growth_pos,
+    P.dilution_pos⟩
+  rw [steady_eq hα hα1 P, steady_eq hα hα1 P2]
+  exact steadyState_strictMono_investment P.saving_pos hbb P.dilution_pos hα1
+
+/-- Higher depreciation or faster effective-labour growth lowers the steady state. -/
+theorem steady_strictAnti_dilution {b δ₁ δ₂ γ₁ γ₂ α : ℝ} (hα : 0 < α) (hα1 : α < 1)
+    (P : Params b δ₁ γ₁) (P2 : Params b δ₂ γ₂) (hlt : γ₁ - 1 + δ₁ < γ₂ - 1 + δ₂) :
+    steady (technology_rpow hα hα1) b δ₂ γ₂ < steady (technology_rpow hα hα1) b δ₁ γ₁ := by
+  rw [steady_eq hα hα1 P, steady_eq hα hα1 P2]
+  exact steadyState_strictAnti_dilution P.saving_pos P.dilution_pos hlt hα1
+
+/-- The stationary capital/output ratio is saving over effective dilution. -/
+theorem steady_capital_output_ratio {s A δ γ α : ℝ} (hα : 0 < α) (hα1 : α < 1)
+    (hA : 0 < A) (P : Params (s * A) δ γ) (hs : 0 < s) :
+    steady (technology_rpow hα hα1) (s * A) δ γ /
+        (A * steady (technology_rpow hα hα1) (s * A) δ γ ^ α) = s / (γ - 1 + δ) := by
+  rw [steady_eq hα hα1 P]
+  exact steadyState_capital_output_ratio hs hA P.dilution_pos hα1
+
+end Solow1956.DiscreteTime.CobbDouglas
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-! # Realizable discrete-time Cobb–Douglas paths and explicit boundary checks
+
+The discrete counterpart of `Solow1956.Growth.SolowSwanExamples`.
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime.CobbDouglas
+
+open Solow1956.Neoclassical
+
+theorem example_params : Params 1 1 1 := ⟨by norm_num, le_rfl, by norm_num, by norm_num⟩
+
+/-- A nonstationary positive initial condition with an explicit path:
+`k₀ = 4`, `k* = 1`, `k(t) = 4^((1/2)^t)`. -/
+theorem example_path (t : ℕ) :
+    path (fun k : ℝ => k ^ (1 / 2 : ℝ)) 1 1 1 4 t = 4 ^ ((1 / 2 : ℝ) ^ t) := by
+  rw [path_full_depreciation (by norm_num) (by norm_num) (by norm_num) (by norm_num),
+    SolowSwan.CobbDouglas.normalized_steadyState, Real.one_rpow, one_mul]
+
+theorem example_converges :
+    Tendsto (path (fun k : ℝ => k ^ (1 / 2 : ℝ)) 1 1 1 4) atTop (𝓝 1) := by
+  have := tendsto_path_full_depreciation (b := 1) (γ := 1) (α := 1 / 2) (k₀ := 4)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  rwa [SolowSwan.CobbDouglas.normalized_steadyState] at this
+
+theorem normalized_steady :
+    steady (technology_rpow (α := 1 / 2) (by norm_num) (by norm_num)) 1 1 1 = 1 := by
+  rw [steady_eq (by norm_num) (by norm_num) example_params]
+  norm_num [SolowSwan.CobbDouglas.steadyState]
+
+/-- Zero is a fixed point of the nonlinear map, excluded by strict positivity. -/
+theorem zero_fixed {b δ γ α : ℝ} (hα : 0 < α) : next (fun k : ℝ => k ^ α) b δ γ 0 = 0 :=
+  next_zero hα
+
+theorem zero_orbit_not_isPath (f : ℝ → ℝ) (s δ γ : ℝ) : ¬ IsPath f s δ γ (fun _ => 0) :=
+  fun h => lt_irrefl (0 : ℝ) h.initial_pos
+
+/-- At the excluded exponent one with `b > γ - 1 + δ`, capital grows every period:
+there is no positive fixed point. -/
+theorem no_positive_fixed_at_exponent_one {b δ γ k : ℝ} (hγ : 0 < γ)
+    (hbm : γ - 1 + δ < b) (hk : 0 < k) : k < next (fun k : ℝ => k ^ (1 : ℝ)) b δ γ k := by
+  have hd := next_sub_self (f := fun k : ℝ => k ^ (1 : ℝ)) (s := b) (δ := δ) hγ k
+  have hr : 0 < rate (fun k : ℝ => k ^ (1 : ℝ)) b (γ - 1 + δ) k := by
+    simp only [rate, Real.rpow_one]
+    nlinarith
+  have := div_pos hr hγ
+  linarith
+
+/-- Effective labour grows by the factor `(1 + n)(1 + g)` each period. -/
+theorem effectiveLabour_succ {B L : ℕ → ℝ} {g n : ℝ} {t : ℕ}
+    (hB : B (t + 1) = (1 + g) * B t) (hL : L (t + 1) = (1 + n) * L t) :
+    B (t + 1) * L (t + 1) = (1 + n) * (1 + g) * (B t * L t) := by
+  rw [hB, hL]
+  ring
+
+end Solow1956.DiscreteTime.CobbDouglas
+
+/-
+SPDX-License-Identifier: Unlicense
+Developed with Claude (Anthropic).
+-/
+
+/-!
+# Absolute convergence among identical discrete-time Solow economies, and its speed
+
+The discrete counterpart of `Solow1956.Growth.SolowConvergence`. Two economies share
+`s`, `δ`, `γ` and `f` and differ only in initial capital. We prove:
+
+* `path_eq_of_meet`, `paths_ordered`: paths that meet at a date agree at every
+  earlier date (the map is injective), so paths never cross.
+* `poorer_grows_faster`: the poorer economy's gross growth factor `k(t+1)/k(t)` is
+  strictly higher every period.
+* `log_gap_strictAnti`, `absolute_convergence`: the log gap `D t = log l t - log k t`
+  strictly decreases, and the level gap, log gap and ratio converge to `0`, `0`, `1`.
+* `log_gap_le_of_contraction_bound`, `exists_uniform_rate`,
+  `absolute_convergence_rate`, `level_gap_le`: geometric convergence. The local
+  contraction `κ(k) = k G'(k) / G(k)` (the elasticity of the map) lies in `(0, 1)`;
+  an upper bound `ρ` for it on the range of the paths gives `D t ≤ ρ^t D 0`.
+* `sharp_convergence_rate`, `log_gap_ratio_tendsto`, `log_gap_rate_tendsto`: the exact
+  asymptotic factor is `ρ* = κ(k*) = G'(k*) = (s f'(k*) + 1 - δ) / γ`:
+  `D (t+1) / D t → ρ*` and `log (D t) / t → log ρ*`.
+* `contraction_steady_eq`: `ρ* = 1 - β*/γ`, with `β* = m - s f'(k*)` the
+  continuous-time speed; `cobbDouglas_contraction`: `ρ* = 1 - (1 - α) m / γ`
+  (`= α` under full depreciation and `γ = 1`).
+
+The constant steady-state path is admissible, so every result also bounds a single
+economy's convergence to its steady state (`log_gap_steady_le`).
+-/
+
+open Set Filter Topology
+
+namespace Solow1956.DiscreteTime
+
+open Solow1956.Neoclassical
+
+variable {f : ℝ → ℝ}
+
+/-- Gross growth factor of capital, `k(t+1)/k(t) = (s f(k)/k + 1 - δ)/γ`. -/
+noncomputable def growthFactor (f : ℝ → ℝ) (s δ γ k : ℝ) : ℝ := (s * (f k / k) + (1 - δ)) / γ
+
+/-- Local contraction `κ(k) = k G'(k)/G(k)`: the elasticity of the map, the slope of
+`log k(t+1)` against `log k(t)`. -/
+noncomputable def contraction (f : ℝ → ℝ) (s δ k : ℝ) : ℝ :=
+  k * (s * deriv f k + (1 - δ)) / (s * f k + (1 - δ) * k)
+
+theorem next_div_eq_growthFactor (s δ γ : ℝ) {k : ℝ} (hk : 0 < k) :
+    next f s δ γ k / k = growthFactor f s δ γ k := by
+  unfold next growthFactor
+  field_simp
+
+theorem growthFactor_strictAnti (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    StrictAntiOn (growthFactor f s δ γ) (Ioi 0) := by
+  intro a ha b hb hab
+  have := mul_lt_mul_of_pos_left (h.average_strictAnti ha hb hab) P.saving_pos
+  exact div_lt_div_of_pos_right (by linarith) P.growth_pos
+
+theorem gross_pos (h : Technology f) {s δ γ k : ℝ} (P : Params s δ γ) (hk : 0 < k) :
+    0 < s * f k + (1 - δ) * k := by
+  have := mul_pos P.saving_pos (h.output_pos hk)
+  have := mul_nonneg (sub_nonneg.mpr P.depreciation_le_one) hk.le
+  linarith
+
+theorem contraction_pos (h : Technology f) {s δ γ k : ℝ} (P : Params s δ γ) (hk : 0 < k) :
+    0 < contraction f s δ k := by
+  have := mul_pos P.saving_pos (h.marginal_positive k hk)
+  have := sub_nonneg.mpr P.depreciation_le_one
+  exact div_pos (mul_pos hk (by linarith)) (gross_pos h P hk)
+
+theorem contraction_lt_one (h : Technology f) {s δ γ k : ℝ} (P : Params s δ γ) (hk : 0 < k) :
+    contraction f s δ k < 1 := by
+  have hg := mul_lt_mul_of_pos_left (h.output_gap hk) P.saving_pos
+  apply (div_lt_one (gross_pos h P hk)).mpr
+  nlinarith
+
+theorem contraction_continuousOn (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    ContinuousOn (contraction f s δ) (Ioi 0) := by
+  have hf : ContinuousOn f (Ioi 0) := fun k hk =>
+    (h.differentiable k hk).continuousAt.continuousWithinAt
+  exact (continuousOn_id.mul ((h.derivative_continuous.const_mul s).add continuousOn_const)).div
+    ((hf.const_mul s).add (continuousOn_id.const_mul (1 - δ)))
+    (fun k hk => ne_of_gt (gross_pos h P hk))
+
+/-- At the steady state the contraction is the slope of the map, `G'(k*)`. -/
+theorem contraction_steady (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    contraction f s δ (steady h s δ γ) = (s * deriv f (steady h s δ γ) + (1 - δ)) / γ := by
+  obtain ⟨hk, hfix⟩ := steady_spec h P
+  set ks := steady h s δ γ
+  have hgross : s * f ks + (1 - δ) * ks = γ * ks := by
+    unfold next at hfix
+    field_simp [ne_of_gt P.growth_pos] at hfix
+    linarith
+  unfold contraction
+  rw [hgross]
+  field_simp [ne_of_gt P.growth_pos, ne_of_gt hk]
+
+/-- The discrete factor and the continuous speed: `ρ* = 1 - β*/γ`. -/
+theorem contraction_steady_eq (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    contraction f s δ (steady h s δ γ) =
+      1 - convergenceSpeed f s (steady h s δ γ) / γ := by
+  rw [contraction_steady h P, steady,
+    convergenceSpeed_steady h P.saving_pos P.dilution_pos]
+  field_simp [ne_of_gt P.growth_pos]
+  ring
+
+/-- Cobb–Douglas: `ρ* = 1 - (1 - α)(γ - 1 + δ)/γ`. -/
+theorem cobbDouglas_contraction {α b δ γ : ℝ} (hα : 0 < α) (hα1 : α < 1) (P : Params b δ γ) :
+    contraction (fun k : ℝ => k ^ α) b δ (steady (technology_rpow hα hα1) b δ γ) =
+      1 - (1 - α) * (γ - 1 + δ) / γ := by
+  rw [contraction_steady_eq _ P, steady, cobbDouglas_speed hα hα1 P.saving_pos P.dilution_pos]
+
+/-- The constant path at `k*` is admissible. -/
+theorem isPath_steady (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) :
+    IsPath f s δ γ (fun _ => steady h s δ γ) :=
+  ⟨(steady_spec h P).1, fun _ => (steady_spec h P).2.symm⟩
+
+/-- Backward uniqueness: paths that meet at a date agree at every earlier date. -/
+theorem path_eq_of_meet (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l)
+    {T : ℕ} (hmeet : k T = l T) {t : ℕ} (ht : t ≤ T) : k t = l t := by
+  induction T with
+  | zero => rwa [Nat.le_zero.mp ht]
+  | succ T ih =>
+    rcases Nat.lt_or_eq_of_le ht with hlt | heq
+    · apply ih _ (Nat.lt_succ_iff.mp hlt)
+      rw [hk.succ, hl.succ] at hmeet
+      exact (next_strictMono h P).injOn (hk.pos h P T).le (hl.pos h P T).le hmeet
+    · rw [heq]; exact hmeet
+
+/-- Paths never cross: the initially poorer economy is strictly poorer every period. -/
+theorem paths_ordered (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0)
+    (t : ℕ) : k t < l t := by
+  induction t with
+  | zero => exact h0
+  | succ t ih =>
+    rw [hk.succ, hl.succ]
+    exact next_strictMono h P (hk.pos h P t).le (hl.pos h P t).le ih
+
+/-- The poorer economy grows by a strictly larger factor every period. -/
+theorem poorer_grows_faster (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0)
+    (t : ℕ) : l (t + 1) / l t < k (t + 1) / k t := by
+  rw [hk.succ, hl.succ, next_div_eq_growthFactor s δ γ (hk.pos h P t),
+    next_div_eq_growthFactor s δ γ (hl.pos h P t)]
+  exact growthFactor_strictAnti h P (hk.pos h P t) (hl.pos h P t) (paths_ordered h P hk hl h0 t)
+
+theorem log_gap_pos (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0)
+    (t : ℕ) : 0 < Real.log (l t) - Real.log (k t) :=
+  sub_pos.mpr (Real.log_lt_log (hk.pos h P t) (paths_ordered h P hk hl h0 t))
+
+/-- The proportional gap shrinks strictly every period. -/
+theorem log_gap_strictAnti (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0) :
+    StrictAnti (fun t => Real.log (l t) - Real.log (k t)) := by
+  apply strictAnti_nat_of_succ_lt
+  intro t
+  have hkt := hk.pos h P t
+  have hlt := hl.pos h P t
+  have hfast := poorer_grows_faster h P hk hl h0 t
+  have hk1 := hk.pos h P (t + 1)
+  have hl1 := hl.pos h P (t + 1)
+  have hlog := Real.log_lt_log (div_pos hl1 hlt) hfast
+  rw [Real.log_div hl1.ne' hlt.ne', Real.log_div hk1.ne' hkt.ne'] at hlog
+  linarith
+
+/-- Absolute convergence: identical economies converge to each other in levels, in
+logs, and in ratio. -/
+theorem absolute_convergence (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) :
+    Tendsto (fun t => l t - k t) atTop (𝓝 0) ∧
+      Tendsto (fun t => Real.log (l t) - Real.log (k t)) atTop (𝓝 0) ∧
+      Tendsto (fun t => l t / k t) atTop (𝓝 1) := by
+  have hks := (steady_spec h P).1
+  have hkl := hk.tendsto h P
+  have hll := hl.tendsto h P
+  refine ⟨by simpa only [sub_self] using hll.sub hkl, ?_, ?_⟩
+  · have hlog := (Real.continuousAt_log (ne_of_gt hks)).tendsto
+    have := (hlog.comp hll).sub (hlog.comp hkl)
+    rw [sub_self] at this
+    exact this
+  · have := hll.div hkl (ne_of_gt hks)
+    rw [div_self (ne_of_gt hks)] at this
+    exact this
+
+theorem hasDerivAt_log_next_sub (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ) (r : ℝ)
+    {z : ℝ} (hz : 0 < z) :
+    HasDerivAt (fun z => Real.log (next f s δ γ z) - r * Real.log z)
+      ((contraction f s δ z - r) / z) z := by
+  have hg := gross_pos h P hz
+  have h1 := (next_hasDerivAt h s δ γ hz).log (ne_of_gt (next_pos h P hz))
+  have h2 := (Real.hasDerivAt_log (ne_of_gt hz)).const_mul r
+  refine (h1.sub h2).congr_deriv ?_
+  unfold contraction next
+  field_simp [ne_of_gt P.growth_pos, ne_of_gt hg, ne_of_gt hz]
+
+/-- An upper bound `ρ` on the contraction over `[a, b]` bounds the one-period log gap. -/
+theorem log_next_gap_le (h : Technology f) {s δ γ a b r : ℝ} (P : Params s δ γ) (ha : 0 < a)
+    (hr : ∀ z ∈ Icc a b, contraction f s δ z ≤ r)
+    {x y : ℝ} (hx : x ∈ Icc a b) (hy : y ∈ Icc a b) (hxy : x ≤ y) :
+    Real.log (next f s δ γ y) - Real.log (next f s δ γ x) ≤ r * (Real.log y - Real.log x) := by
+  have hanti : AntitoneOn (fun z => Real.log (next f s δ γ z) - r * Real.log z) (Icc a b) := by
+    apply antitoneOn_of_deriv_nonpos (convex_Icc a b)
+      (HasDerivAt.continuousOn (fun z hz => hasDerivAt_log_next_sub h P r (ha.trans_le hz.1)))
+      (fun z hz => (hasDerivAt_log_next_sub h P r (ha.trans_le
+        (interior_subset hz : z ∈ Icc a b).1)).differentiableAt.differentiableWithinAt)
+    intro z hz
+    have hz' : z ∈ Icc a b := interior_subset hz
+    rw [(hasDerivAt_log_next_sub h P r (ha.trans_le hz'.1)).deriv]
+    exact div_nonpos_of_nonpos_of_nonneg (sub_nonpos.mpr (hr z hz')) (ha.trans_le hz'.1).le
+  have := hanti hx hy hxy
+  simp only at this
+  linarith
+
+/-- A lower bound `ρ'` on the contraction over `[a, b]` bounds the one-period log gap below. -/
+theorem log_next_gap_ge (h : Technology f) {s δ γ a b r : ℝ} (P : Params s δ γ) (ha : 0 < a)
+    (hr : ∀ z ∈ Icc a b, r ≤ contraction f s δ z)
+    {x y : ℝ} (hx : x ∈ Icc a b) (hy : y ∈ Icc a b) (hxy : x ≤ y) :
+    r * (Real.log y - Real.log x) ≤ Real.log (next f s δ γ y) - Real.log (next f s δ γ x) := by
+  have hmono : MonotoneOn (fun z => Real.log (next f s δ γ z) - r * Real.log z) (Icc a b) := by
+    apply monotoneOn_of_deriv_nonneg (convex_Icc a b)
+      (HasDerivAt.continuousOn (fun z hz => hasDerivAt_log_next_sub h P r (ha.trans_le hz.1)))
+      (fun z hz => (hasDerivAt_log_next_sub h P r (ha.trans_le
+        (interior_subset hz : z ∈ Icc a b).1)).differentiableAt.differentiableWithinAt)
+    intro z hz
+    have hz' : z ∈ Icc a b := interior_subset hz
+    rw [(hasDerivAt_log_next_sub h P r (ha.trans_le hz'.1)).deriv]
+    exact div_nonneg (sub_nonneg.mpr (hr z hz')) (ha.trans_le hz'.1).le
+  have := hmono hx hy hxy
+  simp only at this
+  linarith
+
+/-- Geometric bound from above: from any date `T` after which both ordered paths stay
+in `[a, b]`, an upper bound `ρ ≥ 0` on the contraction gives `D (T + n) ≤ ρ^n D T`. -/
+theorem log_gap_upper (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0)
+    {a b r : ℝ} {T : ℕ} (ha : 0 < a) (hr0 : 0 ≤ r)
+    (hkw : ∀ t, T ≤ t → k t ∈ Icc a b) (hlw : ∀ t, T ≤ t → l t ∈ Icc a b)
+    (hr : ∀ z ∈ Icc a b, contraction f s δ z ≤ r) (n : ℕ) :
+    Real.log (l (T + n)) - Real.log (k (T + n)) ≤
+      r ^ n * (Real.log (l T) - Real.log (k T)) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    have hT : T ≤ T + n := Nat.le_add_right T n
+    have hstep := log_next_gap_le (γ := γ) h P ha hr (hkw _ hT) (hlw _ hT)
+      (paths_ordered h P hk hl h0 (T + n)).le
+    rw [← hk.succ, ← hl.succ] at hstep
+    rw [← add_assoc, pow_succ]
+    calc Real.log (l (T + n + 1)) - Real.log (k (T + n + 1))
+        ≤ r * (Real.log (l (T + n)) - Real.log (k (T + n))) := hstep
+      _ ≤ r * (r ^ n * (Real.log (l T) - Real.log (k T))) :=
+          mul_le_mul_of_nonneg_left ih hr0
+      _ = _ := by ring
+
+/-- Geometric bound from below: a lower bound `ρ' ≥ 0` on the contraction gives
+`ρ'^n D T ≤ D (T + n)`. -/
+theorem log_gap_lower (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0)
+    {a b r : ℝ} {T : ℕ} (ha : 0 < a) (hr0 : 0 ≤ r)
+    (hkw : ∀ t, T ≤ t → k t ∈ Icc a b) (hlw : ∀ t, T ≤ t → l t ∈ Icc a b)
+    (hr : ∀ z ∈ Icc a b, r ≤ contraction f s δ z) (n : ℕ) :
+    r ^ n * (Real.log (l T) - Real.log (k T)) ≤
+      Real.log (l (T + n)) - Real.log (k (T + n)) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    have hT : T ≤ T + n := Nat.le_add_right T n
+    have hstep := log_next_gap_ge (γ := γ) h P ha hr (hkw _ hT) (hlw _ hT)
+      (paths_ordered h P hk hl h0 (T + n)).le
+    rw [← hk.succ, ← hl.succ] at hstep
+    rw [← add_assoc, pow_succ]
+    calc r ^ n * r * (Real.log (l T) - Real.log (k T))
+        = r * (r ^ n * (Real.log (l T) - Real.log (k T))) := by ring
+      _ ≤ r * (Real.log (l (T + n)) - Real.log (k (T + n))) :=
+          mul_le_mul_of_nonneg_left ih hr0
+      _ ≤ _ := hstep
+
+/-- Both ordered paths lie between the lower initial stock (or `k*`) and the higher
+initial stock (or `k*`). -/
+theorem paths_window (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0) (t : ℕ) :
+    k t ∈ Icc (min (k 0) (steady h s δ γ)) (max (l 0) (steady h s δ γ)) ∧
+      l t ∈ Icc (min (k 0) (steady h s δ γ)) (max (l 0) (steady h s δ γ)) := by
+  obtain ⟨hk1, hk2⟩ := hk.bounds h P t
+  obtain ⟨hl1, hl2⟩ := hl.bounds h P t
+  have h1 : min (k 0) (steady h s δ γ) ≤ min (l 0) (steady h s δ γ) :=
+    min_le_min_right _ h0.le
+  have h2 : max (k 0) (steady h s δ γ) ≤ max (l 0) (steady h s δ γ) :=
+    max_le_max_right _ h0.le
+  exact ⟨⟨hk1, hk2.trans h2⟩, ⟨h1.trans hl1, hl2⟩⟩
+
+/-- Global geometric convergence at an explicit factor: any bound `ρ` for the
+contraction over the range of the two paths satisfies `D t ≤ ρ^t D 0`. -/
+theorem log_gap_le_of_contraction_bound (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0) {r : ℝ}
+    (hr0 : 0 ≤ r)
+    (hr : ∀ z ∈ Icc (min (k 0) (steady h s δ γ)) (max (l 0) (steady h s δ γ)),
+      contraction f s δ z ≤ r) (t : ℕ) :
+    Real.log (l t) - Real.log (k t) ≤ r ^ t * (Real.log (l 0) - Real.log (k 0)) := by
+  have ha : 0 < min (k 0) (steady h s δ γ) := lt_min hk.initial_pos (steady_spec h P).1
+  simpa only [zero_add] using log_gap_upper h P hk hl h0 (T := 0) ha hr0
+    (fun u _ => (paths_window h P hk hl h0 u).1) (fun u _ => (paths_window h P hk hl h0 u).2)
+    hr t
+
+/-- A uniform geometric factor `ρ < 1` exists. -/
+theorem exists_uniform_rate (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0) :
+    ∃ r, 0 < r ∧ r < 1 ∧ ∀ t,
+      Real.log (l t) - Real.log (k t) ≤ r ^ t * (Real.log (l 0) - Real.log (k 0)) := by
+  set a := min (k 0) (steady h s δ γ)
+  set b := max (l 0) (steady h s δ γ)
+  have ha : 0 < a := lt_min hk.initial_pos (steady_spec h P).1
+  have hab : a ≤ b := (min_le_right _ _).trans (le_max_right _ _)
+  obtain ⟨z, hz, hzmax⟩ := isCompact_Icc.exists_isMaxOn (nonempty_Icc.mpr hab)
+    ((contraction_continuousOn h P).mono (fun _ hx => ha.trans_le hx.1))
+  have hzpos := ha.trans_le hz.1
+  exact ⟨contraction f s δ z, contraction_pos h P hzpos, contraction_lt_one h P hzpos,
+    log_gap_le_of_contraction_bound h P hk hl h0 (contraction_pos h P hzpos).le
+      (fun y hy => hzmax hy)⟩
+
+/-- Absolute convergence at a geometric rate for any two identical economies. -/
+theorem absolute_convergence_rate (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) :
+    ∃ r, 0 < r ∧ r < 1 ∧ ∀ t,
+      |Real.log (l t) - Real.log (k t)| ≤ r ^ t * |Real.log (l 0) - Real.log (k 0)| := by
+  rcases lt_trichotomy (k 0) (l 0) with h0 | h0 | h0
+  · obtain ⟨r, hr, hr1, hb⟩ := exists_uniform_rate h P hk hl h0
+    refine ⟨r, hr, hr1, fun t => ?_⟩
+    rw [abs_of_pos (log_gap_pos h P hk hl h0 t), abs_of_pos (log_gap_pos h P hk hl h0 0)]
+    exact hb t
+  · refine ⟨1 / 2, by norm_num, by norm_num, fun t => ?_⟩
+    have he := path_unique hk.succ hl.succ h0
+    rw [he, sub_self, sub_self, abs_zero, mul_zero]
+  · obtain ⟨r, hr, hr1, hb⟩ := exists_uniform_rate h P hl hk h0
+    refine ⟨r, hr, hr1, fun t => ?_⟩
+    rw [abs_sub_comm, abs_sub_comm (Real.log (l 0)), abs_of_pos (log_gap_pos h P hl hk h0 t),
+      abs_of_pos (log_gap_pos h P hl hk h0 0)]
+    exact hb t
+
+/-- A single economy converges geometrically to its steady state. -/
+theorem log_gap_steady_le (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k : ℕ → ℝ} (hk : IsPath f s δ γ k) :
+    ∃ r, 0 < r ∧ r < 1 ∧ ∀ t,
+      |Real.log (k t) - Real.log (steady h s δ γ)| ≤
+        r ^ t * |Real.log (k 0) - Real.log (steady h s δ γ)| :=
+  absolute_convergence_rate h P (isPath_steady h P) hk
+
+/-- The level gap also closes geometrically:
+`l t - k t ≤ max (l 0) k* · log (l 0 / k 0) · ρ^t`. -/
+theorem level_gap_le (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0) :
+    ∃ r, 0 < r ∧ r < 1 ∧ ∀ t, 0 < l t - k t ∧
+      l t - k t ≤ max (l 0) (steady h s δ γ) * (Real.log (l 0) - Real.log (k 0)) * r ^ t := by
+  obtain ⟨r, hr, hr1, hb⟩ := exists_uniform_rate h P hk hl h0
+  refine ⟨r, hr, hr1, fun t => ⟨sub_pos.mpr (paths_ordered h P hk hl h0 t), ?_⟩⟩
+  have hkt := hk.pos h P t
+  have hlt := hl.pos h P t
+  have hlog : l t - k t ≤ l t * (Real.log (l t) - Real.log (k t)) := by
+    have he := Real.add_one_le_exp (Real.log (k t) - Real.log (l t))
+    rw [Real.exp_sub, Real.exp_log hkt, Real.exp_log hlt, le_div_iff₀ hlt] at he
+    nlinarith
+  have hD := log_gap_pos h P hk hl h0 t
+  have hup := (paths_window h P hk hl h0 t).2.2
+  calc l t - k t ≤ l t * (Real.log (l t) - Real.log (k t)) := hlog
+    _ ≤ max (l 0) (steady h s δ γ) * (Real.log (l t) - Real.log (k t)) :=
+        mul_le_mul_of_nonneg_right hup hD.le
+    _ ≤ max (l 0) (steady h s δ γ) * (r ^ t * (Real.log (l 0) - Real.log (k 0))) :=
+        mul_le_mul_of_nonneg_left (hb t) (hlt.le.trans hup)
+    _ = _ := by ring
+
+/-- Near the steady state the one-period ratio of log gaps is within `ε` of `ρ*`:
+there is a date after which both paths lie in a window where `ρ* - ε ≤ κ ≤ ρ* + ε`. -/
+theorem eventually_contraction_window (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) {ε : ℝ} (hε : 0 < ε) :
+    ∃ a b : ℝ, 0 < a ∧ ∃ T : ℕ,
+      (∀ t, T ≤ t → k t ∈ Icc a b) ∧ (∀ t, T ≤ t → l t ∈ Icc a b) ∧
+      ∀ z ∈ Icc a b, |contraction f s δ z - contraction f s δ (steady h s δ γ)| < ε := by
+  have hks := (steady_spec h P).1
+  set ks := steady h s δ γ
+  obtain ⟨d, hd, hdb⟩ := Metric.continuousAt_iff.mp
+    ((contraction_continuousOn h P).continuousAt (Ioi_mem_nhds hks)) ε hε
+  set r := min (d / 2) (ks / 2)
+  have hr : 0 < r := lt_min (half_pos hd) (half_pos hks)
+  have ha : 0 < ks - r := by have := min_le_right (d / 2) (ks / 2); linarith
+  have hnhds : Icc (ks - r) (ks + r) ∈ 𝓝 ks := Icc_mem_nhds (by linarith) (by linarith)
+  obtain ⟨T, hT⟩ := eventually_atTop.mp
+    (((hk.tendsto h P).eventually hnhds).and ((hl.tendsto h P).eventually hnhds))
+  refine ⟨ks - r, ks + r, ha, T, fun t ht => (hT t ht).1, fun t ht => (hT t ht).2, ?_⟩
+  intro z hz
+  have : dist z ks < d := by
+    rw [Real.dist_eq, abs_lt]
+    have := min_le_left (d / 2) (ks / 2)
+    constructor <;> linarith [hz.1, hz.2]
+  have := hdb this
+  rwa [Real.dist_eq] at this
+
+/-- The exact asymptotic factor: `D (t+1) / D t → ρ* = κ(k*) = G'(k*)`. -/
+theorem log_gap_ratio_tendsto (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0) :
+    Tendsto (fun t => (Real.log (l (t + 1)) - Real.log (k (t + 1))) /
+      (Real.log (l t) - Real.log (k t))) atTop (𝓝 (contraction f s δ (steady h s δ γ))) := by
+  set ρ := contraction f s δ (steady h s δ γ)
+  rw [Metric.tendsto_atTop]
+  intro ε hε
+  obtain ⟨a, b, ha, T, hkw, hlw, hwin⟩ :=
+    eventually_contraction_window h P hk hl (half_pos hε)
+  refine ⟨T, fun t ht => ?_⟩
+  have hD := log_gap_pos h P hk hl h0 t
+  have hord := (paths_ordered h P hk hl h0 t).le
+  have hup := log_next_gap_le (γ := γ) h P ha
+    (fun z hz => (by linarith [(abs_lt.mp (hwin z hz)).2] : contraction f s δ z ≤ ρ + ε / 2))
+    (hkw t ht) (hlw t ht) hord
+  have hlo := log_next_gap_ge (γ := γ) h P ha
+    (fun z hz => (by linarith [(abs_lt.mp (hwin z hz)).1] : ρ - ε / 2 ≤ contraction f s δ z))
+    (hkw t ht) (hlw t ht) hord
+  rw [← hk.succ, ← hl.succ] at hup hlo
+  rw [Real.dist_eq, abs_lt]
+  constructor
+  · rw [lt_sub_iff_add_lt, lt_div_iff₀ hD]; nlinarith
+  · rw [sub_lt_iff_lt_add, div_lt_iff₀ hD]; nlinarith
+
+/-- Sharp geometric sandwich: for `0 < ε < ρ*` with `ρ* + ε ≤ 1`, the log gap lies
+between multiples of `(ρ* - ε)^t` and `(ρ* + ε)^t`. -/
+theorem sharp_convergence_rate (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0)
+    {ε : ℝ} (hε : 0 < ε) (hερ : ε < contraction f s δ (steady h s δ γ))
+    (hρ1 : contraction f s δ (steady h s δ γ) + ε ≤ 1) :
+    ∃ c, 0 < c ∧ ∃ C, 0 < C ∧ ∀ t,
+      c * (contraction f s δ (steady h s δ γ) - ε) ^ t ≤ Real.log (l t) - Real.log (k t) ∧
+        Real.log (l t) - Real.log (k t) ≤ C * (contraction f s δ (steady h s δ γ) + ε) ^ t := by
+  set ρ := contraction f s δ (steady h s δ γ)
+  set D : ℕ → ℝ := fun u => Real.log (l u) - Real.log (k u) with hD
+  obtain ⟨a, b, ha, T, hkw, hlw, hwin⟩ := eventually_contraction_window h P hk hl hε
+  have hDpos : ∀ t, 0 < D t := log_gap_pos h P hk hl h0
+  have hanti := log_gap_strictAnti h P hk hl h0
+  have hlo0 : 0 ≤ ρ - ε := by linarith
+  have hhi0 : 0 < ρ + ε := by linarith
+  have hlo1 : ρ - ε ≤ 1 := by linarith
+  have hupT := log_gap_upper h P hk hl h0 ha hhi0.le hkw hlw
+    (fun z hz => (by linarith [(abs_lt.mp (hwin z hz)).2] : contraction f s δ z ≤ ρ + ε))
+  have hloT := log_gap_lower h P hk hl h0 ha hlo0 hkw hlw
+    (fun z hz => (by linarith [(abs_lt.mp (hwin z hz)).1] : ρ - ε ≤ contraction f s δ z))
+  have hpowT := pow_pos hhi0 T
+  refine ⟨D T, hDpos T, D 0 / (ρ + ε) ^ T, div_pos (hDpos 0) hpowT, fun t => ⟨?_, ?_⟩⟩
+  · rcases le_total T t with hTt | htT
+    · obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le hTt
+      have h1 : (ρ - ε) ^ (T + n) ≤ (ρ - ε) ^ n := by
+        rw [pow_add]
+        exact mul_le_of_le_one_left (pow_nonneg hlo0 _) (pow_le_one₀ hlo0 hlo1)
+      calc D T * (ρ - ε) ^ (T + n) ≤ D T * (ρ - ε) ^ n :=
+            mul_le_mul_of_nonneg_left h1 (hDpos T).le
+        _ = (ρ - ε) ^ n * D T := by ring
+        _ ≤ D (T + n) := hloT n
+    · have hmono : D T ≤ D t := hanti.antitone htT
+      calc D T * (ρ - ε) ^ t ≤ D T * 1 :=
+            mul_le_mul_of_nonneg_left (pow_le_one₀ hlo0 hlo1) (hDpos T).le
+        _ ≤ D t := by rw [mul_one]; exact hmono
+  · rcases le_total T t with hTt | htT
+    · obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le hTt
+      have hmono : D T ≤ D 0 := hanti.antitone (Nat.zero_le T)
+      calc D (T + n) ≤ (ρ + ε) ^ n * D T := hupT n
+        _ ≤ (ρ + ε) ^ n * D 0 := mul_le_mul_of_nonneg_left hmono (pow_nonneg hhi0.le _)
+        _ = D 0 / (ρ + ε) ^ T * (ρ + ε) ^ (T + n) := by
+            rw [pow_add]; field_simp
+    · have hmono : D t ≤ D 0 := hanti.antitone (Nat.zero_le t)
+      have hp : (ρ + ε) ^ T ≤ (ρ + ε) ^ t := pow_le_pow_of_le_one hhi0.le hρ1 htT
+      calc D t ≤ D 0 := hmono
+        _ = D 0 / (ρ + ε) ^ T * (ρ + ε) ^ T := by field_simp
+        _ ≤ D 0 / (ρ + ε) ^ T * (ρ + ε) ^ t :=
+            mul_le_mul_of_nonneg_left hp (div_pos (hDpos 0) hpowT).le
+
+/-- The exact asymptotic rate in logarithms: `log (D t) / t → log ρ*`. -/
+theorem log_gap_rate_tendsto (h : Technology f) {s δ γ : ℝ} (P : Params s δ γ)
+    {k l : ℕ → ℝ} (hk : IsPath f s δ γ k) (hl : IsPath f s δ γ l) (h0 : k 0 < l 0) :
+    Tendsto (fun t : ℕ => Real.log (Real.log (l t) - Real.log (k t)) / t) atTop
+      (𝓝 (Real.log (contraction f s δ (steady h s δ γ)))) := by
+  set ρ := contraction f s δ (steady h s δ γ)
+  have hρ := contraction_pos h P (steady_spec h P).1
+  have hρ1 := contraction_lt_one h P (steady_spec h P).1
+  rw [Metric.tendsto_nhds]
+  intro e he
+  -- choose `ε` so that `log (ρ ± ε)` is within `e / 4` of `log ρ`
+  obtain ⟨d, hd, hdb⟩ := Metric.continuousAt_iff.mp (Real.continuousAt_log (ne_of_gt hρ))
+    (e / 4) (by linarith)
+  set ε := min (d / 2) (min (ρ / 2) ((1 - ρ) / 2))
+  have hε : 0 < ε := lt_min (half_pos hd) (lt_min (half_pos hρ) (by linarith))
+  have hεd : ε < d := (min_le_left _ _).trans_lt (half_lt_self hd)
+  have hερ : ε < ρ := ((min_le_right _ _).trans (min_le_left _ _)).trans_lt (half_lt_self hρ)
+  have hε1 : ρ + ε ≤ 1 := by
+    have := (min_le_right (d / 2) _).trans (min_le_right (ρ / 2) ((1 - ρ) / 2)); linarith
+  have hlogm : |Real.log (ρ - ε) - Real.log ρ| < e / 4 := by
+    have := hdb (x := ρ - ε) (by rw [Real.dist_eq]; rw [abs_lt]; constructor <;> linarith)
+    rwa [Real.dist_eq] at this
+  have hlogp : |Real.log (ρ + ε) - Real.log ρ| < e / 4 := by
+    have := hdb (x := ρ + ε) (by rw [Real.dist_eq]; rw [abs_lt]; constructor <;> linarith)
+    rwa [Real.dist_eq] at this
+  obtain ⟨c, hc, C, hC, hb⟩ := sharp_convergence_rate h P hk hl h0 hε hερ hε1
+  have hz : ∀ a : ℝ, Tendsto (fun t : ℕ => a / (t : ℝ)) atTop (𝓝 0) :=
+    fun a => tendsto_const_div_atTop_nhds_zero_nat a
+  filter_upwards [eventually_gt_atTop 0,
+    (hz (Real.log c)).eventually (Metric.ball_mem_nhds 0 (by linarith : 0 < e / 4)),
+    (hz (Real.log C)).eventually (Metric.ball_mem_nhds 0 (by linarith : 0 < e / 4))]
+    with t ht hct hCt
+  rw [Real.dist_eq, sub_zero] at hct hCt
+  have htr : (0 : ℝ) < t := Nat.cast_pos.mpr ht
+  obtain ⟨hlo, hhi⟩ := hb t
+  have hlpos : 0 < ρ - ε := by linarith
+  have hlo' := Real.log_le_log (mul_pos hc (pow_pos hlpos t)) hlo
+  have hhi' := Real.log_le_log ((mul_pos hc (pow_pos hlpos t)).trans_le hlo) hhi
+  rw [Real.log_mul (ne_of_gt hc) (pow_pos hlpos t).ne', Real.log_pow] at hlo'
+  rw [Real.log_mul (ne_of_gt hC) (pow_pos (by linarith) t).ne', Real.log_pow] at hhi'
+  have h1 : Real.log c / t + Real.log (ρ - ε) ≤
+      Real.log (Real.log (l t) - Real.log (k t)) / t := by
+    rw [div_add' _ _ _ (ne_of_gt htr), div_le_div_iff_of_pos_right htr]; linarith
+  have h2 : Real.log (Real.log (l t) - Real.log (k t)) / t ≤
+      Real.log C / t + Real.log (ρ + ε) := by
+    rw [div_add' _ _ _ (ne_of_gt htr), div_le_div_iff_of_pos_right htr]; linarith
+  rw [Real.dist_eq, abs_lt]
+  constructor
+  · linarith [(abs_lt.mp hct).1, (abs_lt.mp hlogm).1]
+  · linarith [(abs_lt.mp hCt).2, (abs_lt.mp hlogp).2]
+
+end Solow1956.DiscreteTime
+
 #print axioms Solow1956.SolowSwan.capitalChange
 #print axioms Solow1956.SolowSwan.hasDerivAt_capitalPerWorker
 #print axioms Solow1956.SolowSwan.intensiveForm_of_homogeneous
@@ -2726,3 +4363,142 @@ end Solow1956.Neoclassical
 #print axioms Solow1956.Neoclassical.sharp_convergence_rate
 #print axioms Solow1956.Neoclassical.log_gap_rate_tendsto
 #print axioms Solow1956.Neoclassical.cobbDouglas_speed
+#print axioms Solow1956.DiscreteTime.Map.attracting_orbit
+#print axioms Solow1956.DiscreteTime.Params
+#print axioms Solow1956.DiscreteTime.Params.mk
+#print axioms Solow1956.DiscreteTime.Params.saving_pos
+#print axioms Solow1956.DiscreteTime.Params.depreciation_le_one
+#print axioms Solow1956.DiscreteTime.Params.growth_pos
+#print axioms Solow1956.DiscreteTime.Params.dilution_pos
+#print axioms Solow1956.DiscreteTime.next
+#print axioms Solow1956.DiscreteTime.steady
+#print axioms Solow1956.DiscreteTime.next_sub_self
+#print axioms Solow1956.DiscreteTime.next_acemoglu
+#print axioms Solow1956.DiscreteTime.next_zero
+#print axioms Solow1956.DiscreteTime.next_pos
+#print axioms Solow1956.DiscreteTime.next_nonneg
+#print axioms Solow1956.DiscreteTime.next_strictMono
+#print axioms Solow1956.DiscreteTime.next_continuousOn
+#print axioms Solow1956.DiscreteTime.next_hasDerivAt
+#print axioms Solow1956.DiscreteTime.next_eq_self_iff
+#print axioms Solow1956.DiscreteTime.existsUnique_steadyState
+#print axioms Solow1956.DiscreteTime.steady_spec
+#print axioms Solow1956.DiscreteTime.steady_eq
+#print axioms Solow1956.DiscreteTime.zero_fixed
+#print axioms Solow1956.DiscreteTime.steady_state_equilibrium
+#print axioms Solow1956.DiscreteTime.next_gt_self
+#print axioms Solow1956.DiscreteTime.next_lt_self
+#print axioms Solow1956.DiscreteTime.slope_at_steady
+#print axioms Solow1956.DiscreteTime.IsPath
+#print axioms Solow1956.DiscreteTime.IsPath.mk
+#print axioms Solow1956.DiscreteTime.IsPath.initial_pos
+#print axioms Solow1956.DiscreteTime.IsPath.succ
+#print axioms Solow1956.DiscreteTime.path
+#print axioms Solow1956.DiscreteTime.path_zero
+#print axioms Solow1956.DiscreteTime.path_succ
+#print axioms Solow1956.DiscreteTime.isPath_path
+#print axioms Solow1956.DiscreteTime.path_unique
+#print axioms Solow1956.DiscreteTime.IsPath.eq_path
+#print axioms Solow1956.DiscreteTime.path_nonneg
+#print axioms Solow1956.DiscreteTime.path_of_zero
+#print axioms Solow1956.DiscreteTime.general_solow
+#print axioms Solow1956.DiscreteTime.IsPath.orbit
+#print axioms Solow1956.DiscreteTime.IsPath.pos
+#print axioms Solow1956.DiscreteTime.IsPath.tendsto
+#print axioms Solow1956.DiscreteTime.IsPath.bounds
+#print axioms Solow1956.DiscreteTime.output_consumption_limit
+#print axioms Solow1956.DiscreteTime.steady_strictMono_saving
+#print axioms Solow1956.DiscreteTime.steady_strictAnti_depreciation
+#print axioms Solow1956.DiscreteTime.steady_strictAnti_growth
+#print axioms Solow1956.DiscreteTime.steady_derivative_signs
+#print axioms Solow1956.DiscreteTime.steady_rewrite
+#print axioms Solow1956.DiscreteTime.acemoglu_capital_partials
+#print axioms Solow1956.DiscreteTime.acemoglu_output_partials
+#print axioms Solow1956.DiscreteTime.stationary_consumption
+#print axioms Solow1956.DiscreteTime.exists_unique_golden_saving
+#print axioms Solow1956.DiscreteTime.acemoglu_golden_rule
+#print axioms Solow1956.DiscreteTime.cass_stationary_bridge
+#print axioms Solow1956.DiscreteTime.every_path_converges
+#print axioms Solow1956.DiscreteTime.path_stable
+#print axioms Solow1956.DiscreteTime.path_stable_initial
+#print axioms Solow1956.DiscreteTime.saving_increase_transition
+#print axioms Solow1956.DiscreteTime.capitalPerEffectiveWorker_succ
+#print axioms Solow1956.DiscreteTime.effective_labour_convergence
+#print axioms Solow1956.DiscreteTime.wage
+#print axioms Solow1956.DiscreteTime.wage_strictMono
+#print axioms Solow1956.DiscreteTime.factor_prices
+#print axioms Solow1956.DiscreteTime.example_params
+#print axioms Solow1956.DiscreteTime.mixed_power_fixed_exists
+#print axioms Solow1956.DiscreteTime.mixed_power_converges
+#print axioms Solow1956.DiscreteTime.no_positive_fixed_without_dilution
+#print axioms Solow1956.DiscreteTime.depreciation_above_one_breaks_positivity
+#print axioms Solow1956.DiscreteTime.linear_technology_multiple_fixed
+#print axioms Solow1956.DiscreteTime.capitalPerWorker_succ
+#print axioms Solow1956.DiscreteTime.next_sub_self_net
+#print axioms Solow1956.DiscreteTime.SquareRoot.next_production
+#print axioms Solow1956.DiscreteTime.SquareRoot.next_zero
+#print axioms Solow1956.DiscreteTime.SquareRoot.next_eq_self_iff
+#print axioms Solow1956.DiscreteTime.SquareRoot.existsUnique_positive_fixed
+#print axioms Solow1956.DiscreteTime.SquareRoot.lt_next_of_lt
+#print axioms Solow1956.DiscreteTime.SquareRoot.next_lt_of_gt
+#print axioms Solow1956.DiscreteTime.SquareRoot.params
+#print axioms Solow1956.DiscreteTime.SquareRoot.steady_eq_steadyState
+#print axioms Solow1956.DiscreteTime.SquareRoot.global_dynamics
+#print axioms Solow1956.DiscreteTime.SquareRoot.fixed_capital_output_ratio
+#print axioms Solow1956.DiscreteTime.CobbDouglas.steady_eq
+#print axioms Solow1956.DiscreteTime.CobbDouglas.next_zero
+#print axioms Solow1956.DiscreteTime.CobbDouglas.next_full_depreciation
+#print axioms Solow1956.DiscreteTime.CobbDouglas.path_full_depreciation
+#print axioms Solow1956.DiscreteTime.CobbDouglas.log_gap_full_depreciation
+#print axioms Solow1956.DiscreteTime.CobbDouglas.tendsto_path_full_depreciation
+#print axioms Solow1956.DiscreteTime.CobbDouglas.positive_dynamics
+#print axioms Solow1956.DiscreteTime.CobbDouglas.tendsto_of_isPath
+#print axioms Solow1956.DiscreteTime.CobbDouglas.path_lt_steadyState_iff
+#print axioms Solow1956.DiscreteTime.CobbDouglas.path_strictMono_of_lt
+#print axioms Solow1956.DiscreteTime.CobbDouglas.path_strictAnti_of_gt
+#print axioms Solow1956.DiscreteTime.CobbDouglas.lt_next_iff
+#print axioms Solow1956.DiscreteTime.CobbDouglas.tendsto_output
+#print axioms Solow1956.DiscreteTime.CobbDouglas.steady_strictMono_investment
+#print axioms Solow1956.DiscreteTime.CobbDouglas.steady_strictAnti_dilution
+#print axioms Solow1956.DiscreteTime.CobbDouglas.steady_capital_output_ratio
+#print axioms Solow1956.DiscreteTime.CobbDouglas.example_params
+#print axioms Solow1956.DiscreteTime.CobbDouglas.example_path
+#print axioms Solow1956.DiscreteTime.CobbDouglas.example_converges
+#print axioms Solow1956.DiscreteTime.CobbDouglas.normalized_steady
+#print axioms Solow1956.DiscreteTime.CobbDouglas.zero_fixed
+#print axioms Solow1956.DiscreteTime.CobbDouglas.zero_orbit_not_isPath
+#print axioms Solow1956.DiscreteTime.CobbDouglas.no_positive_fixed_at_exponent_one
+#print axioms Solow1956.DiscreteTime.CobbDouglas.effectiveLabour_succ
+#print axioms Solow1956.DiscreteTime.growthFactor
+#print axioms Solow1956.DiscreteTime.contraction
+#print axioms Solow1956.DiscreteTime.next_div_eq_growthFactor
+#print axioms Solow1956.DiscreteTime.growthFactor_strictAnti
+#print axioms Solow1956.DiscreteTime.gross_pos
+#print axioms Solow1956.DiscreteTime.contraction_pos
+#print axioms Solow1956.DiscreteTime.contraction_lt_one
+#print axioms Solow1956.DiscreteTime.contraction_continuousOn
+#print axioms Solow1956.DiscreteTime.contraction_steady
+#print axioms Solow1956.DiscreteTime.contraction_steady_eq
+#print axioms Solow1956.DiscreteTime.cobbDouglas_contraction
+#print axioms Solow1956.DiscreteTime.isPath_steady
+#print axioms Solow1956.DiscreteTime.path_eq_of_meet
+#print axioms Solow1956.DiscreteTime.paths_ordered
+#print axioms Solow1956.DiscreteTime.poorer_grows_faster
+#print axioms Solow1956.DiscreteTime.log_gap_pos
+#print axioms Solow1956.DiscreteTime.log_gap_strictAnti
+#print axioms Solow1956.DiscreteTime.absolute_convergence
+#print axioms Solow1956.DiscreteTime.hasDerivAt_log_next_sub
+#print axioms Solow1956.DiscreteTime.log_next_gap_le
+#print axioms Solow1956.DiscreteTime.log_next_gap_ge
+#print axioms Solow1956.DiscreteTime.log_gap_upper
+#print axioms Solow1956.DiscreteTime.log_gap_lower
+#print axioms Solow1956.DiscreteTime.paths_window
+#print axioms Solow1956.DiscreteTime.log_gap_le_of_contraction_bound
+#print axioms Solow1956.DiscreteTime.exists_uniform_rate
+#print axioms Solow1956.DiscreteTime.absolute_convergence_rate
+#print axioms Solow1956.DiscreteTime.log_gap_steady_le
+#print axioms Solow1956.DiscreteTime.level_gap_le
+#print axioms Solow1956.DiscreteTime.eventually_contraction_window
+#print axioms Solow1956.DiscreteTime.log_gap_ratio_tendsto
+#print axioms Solow1956.DiscreteTime.sharp_convergence_rate
+#print axioms Solow1956.DiscreteTime.log_gap_rate_tendsto

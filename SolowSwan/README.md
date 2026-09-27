@@ -7,7 +7,7 @@ root. [Return to the growth library index](../README.md).
 
 A checked formalization of general neoclassical Solow–Swan growth using
 **Acemoglu, Chapter 2**, alongside the original Solow (1956) Cobb–Douglas proofs.
-The library contains **162 theorems** and audits **196 declarations**, including structure constructors and projections.
+The library contains **285 theorems** and audits **335 declarations**, including structure constructors and projections.
 It constructs global positive solutions, proves uniqueness, strict monotone
 convergence and stability, establishes all eight source comparative-statics
 signs, and connects Golden Rule saving to the stationary Cass condition.
@@ -62,6 +62,16 @@ neoclassical convergence in the separately documented modules below.
 | [GeneralSolowExamples](Solow1956/Growth/GeneralSolowExamples.lean) | 6 | Powers, sums of powers, and assumption checks |
 | [SolowConvergence](Solow1956/Growth/SolowConvergence.lean) | 30 | Absolute convergence of identical economies: no crossing, poorer grows faster, uniform exponential rate, sharp rate `m - s f'(k*)` (`(1-α)m` for Cobb–Douglas) |
 | [Analysis helpers](Solow1956/Analysis/) | 17 | Global ODE construction, scalar dynamics, and limits |
+
+## Discrete time
+
+The [DiscreteTime](DiscreteTime/) library (123 theorems) redoes these results for
+`k(t+1) = (s f(k) + (1-δ)k)/γ`, with `γ = (1+n)(1+g)`; `γ = 1` is Acemoglu's
+equation (2.17). It formalizes Acemoglu's discrete-time Propositions 2.2–2.6, has a
+counterpart of every continuous module, solves Solow's square-root economy
+globally, gives the Cobb–Douglas closed form under full depreciation, and proves
+absolute convergence with exact per-period factor `ρ* = G'(k*) = 1 - β*/γ`.
+Import `DiscreteTime`; see the [discrete-time statement and source map](docs/discrete-time.md).
 
 Import `Solow1956`. For the original explicit solution, start with
 `Solow1956.SolowSwan.CobbDouglas.nonnegative_dynamics`; monotonicity and output

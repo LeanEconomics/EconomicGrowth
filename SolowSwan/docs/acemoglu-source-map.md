@@ -38,9 +38,11 @@ as supporting material; they do not replace the book's assumptions.
 - Aggregate constant returns are represented by the explicit intensive form
   `Y=E f(K/E)` in the normalization theorem. This contribution does not prove a
   general multivariate constant-returns representation theorem.
-- The proof concerns classical continuous-time trajectories. Discrete-time
-  propositions, empirical convergence regressions, stochastic growth, endogenous
-  technology, and competitive decentralization of Cass are outside this PR.
+- The proof concerns classical continuous-time trajectories. The discrete-time
+  Propositions 2.2–2.6 are formalized separately in `DiscreteTime/`; see the
+  [discrete-time source map](discrete-time.md). Empirical convergence regressions,
+  stochastic growth, endogenous technology, and competitive decentralization of
+  Cass remain outside scope.
 - The stationary Cass bridge uses the same production and dilution units on
   both sides. Its `d` is the effective utility discount rate, not an unexplained
   substitution for an unnormalized household discount parameter.

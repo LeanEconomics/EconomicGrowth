@@ -1,7 +1,7 @@
 name = "Solow1956"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["Solow1956"]
+defaultTargets = ["Solow1956", "DiscreteTime"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a â†¦ b`
@@ -19,3 +19,6 @@ rev = "v4.34.0"
 
 [[lean_lib]]
 name = "Solow1956"
+
+[[lean_lib]]
+name = "DiscreteTime"

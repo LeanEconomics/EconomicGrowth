@@ -1,5 +1,8 @@
 {
   "library": "Solow1956",
+  "additional_libraries": [
+    "DiscreteTime"
+  ],
   "modules": [
     "Solow1956/Growth/SolowSwan.lean",
     "Solow1956/Growth/SolowSwanDynamics.lean",
@@ -14,7 +17,18 @@
     "Solow1956/Growth/SolowGoldenRule.lean",
     "Solow1956/Growth/GeneralSolowApplications.lean",
     "Solow1956/Growth/GeneralSolowExamples.lean",
-    "Solow1956/Growth/SolowConvergence.lean"
+    "Solow1956/Growth/SolowConvergence.lean",
+    "DiscreteTime/Analysis/ScalarMap.lean",
+    "DiscreteTime/Neoclassical.lean",
+    "DiscreteTime/GeneralSolow.lean",
+    "DiscreteTime/SolowComparative.lean",
+    "DiscreteTime/SolowGoldenRule.lean",
+    "DiscreteTime/GeneralSolowApplications.lean",
+    "DiscreteTime/GeneralSolowExamples.lean",
+    "DiscreteTime/SolowSwan.lean",
+    "DiscreteTime/SolowSwanDynamics.lean",
+    "DiscreteTime/SolowSwanExamples.lean",
+    "DiscreteTime/SolowConvergence.lean"
   ],
   "theorem_counts": {
     "Solow1956/Growth/SolowSwan.lean": 16,
@@ -30,9 +44,20 @@
     "Solow1956/Growth/SolowGoldenRule.lean": 9,
     "Solow1956/Growth/GeneralSolowApplications.lean": 4,
     "Solow1956/Growth/GeneralSolowExamples.lean": 6,
-    "Solow1956/Growth/SolowConvergence.lean": 30
+    "Solow1956/Growth/SolowConvergence.lean": 30,
+    "DiscreteTime/Analysis/ScalarMap.lean": 1,
+    "DiscreteTime/Neoclassical.lean": 17,
+    "DiscreteTime/GeneralSolow.lean": 13,
+    "DiscreteTime/SolowComparative.lean": 7,
+    "DiscreteTime/SolowGoldenRule.lean": 4,
+    "DiscreteTime/GeneralSolowApplications.lean": 8,
+    "DiscreteTime/GeneralSolowExamples.lean": 6,
+    "DiscreteTime/SolowSwan.lean": 12,
+    "DiscreteTime/SolowSwanDynamics.lean": 16,
+    "DiscreteTime/SolowSwanExamples.lean": 8,
+    "DiscreteTime/SolowConvergence.lean": 31
   },
-  "scope": "General neoclassical continuous-time Solow-Swan growth from positive capital: existence, positivity, uniqueness among nonnegative classical paths, strict monotone convergence, Lyapunov stability, all eight Acemoglu comparative-statics partials, Golden Rule saving, a stationary Cass bridge, saving shocks, effective-labour convergence, and Cobb-Douglas closed forms, absolute convergence among identical economies with a uniform exponential rate and the sharp asymptotic rate m - s f'(k*).",
+  "scope": "General neoclassical continuous-time Solow-Swan growth from positive capital: existence, positivity, uniqueness among nonnegative classical paths, strict monotone convergence, Lyapunov stability, all eight Acemoglu comparative-statics partials, Golden Rule saving, a stationary Cass bridge, saving shocks, effective-labour convergence, and Cobb-Douglas closed forms, absolute convergence among identical economies with a uniform exponential rate and the sharp asymptotic rate m - s f'(k*). A parallel discrete-time library (DiscreteTime/) redoes these results for k(t+1) = (s f(k) + (1 - delta) k)/gamma, following Acemoglu Propositions 2.2-2.6.",
   "source_commit": "4bed57534cf4f5562be8b90c481bb3dd54360fe0",
   "source_files": {
     "Solow1956/Growth/SolowSwan.lean": {
