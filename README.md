@@ -7,7 +7,7 @@ project with a precise statement, sources, examples, and reproducible proof chec
 
 | Project | Checked results | Start here |
 | --- | --- | --- |
-| [SolowSwan](SolowSwan/README.md) | 132 theorems: general neoclassical existence, uniqueness, stability, convergence, comparative statics, Golden Rule saving, and Cobb–Douglas closed forms | [Acemoglu statement and proof](SolowSwan/docs/acemoglu-general-solow.md) |
+| [SolowSwan](SolowSwan/README.md) | 162 theorems: general neoclassical existence, uniqueness, stability, convergence, comparative statics, Golden Rule saving, Cobb–Douglas closed forms, and absolute convergence of identical economies with its exact rate | [Acemoglu statement and proof](SolowSwan/docs/acemoglu-general-solow.md) |
 | [Uzawa](Uzawa/README.md) | 63 main theorems plus 3 obstruction lemmas: the published Jones–Scrimgeour/Schlicht route and a repaired elasticity route | [Comparison of the source versions](Uzawa/docs/uzawa-versions-comparison.md) |
 | [RamseyCassKoopmans](RamseyCassKoopmans/README.md) | 423 theorems: general Cass existence, uniqueness, monotone convergence, all-competitor asymptotic welfare comparison, explicit corner dynamics, and a regular Koopmans Euler-path obstruction | [General Cass proof](RamseyCassKoopmans/docs/cass-general.md) and [Koopmans boundary analysis](RamseyCassKoopmans/docs/koopmans-boundary-obstruction.md) |
 

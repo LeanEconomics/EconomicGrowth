@@ -1,6 +1,6 @@
 {
-  "checked_at_utc": "2026-09-21T21:16:51.051113+00:00",
-  "theorems": 132,
+  "checked_at_utc": "2026-09-27T03:04:30.169885+00:00",
+  "theorems": 162,
   "module_theorems": {
     "Solow1956/Growth/SolowSwan.lean": 16,
     "Solow1956/Growth/SolowSwanDynamics.lean": 37,
@@ -14,9 +14,10 @@
     "Solow1956/Growth/SolowComparative.lean": 18,
     "Solow1956/Growth/SolowGoldenRule.lean": 9,
     "Solow1956/Growth/GeneralSolowApplications.lean": 4,
-    "Solow1956/Growth/GeneralSolowExamples.lean": 6
+    "Solow1956/Growth/GeneralSolowExamples.lean": 6,
+    "Solow1956/Growth/SolowConvergence.lean": 30
   },
-  "audited_declarations": 159,
+  "audited_declarations": 196,
   "declarations": [
     {
       "name": "Solow1956.SolowSwan.capitalChange",
@@ -812,6 +813,191 @@
       "name": "Solow1956.Neoclassical.linear_technology_multiple_steady",
       "kind": "theorem",
       "module": "Solow1956/Growth/GeneralSolowExamples.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.IsPath",
+      "kind": "structure",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.IsPath.mk",
+      "kind": "constructor",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.IsPath.initial_pos",
+      "kind": "projection",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.IsPath.nonneg",
+      "kind": "projection",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.IsPath.hasDerivAt",
+      "kind": "projection",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.growthRate",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.convergenceSpeed",
+      "kind": "def",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.rate_div_eq_growthRate",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.growthRate_strictAnti",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.convergenceSpeed_pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.convergenceSpeed_continuousOn",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.convergenceSpeed_steady",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.convergenceSpeed_steady_share",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.IsPath.pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.isPath_steady",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.IsPath.bounds",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.IsPath.tendsto",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.path_eq_of_meet",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.paths_ordered",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.poorer_grows_faster",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.hasDerivAt_log_gap",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.log_gap_strictAnti",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.absolute_convergence",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.growthRate_gap_ge",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.growthRate_gap_le",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.log_gap_upper",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.log_gap_lower",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.paths_window",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.log_gap_le_of_speed_bound",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.log_gap_pos",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.exists_uniform_rate",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.absolute_convergence_rate",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.log_gap_steady_le",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.level_gap_le",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.sharp_convergence_rate",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.log_gap_rate_tendsto",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
+    },
+    {
+      "name": "Solow1956.Neoclassical.cobbDouglas_speed",
+      "kind": "theorem",
+      "module": "Solow1956/Growth/SolowConvergence.lean"
     }
   ],
   "full_build": "passed",
@@ -1611,6 +1797,191 @@
       "propext",
       "Classical.choice",
       "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.IsPath": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.IsPath.mk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.IsPath.initial_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.IsPath.nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.IsPath.hasDerivAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.growthRate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.convergenceSpeed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.rate_div_eq_growthRate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.growthRate_strictAnti": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.convergenceSpeed_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.convergenceSpeed_continuousOn": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.convergenceSpeed_steady": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.convergenceSpeed_steady_share": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.IsPath.pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.isPath_steady": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.IsPath.bounds": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.IsPath.tendsto": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.path_eq_of_meet": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.paths_ordered": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.poorer_grows_faster": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.hasDerivAt_log_gap": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.log_gap_strictAnti": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.absolute_convergence": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.growthRate_gap_ge": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.growthRate_gap_le": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.log_gap_upper": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.log_gap_lower": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.paths_window": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.log_gap_le_of_speed_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.log_gap_pos": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.exists_uniform_rate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.absolute_convergence_rate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.log_gap_steady_le": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.level_gap_le": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.sharp_convergence_rate": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.log_gap_rate_tendsto": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Solow1956.Neoclassical.cobbDouglas_speed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
     ]
   },
   "source_sha256": {
@@ -1627,19 +1998,20 @@
     "Solow1956/Growth/SolowGoldenRule.lean": "b039517230a47dc0f6e08e6090dd067388710addfe5ec9e09fabc848c698eb33",
     "Solow1956/Growth/GeneralSolowApplications.lean": "eb3515028f0d0a76bcb56c8287fdb4e18fb38e9e8f5f6c656cbb58bff02b11b1",
     "Solow1956/Growth/GeneralSolowExamples.lean": "1c9efe6b2cace2f1742f2c6db4cb450c12e9ef8944d274de37526e6eac4a340d",
-    "Solow1956.lean": "987d25656dfa1e2215722c53ff7a1a87508a642be30857b7ef22ccd1fc66246b",
+    "Solow1956/Growth/SolowConvergence.lean": "cdf2712f5a32542ea6b1a2e1c45126faeec8847660a1600da78ba5bf51fe7c2f",
+    "Solow1956.lean": "37eeb9f94565c435f415d7abdcd833f58c0c31dd51d621de879149f3610c8df1",
     "lean-toolchain": "8733782dc070a99b312039cda424f601b80f3be6f6f512627da5ba25adc27632",
     "lakefile.toml": "8559f1e70440e3b09240fd6519f80e89e1700d744cee7cd4dbcdde5553cdd319",
     "lake-manifest.json": "cdd8751d44aca7249c10ed225b3ca7685cce852223aa889b81784ab496fcb36d",
-    "proof-manifest.json": "9756188db90e88654ad299ef3d2926b5d763eb389bafeb377a742bdae30fba44",
+    "proof-manifest.json": "cf8d7a1956cccea3a028fbd9ab74a7120832a51d9966abb59edc76c7daa9eb2d",
     "scripts/verify.py": "fec6e33fb6df8900ecb65f5c0fbc133070f21ce7b1c08c2b64c4f54954877e0d",
     "scripts/verify_evidence.py": "75518db86e6a5a21996cc87d7fe2492da49ab9aa47170ea1b074094247446f1e",
     "scripts/check_theorydebugger.py": "594bccc70ef9fa416f3b6ebf8744d710947d7186a1805b746d30dcecf892b839",
     "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c"
   },
-  "fresh_audit_sha256": "7c0da49359f644ee945c7e8ac6251e52cc66c77d126c734d1f61e21cf0c7212b",
+  "fresh_audit_sha256": "71640b6fc70b8671da8521b25d3ea40b2b0253bf1de4d6bc7d3633ef5b5d77bf",
   "lean_toolchain": "leanprover/lean4:v4.34.0",
-  "scope": "General neoclassical continuous-time Solow-Swan growth from positive capital: existence, positivity, uniqueness among nonnegative classical paths, strict monotone convergence, Lyapunov stability, all eight Acemoglu comparative-statics partials, Golden Rule saving, a stationary Cass bridge, saving shocks, effective-labour convergence, and Cobb-Douglas closed forms.",
+  "scope": "General neoclassical continuous-time Solow-Swan growth from positive capital: existence, positivity, uniqueness among nonnegative classical paths, strict monotone convergence, Lyapunov stability, all eight Acemoglu comparative-statics partials, Golden Rule saving, a stationary Cass bridge, saving shocks, effective-labour convergence, and Cobb-Douglas closed forms, absolute convergence among identical economies with a uniform exponential rate and the sharp asymptotic rate m - s f'(k*).",
   "source_provenance": "4bed57534cf4f5562be8b90c481bb3dd54360fe0",
   "theorydebugger": {
     "cases": 10,

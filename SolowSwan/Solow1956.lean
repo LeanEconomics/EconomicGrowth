@@ -11,3 +11,4 @@ import Solow1956.Growth.SolowComparative
 import Solow1956.Growth.SolowGoldenRule
 import Solow1956.Growth.GeneralSolowApplications
 import Solow1956.Growth.GeneralSolowExamples
+import Solow1956.Growth.SolowConvergence
