@@ -211,7 +211,10 @@ def collect_sources(root, config):
     names = [item["name"] for item in declarations]
     require(len(set(names)) == len(names), "Duplicate named declarations in fresh audit")
     fresh = "\n".join(imports) + "\nset_option autoImplicit false\n\n" + "\n\n".join(bodies)
-    fresh += "\n\n" + "\n".join("#print axioms " + name for name in names) + "\n"
+    # Generated audit commands can contain fully qualified names longer than the
+    # 100-column style limit; the sources above are line-length checked by `lake build`.
+    fresh += "\n\nset_option linter.style.longLine false\n\n"
+    fresh += "\n".join("#print axioms " + name for name in names) + "\n"
     return fresh, declarations, counts, hashes
 
 
