@@ -77,7 +77,7 @@ lake exe cache get
 python scripts/verify.py
 ```
 
-Lean and Mathlib are pinned to **v4.34.0-rc2**, with transitive revisions in
+Lean and Mathlib are pinned to **v4.34.0**, with transitive revisions in
 `lake-manifest.json`. The script builds the library, freshly recompiles the
 proof sources without importing their compiled project modules, and checks
 107 declarations, including all 66 theorems, definitions, structures, their

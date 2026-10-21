@@ -927,6 +927,8 @@ theorem zero_investment_no_neoclassical_representation
 
 end UzawaModern.VersionAudit
 
+set_option linter.style.longLine false
+
 #print axioms UzawaModern.Uzawa.trajectory
 #print axioms UzawaModern.Uzawa.trajectory_start
 #print axioms UzawaModern.Uzawa.trajectory_pos

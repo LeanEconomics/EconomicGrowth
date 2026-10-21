@@ -43,10 +43,11 @@ theorem and Ramsey's undiscounted bliss criterion are not claimed as completed.
 
 ## Build and verify
 
-Install [elan](https://github.com/leanprover/elan) and Python 3.12+. Each project
-pins its own Lean and Mathlib versions: SolowSwan and RamseyCassKoopmans use
-`v4.34.0`, and Uzawa uses `v4.34.0-rc2`. Each Lake manifest pins transitive
-dependencies. From the repository root:
+Install [elan](https://github.com/leanprover/elan) and Python 3.12+. All three
+projects pin Lean and Mathlib `v4.34.0`, matching
+[DynamicProgramming](https://github.com/LeanEconomics/DynamicProgramming).
+Each Lake manifest pins the same transitive dependency revisions.
+From the repository root:
 
 ```sh
 cd SolowSwan

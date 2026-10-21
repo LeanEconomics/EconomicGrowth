@@ -10768,6 +10768,8 @@ theorem steady_strictAnti_depreciation {δ' : ℝ} (P : Primitives f u β δ)
 
 end RamseyCassKoopmans.DiscreteTime
 
+set_option linter.style.longLine false
+
 #print axioms RamseyCassKoopmans.FeasiblePath
 #print axioms RamseyCassKoopmans.FeasiblePath.mk
 #print axioms RamseyCassKoopmans.FeasiblePath.capital

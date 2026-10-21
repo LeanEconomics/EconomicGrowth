@@ -10,6 +10,9 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 ALLOWED = {"propext", "Classical.choice", "Quot.sound"}
+# `lake env lean` sets the import path but does not apply Lake's leanOptions.
+# Enforce the same standard lint set in the fresh-source audit explicitly.
+SOURCE_LINT_OPTIONS = ["-Dlinter.mathlibStandardSet=true", "-Dlinter.style.header=false"]
 FORBIDDEN = re.compile(r"\b(sorry|admit|axiom|unsafe|native_decide)\b")
 DECLARATION = re.compile(
     r"(?:@\[[^]]*\]\s*)*(?:(?:noncomputable|protected)\s+)*"
@@ -194,7 +197,10 @@ def collect_sources(root, config):
     names = [item["name"] for item in declarations]
     require(len(set(names)) == len(names), "Duplicate named declarations in fresh audit")
     fresh = "\n".join(imports) + "\nset_option autoImplicit false\n\n" + "\n\n".join(bodies)
-    fresh += "\n\n" + "\n".join("#print axioms " + name for name in names) + "\n"
+    # Generated audit commands can contain fully qualified names longer than the
+    # 100-column style limit; the sources above are line-length checked by `lake build`.
+    fresh += "\n\nset_option linter.style.longLine false\n\n"
+    fresh += "\n".join("#print axioms " + name for name in names) + "\n"
     return fresh, declarations, counts, hashes
 
 
@@ -241,7 +247,7 @@ def main():
         return log
 
     run([args.lake, "build"], "build.txt")
-    log = run([args.lake, "env", "lean", str(freshpath)], "fresh-audit.txt")
+    log = run([args.lake, "env", "lean", *SOURCE_LINT_OPTIONS, str(freshpath)], "fresh-audit.txt")
     axioms = audit_axioms(log, declarations)
     for name in (f"{config['library']}.lean", "lean-toolchain", "lakefile.toml",
                  "lake-manifest.json", "proof-manifest.json", "scripts/verify.py", "UNLICENSE"):
@@ -251,6 +257,7 @@ def main():
         "theorems": sum(counts.values()), "module_theorems": counts,
         "audited_declarations": len(declarations), "declarations": declarations,
         "full_build": "passed", "fresh_source_compilation": "passed",
+        "fresh_source_lint_options": SOURCE_LINT_OPTIONS,
         "axioms": axioms, "source_sha256": hashes,
         "fresh_audit_sha256": digest(freshpath),
         "lean_toolchain": (ROOT / "lean-toolchain").read_text().strip(),

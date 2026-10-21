@@ -3,11 +3,13 @@ version = "0.1.0"
 defaultTargets = ["RamseyCassKoopmans", "DiscreteTime"]
 
 [leanOptions]
+pp.unicode.fun = true
 autoImplicit = false
 relaxedAutoImplicit = false
 weak.linter.mathlibStandardSet = true
 # The original contribution uses Unlicense rather than Mathlib's Apache header.
 linter.style.header = false
+maxSynthPendingDepth = 3
 
 [[require]]
 name = "mathlib"
