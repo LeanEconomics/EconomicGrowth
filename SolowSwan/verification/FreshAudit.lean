@@ -4167,6 +4167,8 @@ theorem log_gap_rate_tendsto (h : Technology f) {s δ γ : ℝ} (P : Params s δ
 
 end Solow1956.DiscreteTime
 
+set_option linter.style.longLine false
+
 #print axioms Solow1956.SolowSwan.capitalChange
 #print axioms Solow1956.SolowSwan.hasDerivAt_capitalPerWorker
 #print axioms Solow1956.SolowSwan.intensiveForm_of_homogeneous

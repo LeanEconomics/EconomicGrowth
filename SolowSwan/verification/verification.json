@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-09-27T03:42:26.210999+00:00",
+  "checked_at_utc": "2026-10-21T10:11:25.096508+00:00",
   "theorems": 285,
   "module_theorems": {
     "Solow1956/Growth/SolowSwan.lean": 16,
@@ -1708,6 +1708,10 @@
   ],
   "full_build": "passed",
   "fresh_source_compilation": "passed",
+  "fresh_source_lint_options": [
+    "-Dlinter.mathlibStandardSet=true",
+    "-Dlinter.style.header=false"
+  ],
   "axioms": {
     "Solow1956.SolowSwan.capitalChange": [
       "propext",
@@ -3417,12 +3421,12 @@
     "lakefile.toml": "8e43a7bef2f4149fa7ecf1af6d9af19c2648f237fc15fd42e6ff81e46b17ebbe",
     "lake-manifest.json": "cdd8751d44aca7249c10ed225b3ca7685cce852223aa889b81784ab496fcb36d",
     "proof-manifest.json": "c77667282195c235102ef2b669221444579ba4379a0d4b1a0fb9694f28be24cd",
-    "scripts/verify.py": "46818acd916ae8e64f6d917169e2a5c2752d36b254bf178c16978491ce2a5282",
+    "scripts/verify.py": "e38d03691422dc6c21f5b3da826e672bba650a2751a3ba724315c87465176f18",
     "scripts/verify_evidence.py": "75518db86e6a5a21996cc87d7fe2492da49ab9aa47170ea1b074094247446f1e",
     "scripts/check_theorydebugger.py": "594bccc70ef9fa416f3b6ebf8744d710947d7186a1805b746d30dcecf892b839",
     "UNLICENSE": "b5065838cbac452dfc855ba6e6e031481ad2c68406f70d21ead9321374653e6c"
   },
-  "fresh_audit_sha256": "c60ce26ca1d10b2f9b4cd46e7caa16961049211a8411ff569c536c015553d125",
+  "fresh_audit_sha256": "242f0ca83495c6d4cf35a12a36dd32f01c531808e91c6e39b6293f875629300c",
   "lean_toolchain": "leanprover/lean4:v4.34.0",
   "scope": "General neoclassical continuous-time Solow-Swan growth from positive capital: existence, positivity, uniqueness among nonnegative classical paths, strict monotone convergence, Lyapunov stability, all eight Acemoglu comparative-statics partials, Golden Rule saving, a stationary Cass bridge, saving shocks, effective-labour convergence, and Cobb-Douglas closed forms, absolute convergence among identical economies with a uniform exponential rate and the sharp asymptotic rate m - s f'(k*). A parallel discrete-time library (DiscreteTime/) redoes these results for k(t+1) = (s f(k) + (1 - delta) k)/gamma, following Acemoglu Propositions 2.2-2.6.",
   "source_provenance": "4bed57534cf4f5562be8b90c481bb3dd54360fe0",
